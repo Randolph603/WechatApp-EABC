@@ -1,15 +1,25 @@
 {
   "name": "eabc-wechat-app",
   "version": "1.0.0",
-  "description": "",
-  "scripts": {
-  },
+  "scripts": {},
   "keywords": [],
   "author": "",
-  "license": "",
-  "dependencies": {
-  },
+  "license": "ISC",
   "devDependencies": {
-    "miniprogram-api-typings": "^2.8.3-1"
+    "miniprogram-api-typings": "^4.0.7"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Spaceman-Studio/WechatApp-EABC.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Spaceman-Studio/WechatApp-EABC/issues"
+  },
+  "homepage": "https://github.com/Spaceman-Studio/WechatApp-EABC#readme",
+  "description": "",
+  "dependencies": {
+    "@cloudbase/adapter-wx_mp": "^1.2.0",
+    "@cloudbase/js-sdk": "^2.14.0"
   }
 }

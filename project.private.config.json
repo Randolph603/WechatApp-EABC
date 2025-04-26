@@ -26,8 +26,8 @@
           "name": "pages/me/me",
           "pathName": "pages/me/me",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }
