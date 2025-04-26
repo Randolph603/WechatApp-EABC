@@ -1,11 +1,35 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/logs/logs"
+    "pages/logs/logs",
+    "pages/me/me"
   ],
   "window": {
-    "navigationBarTextStyle": "black",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#000008",
+    "navigationBarTitleText": "NZ Cloud Life",
+    "navigationBarTextStyle": "white",
     "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "color": "#A7A7A7",
+    "selectedColor": "#2D8DB8",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "images/navigation/home-64-7A7A7A.png",
+        "selectedIconPath": "images/navigation/home-64-2D8DB8.png",
+        "text": "活动"
+      },
+      {
+        "pagePath": "pages/me/me",
+        "iconPath": "./images/navigation/account-64-7A7A7A.png",
+        "selectedIconPath": "./images/navigation/account-64-2D8DB8.png",
+        "text": "我的"
+      }
+    ]
   },
   "style": "v2",
   "rendererOptions": {
@@ -18,5 +42,13 @@
   },
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents"
+  "useExtendedLib": {
+    "weui": true
+  },
+  "lazyCodeLoading": "requiredComponents",
+  "resolveAlias": {    
+    "@Language/*": "language/*",
+    "@API/*": "api/*",
+    "@Lib/*": "utils/*"
+  }
 }
