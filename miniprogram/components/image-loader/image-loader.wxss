@@ -1,0 +1,29 @@
+.before-load {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  margin: 0;
+  border: 0;
+  display: none !important;
+}
+
+.avatar {
+  display: flex;
+}
+
+.layout {
+  animation: dh linear 1s infinite alternate;
+}
+
+@keyframes dh {
+
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+
+  25% {
+    opacity: 0;
+  }
+}

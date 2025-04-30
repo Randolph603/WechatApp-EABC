@@ -1,0 +1,5 @@
+<image wx:if="{{!finishLoadFlag}}" mode="{{mode}}" class="my-class avatar layout" src="{{defaultLoadingSrc}}"
+  style="{{width ? 'width:' + width : ''}};{{height ? 'height:' + height : ''}};{{borderRadius ? 'border-radius:' + borderRadius : ''}};" />
+
+<image mode="{{mode}}" class="my-class avatar {{finishLoadFlag ? '' : 'before-load'}}" src='{{src}}' bindload='finishLoad' bindtap="onTaped"
+  style="{{finishLoadFlag && width ? 'width:' + width : ''}};{{finishLoadFlag && height ? 'height:' + height : ''}};{{borderRadius ? 'border-radius:' + borderRadius : ''}};" />

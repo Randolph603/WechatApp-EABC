@@ -20,6 +20,6 @@
   "description": "",
   "dependencies": {
     "@cloudbase/adapter-wx_mp": "^1.2.0",
-    "@cloudbase/js-sdk": "^2.14.0"
+    "@cloudbase/js-sdk": "^2.14.0"    
   }
 }

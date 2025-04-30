@@ -1,5 +1,5 @@
 {
-  "pages": [    
+  "pages": [
     "pages/me/me",
     "pages/index/index",
     "pages/logs/logs"
@@ -9,7 +9,8 @@
     "navigationBarBackgroundColor": "#000008",
     "navigationBarTitleText": "NZ Cloud Life",
     "navigationBarTextStyle": "white",
-    "navigationStyle": "custom"
+    "navigationStyle": "custom",
+    "disableScroll": true
   },
   "tabBar": {
     "backgroundColor": "#FFFFFF",
@@ -32,12 +33,11 @@
     ]
   },
   "style": "v2",
+  "renderer": "skyline",
   "rendererOptions": {
     "skyline": {
       "defaultDisplayBlock": true,
-      "disableABTest": true,
-      "sdkVersionBegin": "3.0.0",
-      "sdkVersionEnd": "15.255.255"
+      "defaultContentBox": true
     }
   },
   "componentFramework": "glass-easel",
@@ -46,6 +46,9 @@
     "weui": true
   },
   "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {
+    "image-loader": "/components/image-loader/image-loader"
+  },
   "resolveAlias": {
     "@Language/*": "languages/*",
     "@API/*": "apis/*",

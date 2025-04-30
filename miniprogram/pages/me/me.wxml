@@ -2,17 +2,17 @@
 
 <view class="top-layout" />
 <view class="user-box">
-  <block wx:if='{{hasAuth}}'>
+  <block wx:if='{{!hasAuth}}'>
     <image class="user-avatar" src='/images/blank-profile.jpg' mode="aspectFill"></image>
     <button bindtap='loginOrRefresh'>
       Click to join us
     </button>
   </block>
   <block wx:else>
-    <image-loader defaultLoadingSrc="/images/blank-profile.jpg" src='{{userInfo.avatarUrl}}' width="165rpx" height="165rpx" borderRadius="10rpx" mode="aspectFill" />
+    <image-loader defaultLoadingSrc="/images/blank-profile.jpg" src='{{userProfile.avatarUrl}}' width="165rpx" height="165rpx" borderRadius="10rpx" mode="aspectFill" />
     <view class="user-info">
       <view class="row">
-        <text class="user-name">Welcome {{userInfo.nickName}}</text>
+        <text class="user-name">Welcome {{userProfile.nickName}}</text>
         <button class="user-refresh" plain="true" size="mini" bindtap='loginOrRefresh'>
           <image class="icon" src="/images/icons/refresh-2c2c2c.png"></image>
         </button>
