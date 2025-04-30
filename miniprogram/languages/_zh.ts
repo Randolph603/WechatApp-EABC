@@ -1,4 +1,4 @@
-module.exports.languageMap = {
+export const LanguageMap = {
   tabbar: {
     list: [
       { text: '活动' },
@@ -115,8 +115,7 @@ module.exports.languageMap = {
     backUpJoin: "后补报名 (有取消，自动补上)",
     activity: "活动",
     my: "我的",
-    contact: "咨询",
-    share: "分享",
+    contact: "咨询",    
     join: "立即报名",
     cancel: "难过取消",
     cancelPolicy: "请提前24小时取消",
@@ -128,4 +127,4 @@ module.exports.languageMap = {
     lowCreditBalanceDesc: "友情提示：您当前的余额为：",
   }
 }
-module.exports.attendTitle = (a, b) => `已有${a}人报名，总名额共${b}人`;
+export const AttendTitle = (a: number, b: number) => `已有${a}人报名，总名额共${b}人`;

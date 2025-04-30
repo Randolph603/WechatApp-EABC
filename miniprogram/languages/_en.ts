@@ -1,4 +1,4 @@
-module.exports.languageMap = {
+export const LanguageMap = {
   tabbar: {
     list: [
       { text: 'Activities' },
@@ -115,8 +115,7 @@ module.exports.languageMap = {
     backUpJoin: "Back up registration (auto joined when someone cancelled)",
     activity: "Activity",
     my: "My",
-    contact: "Consult",
-    share: "Share",
+    contact: "Consult",    
     join: "Join Now",
     cancel: "Cancel",
     cancelPolicy: "Cancel 24 hours in advance",
@@ -128,4 +127,4 @@ module.exports.languageMap = {
     lowCreditBalanceDesc: "Friendly reminder: Your current balance is：",
   }
 }
-module.exports.attendTitle = (a, b) => `${a} members joined, ${b} in total.`;
+export const AttendTitle = (a:number, b: number) => `${a} members joined, ${b} in total.`;

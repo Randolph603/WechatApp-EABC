@@ -1,8 +1,8 @@
 {
-  "pages": [
+  "pages": [    
+    "pages/me/me",
     "pages/index/index",
-    "pages/logs/logs",
-    "pages/me/me"
+    "pages/logs/logs"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -46,9 +46,9 @@
     "weui": true
   },
   "lazyCodeLoading": "requiredComponents",
-  "resolveAlias": {    
-    "@Language/*": "language/*",
-    "@API/*": "api/*",
+  "resolveAlias": {
+    "@Language/*": "languages/*",
+    "@API/*": "apis/*",
     "@Lib/*": "utils/*"
   }
 }
