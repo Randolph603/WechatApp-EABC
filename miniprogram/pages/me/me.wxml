@@ -9,7 +9,7 @@
     </button>
   </block>
   <block wx:else>
-    <image-loader defaultLoadingSrc="/images/blank-profile.jpg" src='{{userProfile.avatarUrl}}' width="165rpx" height="165rpx" borderRadius="10rpx" mode="aspectFill" />
+    <image-loader my-class="user-avatar" defaultLoadingSrc="/images/blank-profile.jpg" src='{{userProfile.avatarUrl}}' mode="aspectFill"  />
     <view class="user-info">
       <view class="row">
         <text class="user-name">Welcome {{userProfile.nickName}}</text>
@@ -33,36 +33,9 @@
   </block>
 </view>
 
-<!-- <view class="setting-box">
-		<navigator wx:if="{{userInfo}}" class="setting" open-type="navigate" url="/pages/myHistory/myHistory">
-			<image class="icon" src="/images/icons/start.png"></image>
-			<text class="title">Traning history</text>
-			<image class="more" src="/images/icons/arrow-right-bold.png"></image>
-		</navigator>
-		<navigator wx:if="{{userInfo}}" class="setting" open-type="navigate"
-			url="/pages/myHealth/myHealth?openId={{userProfile.userId}}">
-			<image class="icon" src="/images/icons/health.png"></image>
-			<text class="title">My health</text>
-			<image class="more" src="/images/icons/arrow-right-bold.png"></image>
-		</navigator>
-		<view class="setting" bindtap="tapDialog" data-value="{{true}}">
-			<image class="icon" src="/images/icons/topup.png"></image>
-			<text class="title">Top up</text>
-			<image class="more" src="/images/icons/arrow-right-bold.png"></image>
-		</view>
-		<view class="setting">
-			<image class="icon" src="/images/icons/contact.png"></image>
-			<view class="title">
-				<button class="contact-btn" open-type="contact"></button>
-				<text class="text">Customer service</text>
-			</view>
-			<image class="more" src="/images/icons/arrow-right-bold.png"></image>
-		</view>
-	</view> -->
-
 <view class="support-by">
   <image style="height: 100rpx" src="/images/spaceman.png" mode="heightFix"></image>
-  <view class="weui-footer">
+  <view class="footer">
     <view class="info">Power by<text class="name">Spanceman Studio</text></view>
     <view class="weui-footer__text info">Copyright ©2021-2021</view>
   </view>

@@ -3,14 +3,6 @@ Page {
   overflow: hidden;
 }
 
-.scroll {
-  height: 100vh;
-}
-
-.nav-bar {
-  background: rgba(31, 38, 59, 0.9);
-}
-
 .top-layout {
   width: 100%;
   height: 500rpx;
@@ -38,120 +30,73 @@ Page {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-}
 
-.user-box .user-avatar {
-  border-radius: 10rpx;
-  width: 165rpx;
-  height: 165rpx;
-}
+  .user-avatar {
+    border-radius: 10rpx;
+    width: 165rpx;
+    height: 165rpx;
+  }
 
-.user-box .user-info {
-  margin: 0 20rpx;
-  height: auto;
-  display: flex;
-  flex-grow: 1;
-  flex-direction: column;
-  align-items: center;
-}
+  .user-info {
+    margin: 0 20rpx;
+    height: auto;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: center;
 
-.user-box .user-info .row {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-grow: 1;
-}
+    .row {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-grow: 1;
+    }
 
-.user-box .user-info .user-name {
-  font-weight: 600;
-  white-space: nowrap;
-  width: 100%;
-}
+    .user-box .user-info .user-name {
+      font-weight: 600;
+      white-space: nowrap;
+      width: 100%;
+    }
 
-.user-box .user-info .user-refresh {
-  border: 0;
-  padding: 0;
-  margin: 0;
-  display: flex;
-}
+    .user-refresh {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      display: flex;
+    }
 
-.user-box .user-info .icon {
-  height: 40rpx;
-  width: 48rpx;
-}
+    .icon {
+      height: 40rpx;
+      width: 48rpx;
+    }
 
-.user-box .user-info .user-motto {
-  font-size: 24rpx;
-  width: 100%;
-  white-space: nowrap;
+    .user-motto {
+      font-size: 24rpx;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+  }
 }
 
 .user-details-box {
   display: flex;
   flex-direction: column;
-}
 
-.user-details-box .name {
-  font-size: 20rpx;
-  color: darkgray;
-}
+  .name {
+    font-size: 20rpx;
+    color: darkgray;
+  }
 
-.user-details-box .value {
-  font-size: 38rpx;
-}
+  .value {
+    font-size: 38rpx;
 
-.user-details-box .value text {
-  font-size: 24rpx;
-}
-
-.setting-box {
-  background: #fff;
-  color: #000;
-  margin: 50rpx 0;
-  /*for Android*/
-  box-shadow: 0rpx 5rpx 5rpx 1rpx #b4b4b496;
-  /*for IOS*/
-  -webkit-box-shadow: 0px 5px 5px 1px #b4b4b496;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.setting-box .setting {
-  width: 100%;
-  padding: 30rpx;
-  align-items: center;
-  display: flex;
-  border-bottom: 1rpx solid #808080af;
-}
-
-.setting-box .setting .icon {
-  margin-left: 60rpx;
-  width: 40rpx;
-  height: 40rpx;
-}
-
-.setting-box .setting .title {
-  position: relative;
-  margin-left: 30rpx;
-  flex-grow: 1;
-}
-
-.setting-box .setting .more {
-  margin-right: 60rpx;
-  width: 40rpx;
-  height: 40rpx;
-}
-
-.setting-box .setting .contact-btn {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  opacity: 0;
+    text {
+      font-size: 24rpx;
+    }
+  }
 }
 
 .support-by {
@@ -160,16 +105,19 @@ Page {
   justify-content: center;
   align-items: center;
   margin-top: 30rpx;
-}
 
-.support-by .info {
-  margin: -8rpx 0 8rpx 0;
-  font-size: 18rpx;
-  font-family: “Helvetica, Tahoma, Arial”;
-}
+  .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: -8rpx 0 8rpx 0;
+    font-size: 18rpx;
+    font-family: “Helvetica, Tahoma, Arial”;
+  }
 
-.support-by .name {
-  margin-left: 10rpx;
-  font-size: 22rpx;
-  color: #2c2c2c88
+  .name {
+    margin-left: 10rpx;
+    font-size: 22rpx;
+    color: #2c2c2c88
+  }
 }
