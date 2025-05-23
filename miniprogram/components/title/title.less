@@ -1,0 +1,30 @@
+.title {
+  display: flex;
+  justify-content: space-between;
+  height: 60rpx;
+  align-items: center;
+
+  .txt {
+    font-size: 30rpx;
+    height: 100%;
+    position: relative;
+    padding-left: 20rpx;
+  }
+
+  .txt::before {
+    display: block;
+    width: 8rpx;
+    height: 34rpx;
+    background: #2D8DB8;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -22rpx;
+  }
+
+  .more {
+    font-size: 34rpx;
+    color: #666
+  }
+}

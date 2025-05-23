@@ -1,42 +1,130 @@
-<mp-navigation-bar title='{{_lang.title}}' ext-class="nav-bar" back="{{false}}" />
-
 <view class="top-layout" />
 <view class="user-box">
-  <block wx:if='{{!hasAuth}}'>
-    <image class="user-avatar" src='/images/blank-profile.jpg' mode="aspectFill"></image>
-    <button bindtap='loginOrRefresh'>
-      Click to join us
+  <view class="view-row" wx:if='{{!hasAuth}}'>
+    <image class="user-avatar" src='/static/images/blank-profile.jpg' mode="aspectFill" />
+    <button wx:if='{{!isLoaded}}'>Loading...</button>
+    <button wx:else bindtap='loginOrRefresh'>
+      {{_lang.register}}
     </button>
-  </block>
-  <block wx:else>
-    <image-loader my-class="user-avatar" defaultLoadingSrc="/images/blank-profile.jpg" src='{{userProfile.avatarUrl}}' mode="aspectFill"  />
-    <view class="user-info">
-      <view class="row">
-        <text class="user-name">Welcome {{userProfile.nickName}}</text>
-        <button class="user-refresh" plain="true" size="mini" bindtap='loginOrRefresh'>
-          <image class="icon" src="/images/icons/refresh-2c2c2c.png"></image>
-        </button>
-      </view>
-
-      <input class="user-motto" value="{{userProfile.displayName}}" maxlength="30" placeholder="Please type a display name" bindblur="onDisplayNameChange" bindfocus="onDisplayNameFocus" />
-      <view class="row">
-        <view class="user-details-box">
-          <text class="name">Credit Balance</text>
-          <view class="value">{{userProfile.creditBalance}}<text> NZD</text></view>
+  </view>
+  <view class="view-column" wx:else>
+    <view class="view-row" style="align-items: flex-start; width: 100%">
+      <button style="border: 0; width: auto; padding: 0; margin: 0;" plain="true" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image-loader ext-class="user-avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{userProfile.avatarUrl}}' mode="aspectFit" />
+      </button>
+      <view class="user-info">
+        <view class="view-row top-row">
+          <view class="view-row">
+            <text class="user-status">{{userProfile.userRoleName}}</text>
+            <image wx:if="{{userProfile.gender > 0}}" class="user-icon" src="/static/icons/{{userProfile.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+            <text class="user-name">{{userProfile.displayName || userProfile.nickName}}</text>
+          </view>
+          <button class="user-edit" plain="true" size="mini" bindtap='loginOrRefresh'>
+            编辑资料
+          </button>
         </view>
-        <view class="user-details-box">
-          <text class="name">Power Points</text>
-          <text class="value">{{userProfile.powerPoint}}</text>
+        <view class="view-row">
+          <text class="user-id">ID: {{userProfile.memberId}}</text>
+          <image class="user-id-icon" src="/static/icons/copy.png" mode="aspectFit" />
+        </view>
+        <view class="view-row">
+          <text class="user-motto">个性宣言： 球伴技术好，你赢球的可能性就大</text>
         </view>
       </view>
     </view>
-  </block>
-</view>
+    <view class="view-row user-values">
+      <view class="view-column">
+        <text>{{userProfile.creditBalance}}</text>
+        <text>余额</text>
+      </view>
+      <view class="view-column">
+        <text>{{userProfile.powerPoint}}</text>
+        <text>活动</text>
+      </view>
+      <view class="view-column">
+        <text>{{userProfile.powerPoint}}</text>
+        <text>积分</text>
+      </view>
+      <view class="view-column">
+        <text>{{userProfile.userLevelName}}</text>
+        <text>级别</text>
+      </view>
+    </view>
 
-<view class="support-by">
-  <image style="height: 100rpx" src="/images/spaceman.png" mode="heightFix"></image>
-  <view class="footer">
-    <view class="info">Power by<text class="name">Spanceman Studio</text></view>
-    <view class="weui-footer__text info">Copyright ©2021-2021</view>
   </view>
 </view>
+
+<view class="loading-box" wx:if='{{!isLoaded}}'>
+  <image class="loading" src='/static/images/loading.gif' mode="heightFix" />
+</view>
+
+<scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="loadUser" refresher-triggered="{{triggered}}">
+
+  <view class="card">
+    <view class="card-title">推荐服务</view>
+    <scroll-view scroll-x="{{true}}">
+      <view class="card-items">
+        <navigator class="card-item" url="/pages/home/home" open-type="switchTab">
+          <image class="icon48" src="/static/icons/adventure.png" mode="heightFix" />
+          <text>钱包</text>
+        </navigator>
+        <view class="card-item">
+          <image class="icon48" src="/static/icons/apple-arcade.png" mode="heightFix" />
+          <text>队伍</text>
+        </view>
+        <view class="card-item">
+          <image class="icon48" src="/static/icons/game-controller.png" mode="heightFix" />
+          <text>积分</text>
+        </view>
+        <view class="card-item">
+          <image class="icon48" src="/static/icons/archer.png" mode="heightFix" />
+          <text>战绩</text>
+        </view>
+        <view class="card-item">
+          <image class="icon48" src="/static/icons/spartan-helmet.png" mode="heightFix" />
+          <text>活动</text>
+        </view>
+        <view class="card-item">
+          <image class="icon48" src="/static/icons/armored-boot.png" mode="heightFix" />
+          <text>比赛</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="feature-card">
+    <mp-cells title="Features">
+      <mp-cell link hover value="{{_lang.wallet}}">
+        <image slot="title" src="/static/icons/body-armor.png" class="mp-cell-icon" />
+        <text slot="footer">Hahaha</text>
+      </mp-cell>
+      <mp-cell link hover value="{{_lang.history}}">
+        <image slot="title" src="/static/icons/gauntlet-gloves.png" class="mp-cell-icon" />
+        <text slot="footer">Hahaha</text>
+      </mp-cell>
+      <mp-cell link hover value="{{_lang.topup}}">
+        <image slot="title" src="/static/icons/greek-helmet.png" class="mp-cell-icon" />
+        <text slot="footer">Hahaha</text>
+      </mp-cell>
+      <mp-cell link value="{{_lang.contactUs}}">
+        <button style="border: 0" class="contact-btn" plain="true" open-type="contact" />
+        <image slot="icon" src="/static/icons/knight-shield.png" class="mp-cell-icon" />
+      </mp-cell>
+      <mp-cell link>
+        <image slot="icon" src="/static/icons/shield.png" class="mp-cell-icon" />
+        <picker bindchange="languagePickerChange" range="{{languageArray}}" range-key="name" value="{{currentLanguage.index}}">
+          <view class="picker"> {{currentLanguage.setting}} </view>
+        </picker>
+      </mp-cell>
+    </mp-cells>
+  </view>
+
+  <view class="support-by">
+    <image style="height: 100rpx" src="/static/images/spaceman.png" mode="heightFix"></image>
+    <view class="footer">
+      <view class="info">Power by<text class="name">Spanceman Studio</text></view>
+      <view class="info">Copyright ©2021-{{year}}</view>
+      <view class="info">Version: {{version}}</view>
+    </view>
+  </view>
+</scroll-view>

@@ -29,7 +29,7 @@ export const GetLanguageVersion = () => {
 export const GetCurrentLanguage = () => {
   const langValue = GetLanguageVersion();
   const matchedLanguage = LanguageArray.find(l => l.value === langValue);
-  return matchedLanguage?.setting;
+  return matchedLanguage;
 }
 
 export const GetLaguageMap = () => {

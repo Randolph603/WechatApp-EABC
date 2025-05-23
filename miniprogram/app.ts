@@ -1,11 +1,10 @@
-import { GetUnionIdAsync, InitDatabaseAsync } from "@API/databaseService";
+import { InitDatabaseAsync } from "@API/databaseService";
+import CheckUpdateVersion from "@API/versionService";
 
-// app.ts
 App<IAppOption>({
   globalData: {},
   async onLaunch() {
+    CheckUpdateVersion();
     await InitDatabaseAsync();
-    const UnionId = await GetUnionIdAsync();
-    console.log(UnionId);
   },
 })

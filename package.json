@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^22.15.21",
     "miniprogram-api-typings": "^4.0.7"
   },
   "main": "index.js",
@@ -20,6 +21,7 @@
   "description": "",
   "dependencies": {
     "@cloudbase/adapter-wx_mp": "^1.2.0",
-    "@cloudbase/js-sdk": "^2.14.0"    
+    "@cloudbase/js-sdk": "^2.14.0",
+    "tdesign-miniprogram": "^1.9.2"
   }
 }

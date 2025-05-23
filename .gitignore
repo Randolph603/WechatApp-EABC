@@ -1,2 +1,4 @@
 /node_modules
 /miniprogram/miniprogram_npm
+/miniprogram/env.ts
+/miniprogram/mocks/**/*.jpg

@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "r-title": "/components/title/title"
+  },
+  "renderer": "skyline"
+}

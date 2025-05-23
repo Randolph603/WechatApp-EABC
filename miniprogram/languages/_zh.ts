@@ -1,8 +1,9 @@
-export const LanguageMap = {
+export const LanguageMap: iLanguageMap = {
   tabbar: {
     list: [
       { text: '活动' },
-      { text: '活跃度' },
+      { text: '排名' },
+      { text: '商城' },
       { text: '我的' },
     ]
   },
@@ -115,7 +116,7 @@ export const LanguageMap = {
     backUpJoin: "后补报名 (有取消，自动补上)",
     activity: "活动",
     my: "我的",
-    contact: "咨询",    
+    contact: "咨询",
     join: "立即报名",
     cancel: "难过取消",
     cancelPolicy: "请提前24小时取消",

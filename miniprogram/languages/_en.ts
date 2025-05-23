@@ -1,8 +1,9 @@
-export const LanguageMap = {
+export const LanguageMap: iLanguageMap = {
   tabbar: {
     list: [
       { text: 'Activities' },
-      { text: 'Hot Rank' },
+      { text: 'Rank' },
+      { text: 'Shop' },
       { text: 'My' },
     ]
   },

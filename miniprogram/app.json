@@ -1,6 +1,8 @@
 {
   "pages": [
+    "pages/activityList/activityList",
     "pages/home/home",
+    "pages/shop/shop",
     "pages/me/me"
   ],
   "window": {
@@ -17,15 +19,27 @@
     "selectedColor": "#2D8DB8",
     "list": [
       {
-        "pagePath": "pages/home/home",
-        "iconPath": "images/navigation/home-64-7A7A7A.png",
-        "selectedIconPath": "images/navigation/home-64-2D8DB8.png",
+        "pagePath": "pages/activityList/activityList",
+        "iconPath": "static/icons/tabbar/badminton-7A7A7A.png",
+        "selectedIconPath": "static/icons/tabbar/badminton-90CAF9.png",
         "text": "活动"
       },
       {
+        "pagePath": "pages/home/home",
+        "iconPath": "static/icons/tabbar/rank-7A7A7A.png",
+        "selectedIconPath": "static/icons/tabbar/rank-90CAF9.png",
+        "text": "排名"
+      },
+      {
+        "pagePath": "pages/shop/shop",
+        "iconPath": "static/icons/tabbar/shop-7A7A7A.png",
+        "selectedIconPath": "static/icons/tabbar/shop-90CAF9.png",
+        "text": "商城"
+      },
+      {
         "pagePath": "pages/me/me",
-        "iconPath": "./images/navigation/account-64-7A7A7A.png",
-        "selectedIconPath": "./images/navigation/account-64-2D8DB8.png",
+        "iconPath": "static/icons/tabbar/badge-7A7A7A.png",
+        "selectedIconPath": "static/icons/tabbar/badge-90CAF9.png",
         "text": "我的"
       }
     ]
@@ -43,7 +57,7 @@
   "sitemapLocation": "sitemap.json",
   "useExtendedLib": {
     "weui": true
-  },
+  },  
   "lazyCodeLoading": "requiredComponents",
   "resolveAlias": {
     "@Language/*": "languages/*",

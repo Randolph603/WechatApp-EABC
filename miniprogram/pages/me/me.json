@@ -1,6 +1,9 @@
 {
   "usingComponents": {
     "mp-navigation-bar": "weui-miniprogram/navigation-bar/navigation-bar",
-    "image-loader": "/components/image-loader/image-loader"
-  }
+    "image-loader": "/components/image-loader/image-loader",
+    "mp-cell": "weui-miniprogram/cell/cell",
+    "mp-cells": "weui-miniprogram/cells/cells"
+  },
+  "renderer": "webview"
 }

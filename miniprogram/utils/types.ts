@@ -1,4 +1,4 @@
-import { GetLaguageMap } from 'miniprogram/languages/languageUtils';
+import { GetLaguageMap } from "@Language/languageUtils";
 
 const lang = GetLaguageMap().type;
 

@@ -1,0 +1,4 @@
+<view class="ext-class title">
+  <view class="txt">{{title}}</view>
+  <navigator wx:if="{{url}}" open-type="reLaunch" url="{{url}}" class="more">></navigator>
+</view>
