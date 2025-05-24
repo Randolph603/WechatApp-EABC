@@ -120,7 +120,7 @@
   </view>
 
   <view class="support-by">
-    <image style="height: 100rpx" src="/static/images/spaceman.png" mode="heightFix"></image>
+    <image style="height: 110rpx" src="/static/images/spaceman.png" mode="heightFix"></image>
     <view class="footer">
       <view class="info">Power by<text class="name">Spanceman Studio</text></view>
       <view class="info">Copyright ©2021-{{year}}</view>

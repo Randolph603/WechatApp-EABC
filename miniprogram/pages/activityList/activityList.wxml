@@ -17,7 +17,7 @@
   </view>
 
   <view class="studio-header">
-    <image class="logo" src="/static/images/logo.png" mode="aspectFill" />
+    <image class="logo" src="/static/images/icon.png" mode="aspectFill" />
     <view class="title">EABC 东羽羽毛球</view>
   </view>
 
@@ -48,7 +48,7 @@
               <view class="bottom">
                 <view class="info"> {{_lang.attendee}}：{{item.Attendees.length}}/{{item.maxAttendee}}</view>
                 <view class="look">
-                  <image src="/static/icons/look-8a8a8a.png" class="lookpic" />
+                  <image src="/static/icons/look.png" class="lookpic" />
                   <text>{{item.viewCount}}</text>
                 </view>
               </view>
