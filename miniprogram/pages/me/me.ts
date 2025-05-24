@@ -15,12 +15,33 @@ Page({
     triggered: false,
     // Variables   
     currentLanguage: {},
-    userProfile: {},
+    userProfile: {memberId: 0},
     languageArray: LanguageArray
   },
 
   async onLoad() {
-    const user = await GetUserByUnionId();    
+    await this.LoadUser();
+  },
+
+  async onShow() {
+    const version = wx.getAccountInfoSync().miniProgram.version;
+    this.setData({
+      _lang: GetLaguageMap().my,
+      version: version,
+      currentLanguage: GetCurrentLanguage()
+    });
+
+    GetLaguageMap()["tabbar"].list.forEach(({ text }, i) => {
+      wx.setTabBarItem({
+        index: i,
+        text: text
+      })
+    });
+  },
+
+  //#region private method
+  async LoadUser() {
+    const user = await GetUserByUnionId();
     if (user) {
       if (user.avatarUrl.startsWith('cloud')) {
         user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
@@ -43,20 +64,8 @@ Page({
     }
   },
 
-  async onShow() {
-    const version = wx.getAccountInfoSync().miniProgram.version;
-    this.setData({
-      _lang: GetLaguageMap().my,
-      version: version,
-      currentLanguage: GetCurrentLanguage()
-    });
-
-    GetLaguageMap()["tabbar"].list.forEach(({ text }, i) => {
-      wx.setTabBarItem({
-        index: i,
-        text: text
-      })
-    });
+  tapMemberId() {
+    wx.setClipboardData({ data: this.data.userProfile.memberId.toString()  });
   },
 
   languagePickerChange(e: { detail: { value: string; }; }) {
@@ -66,4 +75,6 @@ Page({
     const currentPage = pages[pages.length - 1];
     wx.reLaunch({ url: `/${currentPage.route}` })
   },
+  //#endregion
+
 })

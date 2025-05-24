@@ -25,7 +25,7 @@
         </view>
         <view class="view-row">
           <text class="user-id">ID: {{userProfile.memberId}}</text>
-          <image class="user-id-icon" src="/static/icons/copy.png" mode="aspectFit" />
+          <image bindtap="tapMemberId" class="user-id-icon" src="/static/icons/copy.png" mode="aspectFit" />
         </view>
         <view class="view-row">
           <text class="user-motto">个性宣言： 球伴技术好，你赢球的可能性就大</text>
@@ -33,19 +33,19 @@
       </view>
     </view>
     <view class="view-row user-values">
-      <view class="view-column">
+      <view class="view-column" style="align-items: center;">
         <text>{{userProfile.creditBalance}}</text>
         <text>余额</text>
       </view>
-      <view class="view-column">
+      <view class="view-column" style="align-items: center;">
         <text>{{userProfile.powerPoint}}</text>
         <text>活动</text>
       </view>
-      <view class="view-column">
+      <view class="view-column" style="align-items: center;">
         <text>{{userProfile.powerPoint}}</text>
         <text>积分</text>
       </view>
-      <view class="view-column">
+      <view class="view-column" style="align-items: center;">
         <text>{{userProfile.userLevelName}}</text>
         <text>级别</text>
       </view>
@@ -58,7 +58,7 @@
   <image class="loading" src='/static/images/loading.gif' mode="heightFix" />
 </view>
 
-<scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="loadUser" refresher-triggered="{{triggered}}">
+<scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="LoadUser" refresher-triggered="{{triggered}}">
 
   <view class="card">
     <view class="card-title">推荐服务</view>
@@ -96,15 +96,12 @@
     <mp-cells title="Features">
       <mp-cell link hover value="{{_lang.wallet}}">
         <image slot="title" src="/static/icons/body-armor.png" class="mp-cell-icon" />
-        <text slot="footer">Hahaha</text>
       </mp-cell>
       <mp-cell link hover value="{{_lang.history}}">
         <image slot="title" src="/static/icons/gauntlet-gloves.png" class="mp-cell-icon" />
-        <text slot="footer">Hahaha</text>
       </mp-cell>
       <mp-cell link hover value="{{_lang.topup}}">
         <image slot="title" src="/static/icons/greek-helmet.png" class="mp-cell-icon" />
-        <text slot="footer">Hahaha</text>
       </mp-cell>
       <mp-cell link value="{{_lang.contactUs}}">
         <button style="border: 0" class="contact-btn" plain="true" open-type="contact" />

@@ -1,6 +1,6 @@
 import { GetDatabaseAsync, GetUnionIdAsync } from "./databaseService";
 import { config } from "../configs/index";
-import { GetUserByUnionId as MockGetUserByUnionId } from "../mocks/mocks";
+import { GetUserByUnionId as MockGetUserByUnionId } from "../configs/mocks";
 
 export const GetUserByUnionId = async () => {
   if (config.useMock === true) {

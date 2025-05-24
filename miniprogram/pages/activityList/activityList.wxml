@@ -5,13 +5,13 @@
   <view class="banner">
     <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay interval="4000">
       <swiper-item>
-        <image src="/mocks/images/11.jpg" class="banner" mode="aspectFill" />
+        <image src="/static/images/home1.jpg" class="banner" mode="aspectFill" />
       </swiper-item>
       <swiper-item>
-        <image src="/mocks/images/9.jpg" class="banner" mode="aspectFill" />
+        <image src="/static/images/home2.jpg" class="banner" mode="aspectFill" />
       </swiper-item>
       <swiper-item>
-        <image src="/mocks/images/8.jpg" class="banner" mode="aspectFill" />
+        <image src="/static/images/home3.jpg" class="banner" mode="aspectFill" />
       </swiper-item>
     </swiper>
   </view>
