@@ -44,9 +44,16 @@ export const ToDayOfWeekString = (value: string) => {
   const lang = GetLanguageVersion();
   if (lang === Languages.English.value) {
     return date.toLocaleDateString('en-us', { weekday: "short" });
-  } 
+  }
   if (lang === Languages.Chinese.value) {
     return days[date.getDay()];
   }
   return null;
+}
+
+export const GetNavBarHeight = () => {
+  const rect = wx.getMenuButtonBoundingClientRect();
+  const statusBarHeight = wx.getWindowInfo().statusBarHeight;
+  const navBarHeight = rect.bottom + rect.top - statusBarHeight;
+  return navBarHeight;
 }

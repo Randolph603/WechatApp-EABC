@@ -29,7 +29,7 @@ export const GetUnionIdAsync = async () => {
     console.log("jscode2session:", response.result);
     unionid = response.result.unionid;
     wx.setStorageSync('unionid', unionid)
-  }  
+  }
   return unionid;
 }
 

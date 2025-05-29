@@ -1,63 +1,80 @@
-<t-navbar title="{{_lang.title}}" t-class="t-navbar" t-class-title="t-title" />
+<view>
+  <view class="fake-nav-bar" style="height: {{navBarHeight}}px;" />
 
-<scroll-view class="panel" scroll-y type="list">
-
-  <view class="banner">
-    <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay interval="4000">
-      <swiper-item>
-        <image src="/static/images/home1.jpg" class="banner" mode="aspectFill" />
-      </swiper-item>
-      <swiper-item>
-        <image src="/static/images/home2.jpg" class="banner" mode="aspectFill" />
-      </swiper-item>
-      <swiper-item>
-        <image src="/static/images/home3.jpg" class="banner" mode="aspectFill" />
-      </swiper-item>
-    </swiper>
-  </view>
-
-  <view class="studio-header">
-    <image class="logo" src="/static/images/icon.png" mode="aspectFill" />
-    <view class="title">EABC 东羽羽毛球</view>
-  </view>
-
-  <view class="section">
-    <view class="context">
-      EABC东羽是一个面向大众开放的羽毛球俱乐部，致力于推广羽毛球运动、提高技术水平和丰富业余生活，营造积极向上的运动氛围。无论你是初学者还是进阶选手，都能在这里找到属于自己的舞台。
+  <r-navigation-bar class="nav-bar" title="" back="{{false}}">
+    <view class="nav-left" slot="left">
+      <image class="nav-logo" mode="aspectFill" src="/static/images/icon.png" />
+      <view class="nav-title">
+        <text>EABC羽毛球助手</text>
+      </view>
     </view>
-    <view wx:if="{{basicIntrReadAll}}" class="context">
-      俱乐部创建于2021年
+  </r-navigation-bar>
+
+</view>
+
+<scroll-view scroll-y class="panel" style="height: calc(100vh - {{navBarHeight}}px);" type="custom">
+  <view>
+    <view class="banner">
+      <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay interval="4000">
+        <swiper-item>
+          <image src="/static/images/home1.jpg" class="banner" mode="aspectFill" />
+        </swiper-item>
+        <swiper-item>
+          <image src="/static/images/home2.jpg" class="banner" mode="aspectFill" />
+        </swiper-item>
+        <swiper-item>
+          <image src="/static/images/home3.jpg" class="banner" mode="aspectFill" />
+        </swiper-item>
+      </swiper>
     </view>
-    <view bindtap="handleBasicIntrReadMore" class="more">{{basicIntrReadAll ? "Less" : "More"}}</view>
+
+    <view class="studio-header">
+      <image class="logo" src="/static/images/icon.png" mode="aspectFill" />
+      <view class="title">EABC 东羽羽毛球</view>
+    </view>
+
+    <view class="section">
+      <view class="context">
+        EABC东羽是一个面向大众开放的羽毛球俱乐部，致力于推广羽毛球运动、提高技术水平和丰富业余生活，营造积极向上的运动氛围。无论你是初学者还是进阶选手，都能在这里找到属于自己的舞台。
+      </view>
+      <view wx:if="{{basicIntrReadAll}}" class="context">
+        俱乐部创建于2021年
+      </view>
+      <view bindtap="handleBasicIntrReadMore" class="more">{{basicIntrReadAll ? "Less" : "More"}}</view>
+    </view>
   </view>
 
-  <r-title title="活动列表" />
+  <sticky-section push-pinned-header="{{false}}">
+    <sticky-header>
+      <r-title title="活动列表" />
+    </sticky-header>
+  </sticky-section>
 
-  <scroll-view scroll-y style="width: 100%; height: 1500rpx;" type="custom">
-    <grid-view type="masonry" cross-axis-count="{{2}}">
-      <view class="grid-item" wx:for="{{allActivities}}" wx:key="index">
-        <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
-        <view class="card">
-          <navigator url="/pages/front/activityDetail/{{item.category}}/{{item.type}}/activityDetail?id={{item._id}}">
-            <image lazy-load="true" class="boxPic" mode="widthFix" src="{{item.coverImageSrc}}">
-            </image>
-            <view class="boxTxt">
-              <view class="title">[{{_lang.area}}] {{item.title}}</view>
-              <view class="info"> {{_lang.address}}: {{item.address}}</view>
-              <view class="info"> {{_lang.date}}: {{item.date}} ({{item.dayOfWeek}})</view>
-              <view class="bottom">
-                <view class="info"> {{_lang.attendee}}：{{item.Attendees.length}}/{{item.maxAttendee}}</view>
-                <view class="look">
-                  <image src="/static/icons/look.png" class="lookpic" />
-                  <text>{{item.viewCount}}</text>
-                </view>
+  <view class="loading-box" wx:if='{{!isLoaded}}'>
+    <image class="loading" src='/static/images/loading.gif' mode="heightFix" />
+  </view>
+  <grid-view wx:else cross-axis-gap="6" cross-axis-count="2" type="masonry">
+    <view class="grid-item" wx:for="{{allActivities}}" wx:key="index">
+      <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
+      <view class="card">
+        <navigator url="/pages/front/activityDetail/{{item.category}}/{{item.type}}/activityDetail?id={{item._id}}">
+          <image lazy-load="true" class="boxPic" mode="widthFix" src="{{item.coverImageSrc}}">
+          </image>
+          <view class="boxTxt">
+            <view class="title">[{{_lang.area}}] {{item.title}}</view>
+            <view class="info"> {{_lang.address}}: {{item.address}}</view>
+            <view class="info"> {{_lang.date}}: {{item.date}} ({{item.dayOfWeek}})</view>
+            <view class="bottom">
+              <view class="info"> {{_lang.attendee}}：{{item.Attendees.length}}/{{item.maxAttendee}}</view>
+              <view class="look">
+                <image src="/static/icons/look.png" class="lookpic" />
+                <text>{{item.viewCount}}</text>
               </view>
             </view>
-          </navigator>
-        </view>
+          </view>
+        </navigator>
       </view>
+    </view>
 
-    </grid-view>
-  </scroll-view>
-
+  </grid-view>
 </scroll-view>

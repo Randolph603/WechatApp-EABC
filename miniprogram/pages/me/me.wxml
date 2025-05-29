@@ -1,4 +1,4 @@
-<view class="top-layout" />
+<view class="top-layout" style="height: {{navBarHeight + 120}}px;" />
 <view class="user-box">
   <view class="view-row" wx:if='{{!hasAuth}}'>
     <image class="user-avatar" src='/static/images/blank-profile.jpg' mode="aspectFill" />
@@ -28,7 +28,7 @@
           <image bindtap="tapMemberId" class="user-id-icon" src="/static/icons/copy.png" mode="aspectFit" />
         </view>
         <view class="view-row">
-          <text class="user-motto">个性宣言： 球伴技术好，你赢球的可能性就大</text>
+          <text class="user-motto">羽球格言： {{motto}}</text>
         </view>
       </view>
     </view>

@@ -2,13 +2,14 @@
   "pages": [
     "pages/activityList/activityList",
     "pages/home/home",
+    "pages/rank/rank",
     "pages/shop/shop",
     "pages/me/me"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#000008",
-    "navigationBarTitleText": "NZ Cloud Life",
+    "navigationBarTitleText": "EABC",
     "navigationBarTextStyle": "white",
     "navigationStyle": "custom"
   },
@@ -25,7 +26,7 @@
         "text": "活动"
       },
       {
-        "pagePath": "pages/home/home",
+        "pagePath": "pages/rank/rank",
         "iconPath": "static/icons/tabbar/rank-7A7A7A.png",
         "selectedIconPath": "static/icons/tabbar/rank-90CAF9.png",
         "text": "排名"
@@ -49,8 +50,7 @@
   "rendererOptions": {
     "skyline": {
       "disableABTest": true,
-      "defaultDisplayBlock": true,
-      "defaultContentBox": true
+      "defaultDisplayBlock": true
     }
   },
   "componentFramework": "glass-easel",
