@@ -1,7 +1,7 @@
 <view>
-  <view class="fake-nav-bar" style="height: {{navBarHeight}}px;" />
+  <view style="height: {{navBarHeight}}px;" />
 
-  <r-navigation-bar class="nav-bar" title="" back="{{false}}">
+  <r-navigation-bar class="skyline-nav-bar" title="" back="{{false}}">
     <view class="nav-left" slot="left">
       <image class="nav-logo" mode="aspectFill" src="/static/images/icon.png" />
       <view class="nav-title">
@@ -9,10 +9,9 @@
       </view>
     </view>
   </r-navigation-bar>
-
 </view>
 
-<scroll-view scroll-y class="panel" style="height: calc(100vh - {{navBarHeight}}px);" type="custom">
+<scroll-view scroll-y class="panel" style="height: calc(100vh - {{navBarHeight}}px);" type="custom" refresher-enabled scroll-with-animation lower-threshold="{{100}}" bindscrolltolower="handleScrollLower" bindrefresherrefresh="fetchAllDataAsync" refresher-triggered="{{triggered}}" scroll-top="{{top}}">
   <view>
     <view class="banner">
       <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay interval="4000">
@@ -49,15 +48,11 @@
       <r-title title="活动列表" />
     </sticky-header>
   </sticky-section>
-
-  <view class="loading-box" wx:if='{{!isLoaded}}'>
-    <image class="loading" src='/static/images/loading.gif' mode="heightFix" />
-  </view>
-  <grid-view wx:else cross-axis-gap="6" cross-axis-count="2" type="masonry">
-    <view class="grid-item" wx:for="{{allActivities}}" wx:key="index">
+  <grid-view cross-axis-gap="6" cross-axis-count="2" type="masonry">
+    <view class="grid-item" wx:for="{{filterActivities}}" wx:key="index">
       <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
       <view class="card">
-        <navigator url="/pages/front/activityDetail/{{item.category}}/{{item.type}}/activityDetail?id={{item._id}}">
+        <navigator url="/pages/activity/details/details?id={{item._id}}">
           <image lazy-load="true" class="boxPic" mode="widthFix" src="{{item.coverImageSrc}}">
           </image>
           <view class="boxTxt">
@@ -75,6 +70,9 @@
         </navigator>
       </view>
     </view>
-
   </grid-view>
+  <view wx:if="{{isLoading}}" class="loading">
+    <view class="loading-icon"></view>
+    <text>Loading...</text>
+  </view>
 </scroll-view>

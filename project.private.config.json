@@ -23,11 +23,11 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/me/me",
-          "pathName": "pages/me/me",
+          "name": "my",
+          "pathName": "pages/user/my/my",
           "query": "",
-          "launchMode": "default",
-          "scene": null
+          "scene": null,
+          "launchMode": "default"
         }
       ]
     }

@@ -1,0 +1,67 @@
+import { LoadAllActivitiesAsync } from "@API/activityService";
+import { GetLaguageMap } from "@Language/languageUtils";
+import { GetNavBarHeight } from "@Lib/utils";
+
+Page({
+  data: {
+    // Static
+    _lang: GetLaguageMap().activityList,
+    navBarHeight: GetNavBarHeight() + 10,
+    // Status:
+    isLoaded: false,
+    triggered: false,
+    // Variables   
+    allActivities: [],
+    filterActivities: [],
+    loadMore: 4,
+  },
+
+  async onLoad() {
+    wx.showLoading({
+      title: GetLaguageMap().utils.loading,
+    });
+
+    await this.fetchAllDataAsync();
+
+    wx.hideLoading();
+  },
+
+  onShow() {
+
+  },
+
+  onShareAppMessage() {
+
+  },
+
+  async fetchAllDataAsync() {
+    const activities = await LoadAllActivitiesAsync();
+
+    this.setData({
+      allActivities: activities,
+      filterActivities: activities.slice(0, this.data.loadMore),
+      isLoaded: true,
+      triggered: false
+    });
+  },
+
+  async handleScrollLower() {
+    const loadMore = this.data.loadMore + 4;
+
+    this.setData({ isLoading: true });
+    await this.sleep(1000);
+
+    this.setData({
+      triggered: false,
+      filterActivities: this.data.allActivities.slice(0, loadMore),
+      isLoading: false,
+      loadMore,
+    });
+  },
+
+  async sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+})

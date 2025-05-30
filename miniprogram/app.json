@@ -1,10 +1,12 @@
 {
   "pages": [
-    "pages/activityList/activityList",
-    "pages/home/home",
+    "pages/activity/list/list",
+    "pages/activity/details/details",
     "pages/rank/rank",
     "pages/shop/shop",
-    "pages/me/me"
+    "pages/user/my/my",
+    "pages/user/profile/profile",
+    "pages/user/creditHistory/creditHistory"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -20,7 +22,7 @@
     "selectedColor": "#2D8DB8",
     "list": [
       {
-        "pagePath": "pages/activityList/activityList",
+        "pagePath": "pages/activity/list/list",
         "iconPath": "static/icons/tabbar/badminton-7A7A7A.png",
         "selectedIconPath": "static/icons/tabbar/badminton-90CAF9.png",
         "text": "活动"
@@ -38,7 +40,7 @@
         "text": "商城"
       },
       {
-        "pagePath": "pages/me/me",
+        "pagePath": "pages/user/my/my",
         "iconPath": "static/icons/tabbar/badge-7A7A7A.png",
         "selectedIconPath": "static/icons/tabbar/badge-90CAF9.png",
         "text": "我的"

@@ -19,7 +19,7 @@ Page({
     _lang: GetLaguageMap().my,
     year: new Date().getFullYear(),
     version: '',
-    navBarHeight: GetNavBarHeight(),
+    navBarHeight: GetNavBarHeight() + 100,
     // Status:
     isLoaded: false,
     hasAuth: false,

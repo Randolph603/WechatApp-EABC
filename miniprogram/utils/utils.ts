@@ -12,7 +12,7 @@ export const ConvertFileIdToHttps = (fileId: string) => {
   return `https://${customId}.tcb.qcloud.la/${path}`;
 }
 
-const parseISOString = (s: any) => {
+export const ParseISOString = (s: any) => {
   if (typeof s === 'string' || s instanceof String) {
     var b = s.toString().split(/\D+/);
     return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
@@ -22,7 +22,7 @@ const parseISOString = (s: any) => {
 }
 
 export const ToShortDateString = (value: string) => {
-  const date = parseISOString(value);
+  const date = ParseISOString(value);
 
   const lang = GetLanguageVersion();
   if (lang === Languages.English.value) {
@@ -39,7 +39,7 @@ export const ToShortDateString = (value: string) => {
 
 export const ToDayOfWeekString = (value: string) => {
   const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-  const date = parseISOString(value);
+  const date = ParseISOString(value);
 
   const lang = GetLanguageVersion();
   if (lang === Languages.English.value) {
