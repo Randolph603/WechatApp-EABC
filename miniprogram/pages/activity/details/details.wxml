@@ -5,8 +5,8 @@
   <view class="panel">
     <mp-navigation-bar title="{{_lang.title}}" back="{{false}}" color="white" bindback="handlerGobackClick">
       <view class="nav-left" slot="left">
-        <image class="nav-back-image" bindtap="navigateBack" src="/images/icons/back-light.png" />
-        <image class="nav-home-image" bindtap="navigateHome" src="/images/icons/home-light.png" />
+        <image class="nav-back-image" bindtap="navigateBack" src="/static/icons/navigationbar/back-light.png" />
+        <image class="nav-home-image" bindtap="navigateHome" src="/static/icons/navigationbar/home-light.png" />
       </view>
     </mp-navigation-bar>
 
@@ -26,17 +26,17 @@
 
           <view class="info-row">
             <view class="info-row-column" style="width: 63%">
-              <image class="icon" src="/images/icons64/date-white.png" />
+              <image class="icon" src="/static/icons/details/date-white.png" />
               <text>{{activity.date}}</text>
             </view>
             <view class="info-row-column">
-              <image class="icon" src="/images/icons64/time-white.png" />
+              <image class="icon" src="/static/icons/details/time-white.png" />
               <text>{{activity.time}}</text>
             </view>
           </view>
 
           <view class="info-row">
-            <image class="icon" src="/images/icons64/court-white.png" />
+            <image class="icon" src="/static/icons/details/court-white.png" />
             <text>{{_lang.court}}：{{activity.courts}} {{_lang.courtSuffix}}</text>
           </view>
 
@@ -44,34 +44,34 @@
 
           <view class="info-row fixed">
             <view class="icon-section">
-              <image class="icon" src="/images/icons64/location-white.png" />
+              <image class="icon" src="/static/icons/details/location-white.png" />
             </view>
             <text>{{_lang.address}}：</text><text user-select>{{activity.address}}</text>
           </view>
 
           <view class="info-row fixed">
             <view class="icon-section">
-              <image class="icon" src="/images/icons64/fee-white.png" />
+              <image class="icon" src="/static/icons/details/fee-white.png" />
             </view>
             <text>{{_lang.fee}}：{{activity.price}} NZD {{_lang.feeSuffix}}</text>
           </view>
 
           <view wx:if="{{(myProfile.continueWeeklyJoin || 0) > 0 && !activity.isCompleted}}" class="info-row fixed">
             <view class="icon-section">
-              <image class="icon" src="/images/icons64/fee-white.png" />
+              <image class="icon" src="/static/icons/details/fee-white.png" />
             </view>
             <text>{{_lang.discount}}{{myProfile.continueWeeklyJoin}}{{_lang.week}}，{{activity.price - (myProfile.continueWeeklyJoin > 3 ? 3 : myProfile.continueWeeklyJoin )}} NZD {{_lang.feeSuffix}}</text>
           </view>
 
           <view class="info-row fixed">
             <view class="icon-section">
-              <image class="icon" src="/images/icons64/badminton-white.png" />
+              <image class="icon" src="/static/icons/details/badminton-white.png" />
             </view>
             <text>{{_lang.equipment}}</text>
           </view>
           <view class="info-row fixed">
             <view class="icon-section">
-              <image class="icon" src="/images/icons64/equipment-white.png" />
+              <image class="icon" src="/static/icons/details/equipment-white.png" />
             </view>
             <text>{{_lang.facility}}</text>
           </view>
@@ -79,7 +79,7 @@
           <view class="divider" />
 
           <view class="info-row">
-            <image class="icon" src="/images/icons64/attention-white.png" />
+            <image class="icon" src="/static/icons/details/attention-white.png" />
             <text class="small">{{attendTitle}}</text>
           </view>
 
@@ -91,7 +91,7 @@
                 <!-- wx:if="{{joinMore >= 0}}" -->
                 <block>
                   <view class="head-img">
-                    <image-loader my-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                    <image-loader ext-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                   </view>
                   <text class="name">{{user.displayName || user.nickName}}</text>
                   <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
@@ -109,7 +109,7 @@
           <block wx:if="{{allJoinedAttendees.length > activity.maxAttendee}}">
             <view class="info-row">
               <view class="icon-section">
-                <image class="icon" src="/images/icons64/attention-white.png" />
+                <image class="icon" src="/static/icons/details/attention-white.png" />
               </view>
               <text class="small">{{_lang.backUpJoin}}</text>
             </view>
@@ -126,7 +126,7 @@
           <block wx:if="{{canManageAll}}">
             <view class="info-row">
               <view class="icon-section">
-                <image class="icon" src="/images/icons64/attention-white.png" />
+                <image class="icon" src="/static/icons/details/attention-white.png" />
               </view>
               <text class="small">Cancelled</text>
             </view>
@@ -144,19 +144,19 @@
 
       <view class="action-row">
         <button bindtap="navigateHome" class="section" plain="true" size="mini">
-          <image class="icon" src="/images/icons64/home-white.png" />
+          <image class="icon" src="/static/icons/details/home-white.png" />
           <text>{{_lang.activity}}</text>
         </button>
         <button bindtap="navigateMe" class="section" plain="true" size="mini">
-          <image class="icon" src="/images/icons64/attention-white.png" />
+          <image class="icon" src="/static/icons/details/attention-white.png" />
           <text>{{_lang.my}}</text>
         </button>
         <button class="section" plain="true" size="mini" open-type="contact">
-          <image class="icon" src="/images/icons64/contact-white.png" />
+          <image class="icon" src="/static/icons/details/contact-white.png" />
           <text>{{_lang.contact}}</text>
         </button>
         <button class="section" plain="true" size="mini" open-type="share">
-          <image class="icon" src="/images/icons64/share-white.png" />
+          <image class="icon" src="/static/icons/details/share-white.png" />
           <text>{{_lang.share}}</text>
         </button>
 
@@ -166,13 +166,13 @@
           </block>
           <block wx:else>
             <button wx:if="{{!joinMore}}" class="section" plain="true" size="mini" bindtap="joinMoreAsync">
-              <image class="icon" src="/images/icons64/add-user.png" />
+              <image class="icon" src="/static/icons/details/add-user.png" />
               <text>{{_lang.joinMore}}</text>
             </button>
             <view wx:else class="add-more">
-              <image bindtap="joinMinusOneAsync" class="icon" src="/images/icons32/minus.png" />
+              <image bindtap="joinMinusOneAsync" class="icon" src="/static/icons/details/minus.png" />
               <text>+{{joinMore}}</text>
-              <image bindtap="joinMoreAsync" class="icon" src="/images/icons32/add.png" />
+              <image bindtap="joinMoreAsync" class="icon" src="/static/icons/details/add.png" />
             </view>
 
             <view wx:if="{{!joinMore}}" class="section">

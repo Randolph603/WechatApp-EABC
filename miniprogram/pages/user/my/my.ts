@@ -1,7 +1,6 @@
 import { GetUserByUnionId } from '@API/userService';
 import { GetLaguageMap, GetCurrentLanguage, LanguageArray, ChangeLanguage } from '@Language/languageUtils';
-import { LevelArray, UserRoleArray } from '@Lib/types';
-import { ConvertFileIdToHttps, GetNavBarHeight } from '@Lib/utils';
+import { GetNavBarHeight } from '@Lib/utils';
 
 const Mottos = [
   "球伴技术好，你赢球的可能性就大.",
@@ -26,7 +25,7 @@ Page({
     triggered: false,
     // Variables   
     currentLanguage: {},
-    userProfile: {memberId: 0},
+    userProfile: { memberId: 0 },
     languageArray: LanguageArray,
     motto: Mottos[Math.floor(Math.random() * Mottos.length)]
   },
@@ -55,11 +54,6 @@ Page({
   async LoadUser() {
     const user = await GetUserByUnionId();
     if (user) {
-      if (user.avatarUrl.startsWith('cloud')) {
-        user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
-      }
-      user.userRoleName = UserRoleArray.find(u => u.value === user.userRole)?.name ?? 'Unknown';
-      user.userLevelName = LevelArray[user.userLevel].displayName ?? 'Unknown';
 
       const index = Math.floor(Math.random() * Mottos.length);
       this.setData({
@@ -79,7 +73,7 @@ Page({
   },
 
   tapMemberId() {
-    wx.setClipboardData({ data: this.data.userProfile.memberId.toString()  });
+    wx.setClipboardData({ data: this.data.userProfile.memberId.toString() });
   },
 
   languagePickerChange(e: { detail: { value: string; }; }) {

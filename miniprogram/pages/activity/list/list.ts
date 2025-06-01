@@ -47,21 +47,20 @@ Page({
 
   async handleScrollLower() {
     const loadMore = this.data.loadMore + 4;
-
+    const loadAll = loadMore > this.data.allActivities.length
     this.setData({ isLoading: true });
-    await this.sleep(1000);
+    await this.sleep(500);
 
     this.setData({
       triggered: false,
       filterActivities: this.data.allActivities.slice(0, loadMore),
       isLoading: false,
       loadMore,
+      loadAll,
     });
   },
 
   async sleep(ms: number) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 })

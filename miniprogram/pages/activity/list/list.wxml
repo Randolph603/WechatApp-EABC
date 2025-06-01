@@ -48,6 +48,7 @@
       <r-title title="活动列表" />
     </sticky-header>
   </sticky-section>
+
   <grid-view cross-axis-gap="6" cross-axis-count="2" type="masonry">
     <view class="grid-item" wx:for="{{filterActivities}}" wx:key="index">
       <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
@@ -71,8 +72,10 @@
       </view>
     </view>
   </grid-view>
-  <view wx:if="{{isLoading}}" class="loading">
-    <view class="loading-icon"></view>
-    <text>Loading...</text>
+
+  <view class="loading">
+    <view wx:if="{{isLoading && !loadAll}}" class="loading-icon"></view>
+    <text wx:if="{{loadAll}}">-我是有底线的-</text>
+    <text wx:else>Loading...</text>
   </view>
 </scroll-view>

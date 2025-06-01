@@ -1,4 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "mp-navigation-bar": "weui-miniprogram/navigation-bar/navigation-bar",
+    "image-loader": "/components/image-loader/image-loader"
+  },
   "renderer": "webview"
 }

@@ -1,7 +1,8 @@
+import { LoadActivityByIdAsync } from '@API/activityService';
 import { CallCloudFuncAsync, UpdateRecordAsync } from '@API/commonHelper';
-import { GetLaguageMap } from '@Language/languageUtils';
-import { UserRole, LevelArray } from '@Lib/types';
-import { ParseISOString } from '@Lib/utils';
+import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
+import { ParseISOString } from '@Lib/dateExtension';
+// import { ParseISOString } from '@Lib/utils';
 // import util from '@Lib/util';
 // import utilWX from '@Lib/promiseUtil';
 
@@ -15,9 +16,9 @@ Page({
     myMemberId: null,
     myProfile: {},
     activityId: '',
-    activity: { _id: null },
+    activity: null,
     attendTitle: '',
-    allSections: [],
+    // allSections: [],
     allJoinedAttendees: [],
     allCancelledAttendees: [],
     joinMore: 0,
@@ -81,20 +82,13 @@ Page({
   async loadActivity() {
     const id = this.data.activityId;
     if (id.length > 0) {
-      const { activity, organizer } = await CallCloudFuncAsync('activity_getById', { activityId: id, includeCancelledAttendees: true });
-
-      const currentTimestamp = Date.parse(new Date().toString()) / 1000;
-      if (activity.wxActivityExpirationTime > currentTimestamp) {
-        await CallCloudFuncAsync('activity_share', { activityId: id, router: 'setUpdatableMsg' });
-      }
-
-      // activity.date = util.formatShortDate(activity.startTime);
-      // activity.time = util.formatShortTimeRange(activity.startTime, activity.during);
-
-      activity.Attendees.forEach((user: any) => {
-        user.userLevelName = LevelArray[user.userLevel].displayName;
-        user.userLevelImageSrc = `/images/rank/${user.userLevel}.png`;
-      });
+      wx.showLoading({ title: 'Loading...' });
+      const activity = await LoadActivityByIdAsync(id);
+      wx.hideLoading();
+      // const currentTimestamp = Date.parse(new Date().toString()) / 1000;
+      // if (activity.wxActivityExpirationTime > currentTimestamp) {
+      //   await CallCloudFuncAsync('activity_share', { activityId: id, router: 'setUpdatableMsg' });
+      // }
 
       const allAttendees = activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) =>
         ParseISOString(a.updateDate) - ParseISOString(b.updateDate));
@@ -122,11 +116,11 @@ Page({
         });
       }
 
-      // const attendTitle = GetLaguageLib().attendTitle(allJoinedAttendees.length, activity.maxAttendee);
+      const attendTitle = GetAttendTitle(allJoinedAttendees.length, activity.maxAttendee);
       this.setData({
-        // attendTitle, 
-        activity, organizer,
-        // allSections, 
+        attendTitle,
+        activity,
+        allSections: allSections,
         allJoinedAttendees, allCancelledAttendees, joinMore
       });
     }
@@ -140,13 +134,13 @@ Page({
 
   navigateHome: function () {
     wx.switchTab({
-      url: '/pages/front/activityList/activityList',
+      url: '/pages/activity/list/list',
     })
   },
 
   navigateMe: function () {
     wx.switchTab({
-      url: '/pages/front/me/me',
+      url: '/pages/user/my/my',
     })
   },
 
@@ -164,21 +158,21 @@ Page({
       const db = wx.cloud.database();
       const existResponse = await db.collection('Attendees')
         .where({
-          activityId: this.data.activity._id,
+          activityId: this.data.activityId,
           memberId: meInDb.memberId,
           joinMore: 0
         })
         .get();
       if (existResponse.data.length > 0) {
         await UpdateRecordAsync('Attendees',
-          { activityId: this.data.activity._id, memberId: meInDb.memberId, joinMore: 0 },
+          { activityId: this.data.activityId, memberId: meInDb.memberId, joinMore: 0 },
           { isCancelled: false },
           { updateDate: JSON.stringify(new Date()) }
         );
       } else {
         await db.collection('Attendees').add({
           data: {
-            activityId: this.data.activity._id,
+            activityId: this.data.activityId,
             memberId: meInDb.memberId,
             isCancelled: false,
             createDate: new Date(),

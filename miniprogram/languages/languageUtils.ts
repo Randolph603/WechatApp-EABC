@@ -1,5 +1,5 @@
-import { LanguageMap as en } from './_en';
-import { LanguageMap as zh } from './_zh';
+import { LanguageMap as en, AttendTitle as enAttendTitle } from './_en';
+import { LanguageMap as zh, AttendTitle as zhAttendTitle } from './_zh';
 
 export const Languages = {
   English: { index: 0, value: 'en', name: 'English', setting: 'Language' },
@@ -40,6 +40,17 @@ export const GetLaguageMap = () => {
       return zh;
     default:
       return en;
+  }
+}
+
+export const GetAttendTitle = (a: number, b: number) => {
+  switch (GetLanguageVersion()) {
+    case 'en':
+      return enAttendTitle(a, b);
+    case 'zh':
+      return zhAttendTitle(a, b);
+    default:
+      return enAttendTitle(a, b);
   }
 }
 
