@@ -1,3 +1,5 @@
+import { UpdateTabBarLaguage } from "@Lib/utils";
+
 // pages/rank/rank.ts
 Page({
 
@@ -32,7 +34,7 @@ Page({
    * Lifecycle function--Called when page show
    */
   onShow() {
-
+    UpdateTabBarLaguage();
   },
 
   /**

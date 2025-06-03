@@ -34,3 +34,4 @@ const wxPromisify = <T, U extends object>(fn: (obj: U) => void) => {
 
 export default wxPromisify;
 export const WxLoginAsync = wxPromisify<any, object>(wx.login);
+export const WxGetFileInfoAsync = wxPromisify<any, any>(wx.getFileSystemManager().getFileInfo);

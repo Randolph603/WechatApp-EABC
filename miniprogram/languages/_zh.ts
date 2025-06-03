@@ -35,6 +35,7 @@ export const LanguageMap: iLanguageMap = {
     }
   },
   utils: {
+    processing: "处理中...",
     loading: "加载中...",
     updating: "更新中...",
     success: "操作成功",

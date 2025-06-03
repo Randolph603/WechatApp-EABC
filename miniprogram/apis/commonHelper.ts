@@ -1,8 +1,7 @@
-import { GetLaguageMap } from '@Language/languageUtils';
-import { GetDatabaseAsync } from './databaseService';
+import { GetCloudAsync } from './databaseService';
 
 export const CallCloudFuncAsync = async (funcName: string, data: object) => {
-  const app = await GetDatabaseAsync();
+  const app = await GetCloudAsync();
   const response = await app.callFunction({
     name: funcName,
     data: data
@@ -10,44 +9,15 @@ export const CallCloudFuncAsync = async (funcName: string, data: object) => {
   return response.result;
 };
 
-export const UpdateRecordAsync = async (collection: string, where: object, data: object, dateData: object, showLoading: boolean = true) => {
-  var _lang = GetLaguageMap().utils;
-  if (showLoading === true) {
-    wx.showLoading({ title: _lang.updating });
-  }
-
-  const response = await wx.cloud.callFunction({
-    name: 'updateRecord',
-    data: {
+// return updated success count
+export const UpdateRecordAsync = async (collection: string, where: object, data: object, dateData: object | null = null) => {
+  const response = await CallCloudFuncAsync(
+    'updateRecord',
+    {
       collection: collection,
       where: where,
       data: data,
       dateData: dateData
-    }
-  });
-
-  if (typeof response.result === "string") {
-    wx.showToast({
-      title: response.result,
-      icon: 'none',
     });
-  } else if (response.result) {
-    const updated = response.result.updatedCount > 0;
-    if (updated === true) {
-      wx.showToast({
-        title: _lang.success,
-        icon: 'success',
-      });
-    } else {
-      wx.showToast({
-        title: _lang.failed,
-        icon: 'none',
-      });
-    }
-  } else {
-    wx.showToast({
-      title: _lang.failed,
-      icon: 'error',
-    });
-  }
+  return response.updatedCount;
 };

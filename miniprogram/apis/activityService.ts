@@ -1,10 +1,11 @@
 
 import { config } from "../configs/index";
-import { CallCloudFuncAsync } from "./commonHelper";
+import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
 import { LoadAllActivitiesAsync as MockLoadAllActivitiesAsync } from "../configs/mocks";
 import { ToDayOfWeekString, ToShortDateString, ToShortTimeRange } from "@Lib/dateExtension";
 import { LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
+import { GetCloudAsync } from "./databaseService";
 
 export const LoadAllActivitiesAsync = async (limit: number = 20) => {
   if (config.useMock === true) {
@@ -37,7 +38,8 @@ export const LoadActivityByIdAsync = async (id: string) => {
   activity.time = ToShortTimeRange(activity.startTime, activity.during);
 
   activity.Attendees.forEach((user: any) => {
-    user.userLevelName = LevelArray[user.userLevel].displayName;
+    user.userLevelType = LevelArray[user.userLevel];
+    user.key = `${user.memberId}${user.joinMore}`;
     // user.userLevelImageSrc = `/images/rank/${user.userLevel}.png`;
     if (user.avatarUrl.startsWith('cloud')) {
       user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
@@ -45,4 +47,52 @@ export const LoadActivityByIdAsync = async (id: string) => {
   });
 
   return activity;
+}
+
+export const JoinActivityAsync = async (activityId: string, memberId: number, joinMore: number) => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    const updatedCount = await UpdateRecordAsync('Attendees',
+      { activityId: activityId, memberId: memberId, joinMore: joinMore },
+      { isCancelled: false },
+      { updateDate: JSON.stringify(new Date()) }
+    );
+    if (updatedCount === 0) {
+      await db.collection('Attendees').add({
+        activityId: activityId,
+        memberId: memberId,
+        isCancelled: false,
+        createDate: new Date(),
+        updateDate: new Date(),
+        joinMore: joinMore,
+        sectionIndex: 0
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const CancelJoinActivityAsync = async (activityId: string, memberId: number, joinMore: number) => {
+  try {
+    await UpdateRecordAsync('Attendees',
+      { activityId: activityId, memberId: memberId, joinMore: joinMore },
+      { isCancelled: true },
+      { updateDate: JSON.stringify(new Date()) }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const AttendeeMoveSectionAsync = async (activityId: string, memberId: number, joinMore: number, sectionIndex: number) => {
+  try {
+    await UpdateRecordAsync('Attendees',
+      { activityId: activityId, memberId: memberId, joinMore: joinMore },
+      { sectionIndex: sectionIndex }
+    );
+  } catch (error) {
+    console.log(error);
+  }
 }

@@ -4,6 +4,7 @@ interface iLanguageMap {
   },
   type: any,
   utils: {
+    processing: string,
     loading: string,
     updating: string,
     success: string,

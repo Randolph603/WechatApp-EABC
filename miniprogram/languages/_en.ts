@@ -35,6 +35,7 @@ export const LanguageMap: iLanguageMap = {
     }
   },
   utils: {
+    processing: "Processing...",
     loading: "Loading...",
     updating: "Updating...",
     success: "Success!",

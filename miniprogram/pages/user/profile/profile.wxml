@@ -1,2 +1,50 @@
-<!--pages/user/profile/profile.wxml-->
-<text>pages/user/profile/profile.wxml</text>
+<mp-navigation-bar title='{{_lang.title}}' ext-class="nav-bar" back="{{true}}" />
+
+<scroll-view wx:if="{{isLoaded}}" class="scroll" scroll-y>
+  <mp-form id="form" rules="{{rules}}" models="{{formData}}">
+    <mp-cells>
+      <mp-cell>
+        <view slot="title" class="weui-label">{{_lang.memberId}}</view>
+        <text class="weui-input">{{user ? '#'+user.memberId : _lang.noMemberId}}</text>
+      </mp-cell>
+
+      <mp-cell>
+        <view slot="title" class="weui-label">{{_lang.avatar}}</view>
+
+        <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{avatarUrl}}' ext-class="user-avatar" mode="aspectFill" />
+
+        <button slot="footer" style="color: #346FC2; font-size: 14px; border-color: #346FC2;" size="mini" plain="true" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">{{_lang.setAvatar}}</button>
+      </mp-cell>
+
+      <mp-cell show-error prop="displayName">
+        <view slot="title" class="weui-label">{{_lang.nickName}}</view>
+
+        <input bindinput="formTextChange" class="weui-input" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.nickNamePlaceholder}}" />
+      </mp-cell>
+
+      <mp-cell show-error prop="gender">
+        <view slot="title" class="weui-label"> {{_lang.gender}} </view>
+        <picker bindchange="genderPickerChange" range="{{genderArray}}" range-key="name" value="{{formData.gender}}">
+          <view class="picker"> {{formData.genderType.name}} </view>
+        </picker>
+        <mp-badge slot="footer" wx:if="{{formData.gender === 0}}" content="New" color="#888" extClass="mp-row" />
+      </mp-cell>
+
+      <mp-cell show-error prop="userLevel">
+        <view class="weui-cell__hd" slot="title">
+          <view class="weui-label">{{_lang.level}} </view>
+        </view>
+        <picker bindchange="levelPickerChange" range="{{levelArray}}" range-key="name" value="{{formData.userLevel}}">
+          <view class="picker"> {{formData.userLevelType.name}} </view>
+        </picker>
+        <mp-badge slot="footer" wx:if="{{formData.userLevel === 0}}" content="New" color="#888" extClass="mp-row" />
+      </mp-cell>
+    </mp-cells>
+
+    <view class="weui-btn-area" style="display: flex;">
+      <button class="weui-btn bottom-btn" style="background: #346Fc2" type="primary" bindtap="submitForm">
+        {{user ? _lang.save: _lang.register}}
+      </button>
+    </view>
+  </mp-form>
+</scroll-view>

@@ -33,7 +33,7 @@ export const GetUnionIdAsync = async () => {
   return unionid;
 }
 
-export const GetDatabaseAsync = async () => {
+export const GetCloudAsync = async () => {
   if (App) {
     return App;
   } else {

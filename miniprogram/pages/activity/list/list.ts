@@ -1,6 +1,6 @@
 import { LoadAllActivitiesAsync } from "@API/activityService";
 import { GetLaguageMap } from "@Language/languageUtils";
-import { GetNavBarHeight } from "@Lib/utils";
+import { ExcuteWithLoadingAsync, GetNavBarHeight, UpdateTabBarLaguage } from "@Lib/utils";
 
 Page({
   data: {
@@ -17,17 +17,13 @@ Page({
   },
 
   async onLoad() {
-    wx.showLoading({
-      title: GetLaguageMap().utils.loading,
+    await ExcuteWithLoadingAsync(async () => {
+      await this.fetchAllDataAsync();
     });
-
-    await this.fetchAllDataAsync();
-
-    wx.hideLoading();
   },
 
   onShow() {
-
+    UpdateTabBarLaguage();
   },
 
   onShareAppMessage() {

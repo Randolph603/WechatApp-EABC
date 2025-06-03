@@ -1,30 +1,32 @@
-import { LoadActivityByIdAsync } from '@API/activityService';
-import { CallCloudFuncAsync, UpdateRecordAsync } from '@API/commonHelper';
+import { AttendeeMoveSectionAsync, CancelJoinActivityAsync, JoinActivityAsync, LoadActivityByIdAsync } from '@API/activityService';
+import { CallCloudFuncAsync } from '@API/commonHelper';
+import { GetUserByUnionId } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { ParseISOString } from '@Lib/dateExtension';
-// import { ParseISOString } from '@Lib/utils';
-// import util from '@Lib/util';
-// import utilWX from '@Lib/promiseUtil';
-
-// import userApi from '@API/userService';
-// import cloudUtil from '@API/cloudFunc';
+import { UserRole } from '@Lib/types';
+import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync } from '@Lib/utils';
 
 Page({
   data: {
     // Static
     _lang: GetLaguageMap().activityList,
-    myMemberId: null,
+    // Status:
+    isLoaded: false,
+    myMemberId: 0,
     myProfile: {},
+    // Variables
     activityId: '',
-    activity: null,
+    activity: { wxActivityExpirationTime: 0, startTime: '' },
     attendTitle: '',
     // allSections: [],
-    allJoinedAttendees: [],
+    allJoinedOnWaitAttendees: [],
     allCancelledAttendees: [],
     joinMore: 0,
+    // Dialog
     showLowCreditBalance: false,
     showCancelDialog: false,
-    canManageAll: false,
+    // Security
+    isAdmin: false,
   },
 
   // onShareAppMessage: async function () {
@@ -57,44 +59,57 @@ Page({
   //   };
   // },
 
-  onLoad: async function (options: Record<string, string | undefined>) {
+  async onLoad(options: Record<string, string | undefined>) {
     const id = options.id;
     this.setData({
       _lang: GetLaguageMap().activityDetail,
       activityId: id
     });
 
-    // const { user } = await userApi.userCheckExistsAsync();
-    // if (user) {
-    //   if (user.creditBalance < 0) {
-    //     this.setData({ showLowCreditBalance: true });
-    //   }
+    await ExcuteWithLoadingAsync(async () => {
+      const user = await this.LoadMe();
+      if ((user?.creditBalance ?? 0) < 0) {
+        this.setData({ showLowCreditBalance: true });
+      }
 
-    //   this.setData({
-    //     myMemberId: user.memberId,
-    //     myProfile: user,
-    //     canManageAll: user.userRole === UserRole.Admin.value
-    //   });
-    // }
-    await this.loadActivity();
+      await this.loadActivity();
+      if (this.data.activity) {
+        const currentTimestamp = Date.parse(new Date().toString()) / 1000;
+        if (this.data.activity.wxActivityExpirationTime > currentTimestamp) {
+          await CallCloudFuncAsync('activity_share', { activityId: id, router: 'setUpdatableMsg' });
+        }
+      }
+    })
+  },
+
+  //#region private method
+  async LoadMe() {
+    const user = await GetUserByUnionId();
+    if (user) {
+      this.setData({
+        myMemberId: user.memberId,
+        myProfile: user,
+        isAdmin: user.userRole === UserRole.Admin.value
+      });
+    } else {
+      wx.navigateTo({
+        url: '/pages/user/profile/profile',
+      });
+    }
+    return user;
   },
 
   async loadActivity() {
     const id = this.data.activityId;
     if (id.length > 0) {
-      wx.showLoading({ title: 'Loading...' });
       const activity = await LoadActivityByIdAsync(id);
-      wx.hideLoading();
-      // const currentTimestamp = Date.parse(new Date().toString()) / 1000;
-      // if (activity.wxActivityExpirationTime > currentTimestamp) {
-      //   await CallCloudFuncAsync('activity_share', { activityId: id, router: 'setUpdatableMsg' });
-      // }
 
       const allAttendees = activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) =>
         ParseISOString(a.updateDate) - ParseISOString(b.updateDate));
 
       const allJoinedAttendees = allAttendees.filter((a: any) => a.isCancelled === false);
       const allCancelledAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
+      const allJoinedOnWaitAttendees = allJoinedAttendees.slice(activity.maxAttendee, allJoinedAttendees.length);
 
       const joinMore = allJoinedAttendees.filter((a: { memberId: null; }) => a.memberId === this.data.myMemberId).length - 1;
 
@@ -120,202 +135,92 @@ Page({
       this.setData({
         attendTitle,
         activity,
-        allSections: allSections,
-        allJoinedAttendees, allCancelledAttendees, joinMore
+        allSections,
+        allJoinedOnWaitAttendees,
+        allCancelledAttendees,
+        joinMore,
+        isLoaded: true
       });
     }
   },
 
-  navigateBack: function () {
+  navigateBack() {
     wx.navigateBack({
       delta: 0,
     })
   },
 
-  navigateHome: function () {
+  navigateHome() {
     wx.switchTab({
       url: '/pages/activity/list/list',
     })
   },
 
-  navigateMe: function () {
+  navigateMe() {
     wx.switchTab({
       url: '/pages/user/my/my',
     })
   },
 
-  async joinAsync() {
-    wx.showLoading({ title: 'Processing...', mask: true });
-    const { user: meInDb } = await CallCloudFuncAsync('user_checkExists', {});
-    if (!meInDb) {
-      wx.navigateTo({
-        url: '/pages/front/userProfile/userProfile',
-      });
-      return;
-    };
+  async joinAsync(event: any) {
+    const { join_more } = event.currentTarget.dataset;
+    await ExcuteWithProcessingAsync(async () => {
+      await JoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
+      await this.loadActivity();
+    });
+  },
 
-    try {
-      const db = wx.cloud.database();
-      const existResponse = await db.collection('Attendees')
-        .where({
-          activityId: this.data.activityId,
-          memberId: meInDb.memberId,
-          joinMore: 0
-        })
-        .get();
-      if (existResponse.data.length > 0) {
-        await UpdateRecordAsync('Attendees',
-          { activityId: this.data.activityId, memberId: meInDb.memberId, joinMore: 0 },
-          { isCancelled: false },
-          { updateDate: JSON.stringify(new Date()) }
-        );
-      } else {
-        await db.collection('Attendees').add({
-          data: {
-            activityId: this.data.activityId,
-            memberId: meInDb.memberId,
-            isCancelled: false,
-            createDate: new Date(),
-            updateDate: new Date(),
-            joinMore: 0,
-            sectionIndex: 0
-          }
-        });
+  async cancelAsync(event: any) {
+    const { join_more } = event.currentTarget.dataset;
+    await ExcuteWithProcessingAsync(async () => {
+      if (this.showCancelPolicyDialog()) {
+        return;
       }
 
+      // if (this.data.myProfile.continueWeeklyJoin && this.data.myProfile.continueWeeklyJoin > 0) {
+      //   wx.hideLoading();
+      //   const continueWeeklyJoin = this.data.myProfile.continueWeeklyJoin;
+      //   const activityPrice = this.data.activity.price;
+      //   const priceWithDisc = activityPrice - (continueWeeklyJoin > 3 ? 3 : continueWeeklyJoin);
+      //   const { cancel } = await utilWX.showModalPromisified({
+      //     title: '取消提示',
+      //     content: `您已经连续参加活动${continueWeeklyJoin}周次了，这次活动只需要${priceWithDisc} NZD，中断后下次活动将恢复至${activityPrice} NZD`,
+      //     cancelText: 'No',
+      //     confirmText: 'Yes'
+      //   });
+      //   if (cancel) {
+      //     return;
+      //   } else {
+      //     wx.showLoading({ title: 'Processing...', mask: true });
+      //   }
+      // }
+
+      await CancelJoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
       await this.loadActivity();
-      wx.showToast({ title: '操作成功', icon: 'success' });
-    } catch (error) {
-      console.log(error);
-      wx.showToast({ title: '操作失败', icon: 'none' });
+    });
+  },
+
+  showCancelPolicyDialog() {
+    // 36e5 is the scientific notation for 60*60*1000
+    const startTime = new Date(this.data.activity.startTime);
+    const durationInHours = (startTime.getTime() - new Date().getTime()) / 36e5;
+    const attendeeOnWaitCount = this.data.allJoinedOnWaitAttendees.length;
+    if (durationInHours < 24 && attendeeOnWaitCount < 1) {
+      this.setData({ showCancelDialog: true });
+      wx.hideLoading();
+      return true;
     }
-
-    wx.hideLoading();
-  },
-
-  async cancelAsync() {
-    // wx.showLoading({ title: 'Processing...', mask: true });
-
-    // // 36e5 is the scientific notation for 60*60*1000
-    // const durationInHours = (new Date(this.data.activity.startTime) - new Date()) / 36e5;
-    // const attendeeCount = this.data.allJoinedAttendees.length;
-    // if (durationInHours < 24 && attendeeCount < this.data.activity.maxAttendee) {
-    //   this.setData({ showCancelDialog: true });
-    //   wx.hideLoading();
-    //   return;
-    // }
-
-    // if (this.data.myProfile.continueWeeklyJoin && this.data.myProfile.continueWeeklyJoin > 0) {
-    //   wx.hideLoading();
-    //   const continueWeeklyJoin = this.data.myProfile.continueWeeklyJoin;
-    //   const activityPrice = this.data.activity.price;
-    //   const priceWithDisc = activityPrice - (continueWeeklyJoin > 3 ? 3 : continueWeeklyJoin);
-    //   const { cancel } = await utilWX.showModalPromisified({
-    //     title: '取消提示',
-    //     content: `您已经连续参加活动${continueWeeklyJoin}周次了，这次活动只需要${priceWithDisc} NZD，中断后下次活动将恢复至${activityPrice} NZD`,
-    //     cancelText: '继续活动',
-    //     confirmText: '仍然取消'
-    //   });
-    //   if (cancel) {
-    //     return;
-    //   } else {
-    //     wx.showLoading({ title: 'Processing...', mask: true });
-    //   }
-    // }
-
-    // try {
-    //   await cloudUtil.updateRecordAsync('Attendees',
-    //     { activityId: this.data.activity._id, memberId: this.data.myMemberId },
-    //     { isCancelled: true },
-    //     { updateDate: JSON.stringify(new Date()) }
-    //   );
-    //   await this.loadActivity();
-    //   wx.showToast({ title: '操作成功', icon: 'success' });
-    // } catch (error) {
-    //   console.log(error);
-    //   wx.showToast({ title: '操作失败', icon: 'none' });
-    // }
-
-    // wx.hideLoading();
-  },
-
-  async joinMoreAsync() {
-    // wx.showLoading({ title: 'Processing...', mask: true });
-
-    // const joinMore = this.data.joinMore + 1;
-    // try {
-    //   const db = wx.cloud.database();
-    //   const existResponse = await db.collection('Attendees')
-    //     .where({
-    //       activityId: this.data.activity._id,
-    //       memberId: this.data.myMemberId,
-    //       joinMore,
-    //     })
-    //     .get();
-    //   if (existResponse.data.length > 0) {
-    //     await cloudUtil.updateRecordAsync('Attendees',
-    //       { activityId: this.data.activity._id, memberId: this.data.myMemberId, joinMore },
-    //       { isCancelled: false },
-    //       { updateDate: JSON.stringify(new Date()) }
-    //     );
-    //   } else {
-    //     const db = wx.cloud.database();
-    //     await db.collection('Attendees').add({
-    //       data: {
-    //         activityId: this.data.activity._id,
-    //         memberId: this.data.myMemberId,
-    //         isCancelled: false,
-    //         createDate: new Date(),
-    //         updateDate: new Date(),
-    //         joinMore,
-    //         sectionIndex: 0
-    //       }
-    //     });
-    //   }
-
-    //   await this.loadActivity();
-    //   wx.showToast({ title: '操作成功', icon: 'success' });
-    // } catch (error) {
-    //   console.log(error);
-    //   wx.showToast({ title: '操作失败', icon: 'none' });
-    // }
-
-    // wx.hideLoading();
-  },
-
-  async joinMinusOneAsync() {
-    // wx.showLoading({ title: 'Processing...', mask: true });
-
-    // try {
-    //   await cloudUtil.updateRecordAsync('Attendees',
-    //     { activityId: this.data.activity._id, memberId: this.data.myMemberId, joinMore: this.data.joinMore },
-    //     { isCancelled: true },
-    //     { updateDate: JSON.stringify(new Date()) }
-    //   );
-    //   await this.loadActivity();
-    //   wx.showToast({ title: '操作成功', icon: 'success' });
-    // } catch (error) {
-    //   console.log(error);
-    //   wx.showToast({ title: '操作失败', icon: 'none' });
-    // }
-
-    // wx.hideLoading();
+    return false;
   },
 
   async moveAsync(event: any) {
-    // const { sectionindex, joinmore, memberid } = event.currentTarget.dataset;
-    // try {
-    //   await cloudUtil.updateRecordAsync(
-    //     'Attendees',
-    //     { activityId: this.data.activity._id, memberId: memberid, joinMore: joinmore },
-    //     { sectionIndex: sectionindex }
-    //   );
-    //   await this.loadActivity();
-    //   wx.showToast({ title: '操作成功', icon: 'success' });
-    // } catch (error) {
-    //   console.log(error);
-    //   wx.showToast({ title: '操作失败', icon: 'none' });
-    // }
-  },
+    const { section_index, join_more, member_id } = event.currentTarget.dataset;
+    await ExcuteWithProcessingAsync(async () => {
+      await AttendeeMoveSectionAsync(this.data.activityId, member_id, join_more, section_index);
+      await this.loadActivity();
+    });
+  }
+
+  //#endregion
 
 })

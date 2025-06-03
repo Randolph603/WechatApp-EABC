@@ -19,24 +19,5 @@
     "checkInvalidKey": true,
     "ignoreDevUnusedFiles": true
   },
-  "condition": {
-    "miniprogram": {
-      "list": [
-        {
-          "name": "pages/activity/details/details",
-          "pathName": "pages/activity/details/details",
-          "query": "id=6c2530cc68337f40011c9bad21d1b5bf",
-          "scene": null,
-          "launchMode": "default"
-        },
-        {
-          "name": "my",
-          "pathName": "pages/user/my/my",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        }
-      ]
-    }
-  }
+  "condition": {}
 }

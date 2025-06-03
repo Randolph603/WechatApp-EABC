@@ -1,6 +1,6 @@
 import { GetUserByUnionId } from '@API/userService';
 import { GetLaguageMap, GetCurrentLanguage, LanguageArray, ChangeLanguage } from '@Language/languageUtils';
-import { GetNavBarHeight } from '@Lib/utils';
+import { GetNavBarHeight, UpdateTabBarLaguage } from '@Lib/utils';
 
 const Mottos = [
   "球伴技术好，你赢球的可能性就大.",
@@ -17,15 +17,16 @@ Page({
     // Static
     _lang: GetLaguageMap().my,
     year: new Date().getFullYear(),
-    version: '',
+    version: wx.getAccountInfoSync().miniProgram.version,
     navBarHeight: GetNavBarHeight() + 100,
     // Status:
     isLoaded: false,
+    myMemberId: 0,
+    myProfile: {},
     hasAuth: false,
     triggered: false,
     // Variables   
-    currentLanguage: {},
-    userProfile: { memberId: 0 },
+    currentLanguage: GetCurrentLanguage(),
     languageArray: LanguageArray,
     motto: Mottos[Math.floor(Math.random() * Mottos.length)]
   },
@@ -35,32 +36,26 @@ Page({
   },
 
   async onShow() {
-    const version = wx.getAccountInfoSync().miniProgram.version;
     this.setData({
+      // When change language current page need reset to refresh
       _lang: GetLaguageMap().my,
-      version: version,
-      currentLanguage: GetCurrentLanguage()
+      currentLanguage: GetCurrentLanguage(),
     });
 
-    GetLaguageMap()["tabbar"].list.forEach(({ text }, i) => {
-      wx.setTabBarItem({
-        index: i,
-        text: text
-      })
-    });
+    UpdateTabBarLaguage();
   },
 
   //#region private method
   async LoadUser() {
     const user = await GetUserByUnionId();
     if (user) {
-
       const index = Math.floor(Math.random() * Mottos.length);
       this.setData({
         isLoaded: true,
         triggered: false,
         hasAuth: true,
-        userProfile: user,
+        myMemberId: user.memberId,
+        myProfile: user,
         motto: Mottos[index]
       });
     } else {
@@ -72,11 +67,17 @@ Page({
     }
   },
 
-  tapMemberId() {
-    wx.setClipboardData({ data: this.data.userProfile.memberId.toString() });
+  editProfile() {
+    wx.navigateTo({
+      url: '/pages/user/profile/profile?memberId=' + this.data.myMemberId,
+    })
   },
 
-  languagePickerChange(e: { detail: { value: string; }; }) {
+  tapMemberId() {
+    wx.setClipboardData({ data: this.data.myMemberId.toString() });
+  },
+
+  languagePickerChange(e: { detail: { value: string } }) {
     const index = Number(e.detail.value);
     ChangeLanguage(index);
     const pages = getCurrentPages();

@@ -10,21 +10,21 @@
   <view class="view-column" wx:else>
     <view class="view-row" style="align-items: flex-start; width: 100%">
       <button style="border: 0; width: auto; padding: 0; margin: 0;" plain="true" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-        <image-loader ext-class="user-avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{userProfile.avatarUrl}}' mode="aspectFit" />
+        <image-loader ext-class="user-avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{myProfile.avatarUrl}}' mode="aspectFit" />
       </button>
       <view class="user-info">
         <view class="view-row top-row">
           <view class="view-row">
-            <text class="user-status">{{userProfile.userRoleName}}</text>
-            <image wx:if="{{userProfile.gender > 0}}" class="user-icon" src="/static/icons/{{userProfile.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-            <text class="user-name">{{userProfile.displayName || userProfile.nickName}}</text>
+            <text class="user-status">{{myProfile.userRoleType.name}}</text>
+            <image wx:if="{{myProfile.gender > 0}}" class="user-icon" src="/static/icons/{{myProfile.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+            <text class="user-name">{{myProfile.displayName || myProfile.nickName}}</text>
           </view>
-          <button class="user-edit" plain="true" size="mini" bindtap='loginOrRefresh'>
+          <button class="user-edit" plain="true" size="mini" bindtap='editProfile'>
             编辑资料
           </button>
         </view>
         <view class="view-row">
-          <text class="user-id">ID: {{userProfile.memberId}}</text>
+          <text class="user-id">ID: {{myProfile.memberId}}</text>
           <image bindtap="tapMemberId" class="user-id-icon" src="/static/icons/copy.png" mode="aspectFit" />
         </view>
         <view class="view-row">
@@ -34,19 +34,19 @@
     </view>
     <view class="view-row user-values">
       <view class="view-column" style="align-items: center;">
-        <text>{{userProfile.creditBalance}}</text>
+        <text>{{myProfile.creditBalance}}</text>
         <text>余额</text>
       </view>
       <view class="view-column" style="align-items: center;">
-        <text>{{userProfile.powerPoint}}</text>
+        <text>{{myProfile.powerPoint}}</text>
         <text>活动</text>
       </view>
       <view class="view-column" style="align-items: center;">
-        <text>{{userProfile.powerPoint}}</text>
+        <text>{{myProfile.powerPoint}}</text>
         <text>积分</text>
       </view>
       <view class="view-column" style="align-items: center;">
-        <text>{{userProfile.userLevelName}}</text>
+        <text>{{myProfile.userLevelType.displayName}}</text>
         <text>级别</text>
       </view>
     </view>

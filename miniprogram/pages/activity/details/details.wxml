@@ -1,5 +1,3 @@
-<!-- <wxs src="/utils/comm.wxs" module="utils" /> -->
-
 <view class="background">
   <image class="image" src="/static/images/activityDetailbg.jpg" mode="aspectFill" />
   <view class="panel">
@@ -10,7 +8,7 @@
       </view>
     </mp-navigation-bar>
 
-    <block wx:if="{{activity}}">
+    <block wx:if="{{isLoaded}}">
       <scroll-view class="scroll" scroll-y>
         <view class="scroll-box">
           <view class="title">[{{_lang.area}}]{{activity.title}}</view>
@@ -53,14 +51,9 @@
             <view class="icon-section">
               <image class="icon" src="/static/icons/details/fee-white.png" />
             </view>
-            <text>{{_lang.fee}}：{{activity.price}} NZD {{_lang.feeSuffix}}</text>
-          </view>
-
-          <view wx:if="{{(myProfile.continueWeeklyJoin || 0) > 0 && !activity.isCompleted}}" class="info-row fixed">
-            <view class="icon-section">
-              <image class="icon" src="/static/icons/details/fee-white.png" />
-            </view>
-            <text>{{_lang.discount}}{{myProfile.continueWeeklyJoin}}{{_lang.week}}，{{activity.price - (myProfile.continueWeeklyJoin > 3 ? 3 : myProfile.continueWeeklyJoin )}} NZD {{_lang.feeSuffix}}</text>
+            <text wx:if="{{(myProfile.continueWeeklyJoin || 0) > 0 && !activity.isCompleted}} "> {{_lang.fee}}：<text style="text-decoration: line-through;">{{activity.price}} NZD</text> {{activity.price - (myProfile.continueWeeklyJoin > 3 ? 3 : myProfile.continueWeeklyJoin )}} NZD {{_lang.feeSuffix}}
+            </text>
+            <text wx:else>{{_lang.fee}}：{{activity.price}} NZD {{_lang.feeSuffix}}</text>
           </view>
 
           <view class="info-row fixed">
@@ -83,11 +76,11 @@
             <text class="small">{{attendTitle}}</text>
           </view>
 
-          <view class="game-box" wx:for="{{allSections}}" wx:key="_id" wx:for-item="section">
+          <view class="game-box" wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
             <view class="header">{{section.title}} ({{section.attendees.length}} {{_lang.member}})</view>
             <view class="attention-row">
-              <view class="section" wx:for="{{section.attendees}}" wx:key="_id" wx:for-item="user">
-                <text wx:if="{{section.index!= 0 && ((user.memberId === myMemberId && !activity.isCompleted) || canManageAll)}}" class="button" bindtap="moveAsync" data-sectionIndex="{{section.index - 1}}" data-joinMore="{{user.joinMore}}" data-memberId="{{user.memberId}}">{{_lang.up}}</text>
+              <view class="section" wx:for="{{section.attendees}}" wx:key="key" wx:for-item="user">
+                <text wx:if="{{section.index!= 0 && ((user.memberId === myMemberId && !activity.isCompleted) || isAdmin)}}" class="button" bindtap="moveAsync" data-section_index="{{section.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
                 <!-- wx:if="{{joinMore >= 0}}" -->
                 <block>
                   <view class="head-img">
@@ -98,15 +91,16 @@
                 </block>
                 <!-- <block wx:else>
                   <image class="avatar" mode="aspectFill" src="{{user.userLevelImageSrc}}" />              
-                  <text class="name">{{user.userLevelName}}</text>                  
+                  <text class="name">{{user.userLevelType.displayName}}</text>                  
                 </block> -->
 
-                <text wx:if="{{(section.index!= allSections.length -1) && ((user.memberId === myMemberId && !activity.isCompleted) || canManageAll)}}" class="button" bindtap="moveAsync" data-sectionIndex="{{section.index + 1}}" data-joinMore="{{user.joinMore}}" data-memberId="{{user.memberId}}">{{_lang.down}}</text>
+                <text wx:if="{{(section.index!= allSections.length -1) && ((user.memberId === myMemberId && !activity.isCompleted) || isAdmin)}}" class="button" bindtap="moveAsync" data-section_index="{{section.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
               </view>
             </view>
           </view>
 
-          <block wx:if="{{allJoinedAttendees.length > activity.maxAttendee}}">
+          <!-- Waiting List -->
+          <block wx:if="{{allJoinedOnWaitAttendees.length > 0}}">
             <view class="info-row">
               <view class="icon-section">
                 <image class="icon" src="/static/icons/details/attention-white.png" />
@@ -114,16 +108,16 @@
               <text class="small">{{_lang.backUpJoin}}</text>
             </view>
             <view class="attention-row">
-              <!-- <view class="section" wx:for="{{utils.slice(allJoinedAttendees, activity.maxAttendee)}}" wx:key="userId" wx:for-item="user"> -->
-              <view class="section" wx:for="{{allJoinedAttendees}}" wx:key="userId" wx:for-item="user">
-                <image-loader my-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+              <view class="section" wx:for="{{allJoinedOnWaitAttendees}}" wx:key="key" wx:for-item="user">
+                <image-loader ext-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                 <text class="name">{{user.displayName || user.nickName}}</text>
                 <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
               </view>
             </view>
           </block>
 
-          <block wx:if="{{canManageAll}}">
+          <!-- Admin looking for cancelled attendees -->
+          <block wx:if="{{isAdmin}}">
             <view class="info-row">
               <view class="icon-section">
                 <image class="icon" src="/static/icons/details/attention-white.png" />
@@ -131,8 +125,8 @@
               <text class="small">Cancelled</text>
             </view>
             <view class="attention-row">
-              <view class="section" wx:for="{{allCancelledAttendees}}" wx:key="userId" wx:for-item="user">
-                <image-loader my-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+              <view class="section" wx:for="{{allCancelledAttendees}}" wx:key="key" wx:for-item="user">
+                <image-loader ext-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                 <text class="name">{{user.displayName || user.nickName}}</text>
                 <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
               </view>
@@ -162,21 +156,21 @@
 
         <block wx:if="{{!!!activity.isCompleted}}">
           <block wx:if="{{joinMore < 0}}">
-            <button class="btn" size="mini" bindtap="joinAsync" data-isCancelled="{{false}}">{{_lang.join}}</button>
+            <button class="btn" size="mini" bindtap="joinAsync" data-join_more="{{0}}">{{_lang.join}}</button>
           </block>
           <block wx:else>
-            <button wx:if="{{!joinMore}}" class="section" plain="true" size="mini" bindtap="joinMoreAsync">
+            <button wx:if="{{!joinMore}}" class="section" plain="true" size="mini" bindtap="joinAsync" data-join_more="{{1}}">
               <image class="icon" src="/static/icons/details/add-user.png" />
               <text>{{_lang.joinMore}}</text>
             </button>
             <view wx:else class="add-more">
-              <image bindtap="joinMinusOneAsync" class="icon" src="/static/icons/details/minus.png" />
+              <image bindtap="cancelAsync" data-join_more="{{joinMore}}" class="icon" src="/static/icons/details/minus.png" />
               <text>+{{joinMore}}</text>
-              <image bindtap="joinMoreAsync" class="icon" src="/static/icons/details/add.png" />
+              <image bindtap="joinAsync" data-join_more="{{joinMore + 1}}" class="icon" src="/static/icons/details/add.png" />
             </view>
 
             <view wx:if="{{!joinMore}}" class="section">
-              <button class="btn" size="mini" bindtap="cancelAsync" data-isCancelled="{{true}}">{{_lang.cancel}}</button>
+              <button class="btn" size="mini" bindtap="cancelAsync" data-join_more="{{0}}">{{_lang.cancel}}</button>
               <text style="font-size: 18rpx">*{{_lang.cancelPolicy}}</text>
             </view>
           </block>
@@ -188,4 +182,4 @@
 
 <mp-half-screen-dialog show="{{showCancelDialog}}" title="{{_lang.cancelWarningTitle}}" desc="{{_lang.cancelWarningDesc}}" tips="{{_lang.cancelWarningTips}}" />
 
-<mp-half-screen-dialog show="{{showLowCreditBalance}}" title="{{_lang.lowCreditBalanceTitle}}" desc="{{_lang.lowCreditBalanceDesc}}{{myProfile.creditBalance}} NZD。" />
+<mp-half-screen-dialog show="{{showLowCreditBalance}}" title="{{_lang.lowCreditBalanceTitle}}" desc="{{_lang.lowCreditBalanceDesc}}{{myProfile.creditBalance}} NZD" />
