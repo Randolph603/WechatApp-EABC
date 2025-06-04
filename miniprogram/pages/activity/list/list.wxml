@@ -49,6 +49,8 @@
     </sticky-header>
   </sticky-section>
 
+  <image wx:if="{{!isLoaded}}" style="width:100%" mode="aspectFit" src="/static/images/loading2.gif"></image>
+
   <grid-view cross-axis-gap="6" cross-axis-count="2" type="masonry">
     <view class="grid-item" wx:for="{{filterActivities}}" wx:key="index">
       <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
@@ -73,7 +75,7 @@
     </view>
   </grid-view>
 
-  <view class="loading" wx:if="{{filterActivities.langth > 0}}">
+  <view class="loading" wx:if="{{filterActivities.length > 0}}">
     <view wx:if="{{isLoading && !loadAll}}" class="loading-icon"></view>
     <text wx:if="{{loadAll}}">-我是有底线的-</text>
     <text wx:else>Loading...</text>
