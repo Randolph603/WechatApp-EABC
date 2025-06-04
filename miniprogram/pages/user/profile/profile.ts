@@ -1,5 +1,5 @@
 import { CallCloudFuncAsync, UpdateRecordAsync } from "@API/commonHelper";
-import { GetUserByMemberId, UploadAvatarImageAsync } from "@API/userService";
+import { GetUserByMemberId, RegisterNewUserAsync, UploadAvatarImageAsync } from "@API/userService";
 import { GetLaguageMap } from "@Language/languageUtils";
 import { LevelArray, UserGender, UserGenderArray, UserLevel } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
@@ -16,10 +16,10 @@ Page({
     callbackUrl: '',
     // Variables
     avatarUrl: defaultAvatarUrl,
-    user: {},
+    user: null,
     formData: {},
     rules: [
-      { name: 'displayName', rules: { required: true } },
+      { name: 'displayName', rules: { required: true, maxlength: 20, message: 'name is required with max 20 characters' } },
       { name: 'gender', rules: { required: true } },
       { name: 'genderType', rules: { required: false } },
       { name: 'userLevel', rules: { required: true } },
@@ -91,41 +91,44 @@ Page({
     });
   },
 
-  submitForm: async function () {
-    this.selectComponent('#form').validate(async (valid: any, errors: any) => {
-      if (!valid) {
-        const firstError = Object.keys(errors)
-        if (firstError.length) {
-          wx.showToast({
-            title: errors[firstError[0]].message,
-            icon: 'none',
-          });
-        }
-      } else {
-        try {
-          if (!this.data.user) {
-            // update avatar need to know member id, register first if no member id
-            const { profile } = await CallCloudFuncAsync('user_register', {});
-            await this.save(profile);
-          } else {
-            await this.save(this.data.user);
+  async submitForm() {
+    await ExcuteWithProcessingAsync(() => {
+      this.selectComponent('#form').validate(async (valid: any, errors: any) => {
+        if (!valid) {
+          const firstError = Object.keys(errors);
+          console.log(firstError);
+          if (firstError.length) {
+            wx.showToast({
+              title: errors[firstError[0]].message,
+              icon: 'none',
+            });
           }
+        } else {
+          try {
+            if (!this.data.user) {
+              // update avatar need to know member id, register first if no member id
+              const newUser = await RegisterNewUserAsync();
+              await this.save(newUser);
+            } else {
+              await this.save(this.data.user);
+            }
 
-          if (this.data.callbackUrl) {
-            wx.reLaunch({
-              url: this.data.callbackUrl + "?fromCallback=true",
-            })
-          } else {
-            wx.navigateBack({ delta: 0 })
+            if (this.data.callbackUrl) {
+              wx.reLaunch({
+                url: '/' + this.data.callbackUrl + '?fromCallback=true',
+              })
+            } else {
+              wx.navigateBack({ delta: 0 })
+            }
+          } catch (e) {
+            console.log(e);
           }
-        } catch (e) {
-          console.log(e);
         }
-      }
-    })
+      })
+    });
   },
 
-  save: async function (user: any) {
+  async save(user: any) {
     const { memberId, avatarUrl } = user;
     if (!memberId) return;
     await ExcuteWithProcessingAsync(async () => {

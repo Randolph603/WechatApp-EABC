@@ -4,7 +4,7 @@ import { GetUserByUnionId as MockGetUserByUnionId } from "../configs/mocks";
 import { UserRoleArray, LevelArray, UserGenderArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { WxGetFileInfoAsync } from "@Lib/promisify";
-import { UpdateRecordAsync } from "./commonHelper";
+import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
 
 const SetupUserTypes = (user: any) => {
   if (user.avatarUrl.startsWith('cloud')) {
@@ -13,6 +13,11 @@ const SetupUserTypes = (user: any) => {
   user.userRoleType = UserRoleArray[user.userRole];
   user.userLevelType = LevelArray[user.userLevel];
   user.genderType = UserGenderArray[user.gender];
+}
+
+export const RegisterNewUserAsync = async () => {
+  const unionId = await GetUnionIdAsync();
+  return await CallCloudFuncAsync('eabc_user_register', { unionId });
 }
 
 export const GetUserByUnionId = async () => {

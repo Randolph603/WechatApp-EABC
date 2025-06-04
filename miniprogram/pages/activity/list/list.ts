@@ -1,6 +1,6 @@
 import { LoadAllActivitiesAsync } from "@API/activityService";
 import { GetLaguageMap } from "@Language/languageUtils";
-import { ExcuteWithLoadingAsync, GetNavBarHeight, UpdateTabBarLaguage } from "@Lib/utils";
+import { ExcuteWithLoadingAsync, GetNavBarHeight, InitialiseTabPageAndCheckUser } from "@Lib/utils";
 
 Page({
   data: {
@@ -17,19 +17,16 @@ Page({
   },
 
   async onLoad() {
+    await InitialiseTabPageAndCheckUser();
+
     await ExcuteWithLoadingAsync(async () => {
       await this.fetchAllDataAsync();
     });
   },
 
-  onShow() {
-    UpdateTabBarLaguage();
-  },
+  onShareAppMessage() { },
 
-  onShareAppMessage() {
-
-  },
-
+  //#region private method
   async fetchAllDataAsync() {
     const activities = await LoadAllActivitiesAsync();
 
@@ -59,4 +56,5 @@ Page({
   async sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+  //#endregion
 })

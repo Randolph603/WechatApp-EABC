@@ -1,11 +1,6 @@
-import { UpdateTabBarLaguage } from "@Lib/utils";
+import { InitialiseTabPageAndCheckUser } from "@Lib/utils";
 
-// pages/rank/rank.ts
 Page({
-
-  /**
-   * Page initial data
-   */
   data: {
     rankList: [
       { rank: 4, name: "Rosie Nash", score: 24324, avatar: "/images/rosie.png" },
@@ -16,58 +11,10 @@ Page({
     ]
   },
 
-  /**
-   * Lifecycle function--Called when page load
-   */
-  onLoad() {
-
+  async onLoad() {
+    await InitialiseTabPageAndCheckUser();
   },
 
-  /**
-   * Lifecycle function--Called when page is initially rendered
-   */
-  onReady() {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page show
-   */
-  onShow() {
-    UpdateTabBarLaguage();
-  },
-
-  /**
-   * Lifecycle function--Called when page hide
-   */
-  onHide() {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page unload
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * Page event handler function--Called when user drop down
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * Called when page reach bottom
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * Called when user click on the top right corner to share
-   */
   onShareAppMessage() {
 
   }

@@ -73,7 +73,7 @@
     </view>
   </grid-view>
 
-  <view class="loading">
+  <view class="loading" wx:if="{{filterActivities.langth > 0}}">
     <view wx:if="{{isLoading && !loadAll}}" class="loading-icon"></view>
     <text wx:if="{{loadAll}}">-我是有底线的-</text>
     <text wx:else>Loading...</text>

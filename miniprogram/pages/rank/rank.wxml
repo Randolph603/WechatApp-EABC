@@ -1,3 +1,7 @@
+<view>
+  <image></image>
+</view>
+
 <view class="rank-container">
   <!-- 顶部榜单类型 tab -->
   <view class="tab-bar">
@@ -16,19 +20,19 @@
   <!-- TOP 3 排名 -->
   <view class="top3">
     <view class="top-item second">
-      <image src="/images/mary.png" class="avatar" />
+      <!-- <image src="/images/mary.png" class="avatar" /> -->
       <text class="name">Mary Moss</text>
       <text class="score">66345</text>
       <text class="rank">TOP 2</text>
     </view>
     <view class="top-item first">
-      <image src="/images/pinkgirl.png" class="avatar" />
+      <!-- <image src="/images/pinkgirl.png" class="avatar" /> -->
       <text class="name">Pinkgirl</text>
       <text class="score">232345</text>
       <text class="rank">TOP 1</text>
     </view>
     <view class="top-item third">
-      <image src="/images/harriet.png" class="avatar" />
+      <!-- <image src="/images/harriet.png" class="avatar" /> -->
       <text class="name">Harriet</text>
       <text class="score">45045</text>
       <text class="rank">TOP 3</text>
@@ -40,7 +44,7 @@
     <block wx:for="{{rankList}}" wx:key="index">
       <view class="rank-row">
         <text class="rank-number">{{item.rank}}</text>
-        <image class="avatar" src="{{item.avatar}}" />
+        <!-- <image class="avatar" src="{{item.avatar}}" /> -->
         <text class="name">{{item.name}}</text>
         <text class="score">{{item.score}}</text>
       </view>
@@ -49,7 +53,7 @@
 
   <!-- 我的排名 -->
   <view class="my-rank">
-    <image class="avatar" src="/images/me.png" />
+    <!-- <image class="avatar" src="/images/me.png" /> -->
     <view class="info">
       <text class="name">蕉泥先生</text>
       <text class="score">拍力值 3562</text>

@@ -1,6 +1,6 @@
 import { GetUserByUnionId } from '@API/userService';
 import { GetLaguageMap, GetCurrentLanguage, LanguageArray, ChangeLanguage } from '@Language/languageUtils';
-import { GetNavBarHeight, UpdateTabBarLaguage } from '@Lib/utils';
+import { GetNavBarHeight, InitialiseTabPageAndCheckUser, UpdateTabBarLaguage } from '@Lib/utils';
 
 const Mottos = [
   "球伴技术好，你赢球的可能性就大.",

@@ -1,3 +1,4 @@
+import { GetUserByUnionId } from "@API/userService";
 import { GetLaguageMap } from "@Language/languageUtils";
 
 export const ConvertFileIdToHttps = (fileId: string) => {
@@ -19,13 +20,34 @@ export const GetNavBarHeight = () => {
   return navBarHeight;
 }
 
+
 export const UpdateTabBarLaguage = () => {
   GetLaguageMap()["tabbar"].list.forEach(({ text }, i) => {
+    if (i === 2) return;
     wx.setTabBarItem({
       index: i,
       text: text
     })
   });
+}
+
+export const CheckUserExistsAsync = async () => {
+  const user = await GetUserByUnionId();
+  if (!user) {
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    const currentUrl = currentPage.route;
+    wx.navigateTo({
+      url: '/pages/user/profile/profile?callbackUrl=' + currentUrl,
+    });
+  }
+  return user;
+}
+
+// this is for all tab page.
+export const InitialiseTabPageAndCheckUser = async () => {
+  UpdateTabBarLaguage();
+  await CheckUserExistsAsync();
 }
 
 export const ExcuteWithProcessingAsync = async (actionAsync: Function) => {

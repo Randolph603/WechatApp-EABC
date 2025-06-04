@@ -34,12 +34,12 @@
     </view>
     <view class="view-row user-values">
       <view class="view-column" style="align-items: center;">
-        <text>{{myProfile.creditBalance}}</text>
+        <view>{{myProfile.creditBalance}} <text style="font-size: 12px;">NZD</text></view>
         <text>余额</text>
       </view>
       <view class="view-column" style="align-items: center;">
-        <text>{{myProfile.powerPoint}}</text>
-        <text>活动</text>
+        <view>{{myProfile.continueWeeklyJoin}} <text style="font-size: 12px;">周</text></view>
+        <text>连周</text>
       </view>
       <view class="view-column" style="align-items: center;">
         <text>{{myProfile.powerPoint}}</text>
@@ -66,7 +66,7 @@
       <view class="card-items">
         <navigator class="card-item" url="/pages/home/home" open-type="switchTab">
           <image class="icon48" src="/static/icons/adventure.png" mode="heightFix" />
-          <text>钱包</text>
+          <text>战绩</text>
         </navigator>
         <view class="card-item">
           <image class="icon48" src="/static/icons/apple-arcade.png" mode="heightFix" />
@@ -74,7 +74,7 @@
         </view>
         <view class="card-item">
           <image class="icon48" src="/static/icons/game-controller.png" mode="heightFix" />
-          <text>积分</text>
+          <text>门派</text>
         </view>
         <view class="card-item">
           <image class="icon48" src="/static/icons/archer.png" mode="heightFix" />
