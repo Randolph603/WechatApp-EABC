@@ -17,7 +17,7 @@
         <block wx:for="{{users}}" wx:key="_id" wx:for-item="user">
           <view class="box">
             <text class="rank-number">{{index + 1}}</text>
-            <image-loader defaultLoadingSrc="static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+            <image-loader ext-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
             <text class="name">{{user.displayName || user.nickName}}</text>
             <text class="power">{{user.powerPoint || 0}}</text>
             <image class="badge" src="/static/ranks/{{user.userLevel ?? 1}}.png" />
