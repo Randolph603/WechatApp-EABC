@@ -85,3 +85,11 @@ export const UploadAvatarImageAsync = async (filePath: string, memberId: number,
     console.log(error);
   }
 }
+
+export const SearchAllUsersAsync = async () => {
+  const { users } = await CallCloudFuncAsync('user_search', { sort: { powerPoint: -1 }, limit: 20 });
+  users.forEach((u: any) => {
+    SetupUserTypes(u);
+  });
+  return users;
+}

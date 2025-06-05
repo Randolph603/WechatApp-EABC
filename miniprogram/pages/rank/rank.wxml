@@ -10,71 +10,37 @@
   <view wx:for="{{tabList}}" wx:key="id" class="tab-item {{selectedTab === index ? 'actived' : ''}}" data-index="{{index}}" bind:tap="onTapTab">{{item.name}}</view>
 </view>
 
-<view class="swiper-cnt">
-  <swiper class="swiper" current="{{selectedTab}}" bindchange="onChange">
-    <swiper-item>
-      <text>hi</text>
-    </swiper-item>
-    <swiper-item>
-      <view class="rank-container">
-        <!-- 顶部榜单类型 tab -->
-        <view class="tab-bar">
-          <view class="tab selected">豪气榜</view>
-          <view class="tab">贡献榜</view>
-          <view class="tab">点赞榜</view>
-        </view>
-
-        <!-- 子 tab -->
-        <view class="sub-tab-bar">
-          <view class="sub-tab selected">月榜</view>
-          <view class="sub-tab">季榜</view>
-          <view class="sub-tab">年榜</view>
-        </view>
-
-        <!-- TOP 3 排名 -->
-        <view class="top3">
-          <view class="top-item second">
-            <!-- <image src="/images/mary.png" class="avatar" /> -->
-            <text class="name">Mary Moss</text>
-            <text class="score">66345</text>
-            <text class="rank">TOP 2</text>
+<swiper class="swiper" current="{{selectedTab}}" bindchange="onChange">
+  <swiper-item class="item">
+    <view class="rank-list">
+      <scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loadUserListAsync" refresher-triggered="{{triggered}}">
+        <block wx:for="{{users}}" wx:key="_id" wx:for-item="user">
+          <view class="box">
+            <text class="rank-number">{{index + 1}}</text>
+            <image-loader defaultLoadingSrc="static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+            <text class="name">{{user.displayName || user.nickName}}</text>
+            <text class="power">{{user.powerPoint || 0}}</text>
+            <image class="badge" src="/static/ranks/{{user.userLevel ?? 1}}.png" />
           </view>
-          <view class="top-item first">
-            <!-- <image src="/images/pinkgirl.png" class="avatar" /> -->
-            <text class="name">Pinkgirl</text>
-            <text class="score">232345</text>
-            <text class="rank">TOP 1</text>
-          </view>
-          <view class="top-item third">
-            <!-- <image src="/images/harriet.png" class="avatar" /> -->
-            <text class="name">Harriet</text>
-            <text class="score">45045</text>
-            <text class="rank">TOP 3</text>
-          </view>
+        </block>
+      </scroll-view>
+      <!-- 我的排名 -->
+      <view class="my-rank">
+        <!-- <image class="avatar" src="/images/me.png" /> -->
+        <view class="info">
+          <text class="name">蕉泥先生</text>
+          <text class="score">拍力值 3562</text>
         </view>
-
-        <!-- 榜单列表 -->
-        <view class="rank-list">
-          <block wx:for="{{rankList}}" wx:key="index">
-            <view class="rank-row">
-              <text class="rank-number">{{item.rank}}</text>
-              <!-- <image class="avatar" src="{{item.avatar}}" /> -->
-              <text class="name">{{item.name}}</text>
-              <text class="score">{{item.score}}</text>
-            </view>
-          </block>
-        </view>
-
-        <!-- 我的排名 -->
-        <view class="my-rank">
-          <!-- <image class="avatar" src="/images/me.png" /> -->
-          <view class="info">
-            <text class="name">蕉泥先生</text>
-            <text class="score">拍力值 3562</text>
-          </view>
-          <text class="my-rank-number">我的排名 34</text>
-        </view>
+        <text class="my-rank-number">我的排名 34</text>
       </view>
-    </swiper-item>
-  </swiper>
-</view>
+    </view>
+  </swiper-item>
+  <swiper-item class="item">
+    <image mode="widthFix" src="/static/images/no_history.png"></image>
+    <text>No records</text>
+  </swiper-item>
+  <swiper-item class="item">
+    <image mode="widthFix" src="/static/images/no_history.png"></image>
+    <text>No records</text>
+  </swiper-item>
+</swiper>

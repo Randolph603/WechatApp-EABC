@@ -1,3 +1,4 @@
+import { SearchAllUsersAsync } from "@API/userService";
 import { InitialiseTabPageAndCheckUser } from "@Lib/utils";
 
 Page({
@@ -5,14 +6,15 @@ Page({
     selectedTab: 0,
     tabList: [{
       id: 'question',
-      name: '问题',
+      name: '个人',
     }, {
       id: 'blog',
-      name: '文章',
+      name: '队伍',
     }, {
       id: 'others',
-      name: '其他',
+      name: '积分',
     }],
+    users: [],
     rankList: [
       { rank: 4, name: "Rosie Nash", score: 24324, avatar: "/images/rosie.png" },
       { rank: 5, name: "Lucy Nguyen", score: 12324, avatar: "/images/lucy.png" },
@@ -24,6 +26,11 @@ Page({
 
   async onLoad() {
     await InitialiseTabPageAndCheckUser();
+
+    const users = await SearchAllUsersAsync();
+    this.setData({
+      users: users
+    });
   },
 
   onShareAppMessage() {
