@@ -1,4 +1,5 @@
 import { LoadAllActivitiesAsync } from "@API/activityService";
+import { HandleException } from "@API/commonHelper";
 import { GetLaguageMap } from "@Language/languageUtils";
 import { GetNavBarHeight, UpdateTabBarLaguage } from "@Lib/utils";
 
@@ -17,8 +18,12 @@ Page({
   },
 
   async onLoad() {
-    await UpdateTabBarLaguage();
-    await this.fetchAllDataAsync();
+    try {
+      UpdateTabBarLaguage();
+      await this.fetchAllDataAsync();
+    } catch (error) {
+      await HandleException('pages/activity/list/list - onLoad', error)
+    }
   },
 
   onShareAppMessage() { },

@@ -1,3 +1,4 @@
+import { HandleException } from '@API/commonHelper';
 import { GetUserByUnionId } from '@API/userService';
 import { GetLaguageMap, GetCurrentLanguage, LanguageArray, ChangeLanguage } from '@Language/languageUtils';
 import { GetNavBarHeight, InitialiseTabPageAndCheckUser, UpdateTabBarLaguage } from '@Lib/utils';
@@ -32,7 +33,11 @@ Page({
   },
 
   async onLoad() {
-    await this.LoadUser();
+    try {
+      await this.LoadUser();
+    } catch (error) {
+      await HandleException('pages/user/my/my - onLoad', error)
+    }
   },
 
   async onShow() {

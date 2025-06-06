@@ -9,8 +9,8 @@ export const InitDatabaseAsync = async () => {
   cloudbase.useAdapters(adapter);
   //from https://tcb.cloud.tencent.com/dev?envId=prod-4glz11qiccc892f2#/env/safety-source
   App = cloudbase.init({
-    env: "prod-4glz11qiccc892f2",
-    clientId: env.CLIENT_ID,
+    env: 'prod-4glz11qiccc892f2',
+    clientId: env.CLIENT_ID
   });
 
   const auth = App.auth();

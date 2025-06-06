@@ -1,4 +1,4 @@
-import { GetCloudAsync } from './databaseService';
+import { GetCloudAsync, GetUnionIdAsync } from './databaseService';
 
 export const CallCloudFuncAsync = async (funcName: string, data: object) => {
   const app = await GetCloudAsync();
@@ -20,4 +20,19 @@ export const UpdateRecordAsync = async (collection: string, where: object, data:
       dateData: dateData
     });
   return response.updatedCount;
+};
+
+export const HandleException = async (functionName: string, error: any) => {
+  const app = await GetCloudAsync();
+  const db = app.database();
+  const unionId = await GetUnionIdAsync();
+
+  await db.collection('Sys_Exceptions').add({
+    data: {
+      functionName: functionName,
+      operationUserId: unionId,
+      date: new Date(),
+      exception: error,
+    }
+  });
 };
