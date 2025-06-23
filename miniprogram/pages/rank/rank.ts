@@ -5,14 +5,17 @@ Page({
   data: {
     selectedTab: 0,
     tabList: [{
-      id: 'question',
+      id: 'general',
       name: '个人',
     }, {
-      id: 'blog',
-      name: '队伍',
+      id: 'MD',
+      name: '男双',
     }, {
-      id: 'others',
-      name: '积分',
+      id: 'WD',
+      name: '女双',
+    }, {
+      id: 'XD',
+      name: '混双',
     }],
     users: [],
     rankList: [

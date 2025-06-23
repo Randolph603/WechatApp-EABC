@@ -61,6 +61,39 @@
 <scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="LoadUser" refresher-triggered="{{triggered}}">
 
   <view class="card">
+    <view class="card-title">我的成就</view>
+    <scroll-view scroll-x="{{true}}">
+      <view class="card-items">
+        <navigator class="card-item" url="/pages/home/home" open-type="switchTab">
+          <image class="icon72 image-disable" src="/static/icons/badge/week.png" mode="heightFix" />
+          <text>周冠军</text>
+        </navigator>
+        <view class="card-item">
+          <image class="icon72" src="/static/icons/badge/month.png" mode="heightFix" />
+          <text>月冠军</text>
+        </view>
+        <view class="card-item">
+          <image class="icon72" src="/static/icons/badge/year.png" mode="heightFix" />
+          <text>总冠军</text>
+        </view>
+        <view class="card-item">
+          <image class="icon72" src="/static/icons/badge/5weeks.png" mode="heightFix" />
+          <text>连续5周</text>
+        </view>
+        <view class="card-item">
+          <image class="icon72" src="/static/icons/badge/10weeks.png" mode="heightFix" />
+          <text>连续10周</text>
+        </view>
+        <view class="card-item">
+          <image class="icon72" src="/static/icons/badge/15weeks.png" mode="heightFix" />
+          <text>连续15周</text>
+        </view>
+       
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="card">
     <view class="card-title">推荐服务</view>
     <scroll-view scroll-x="{{true}}">
       <view class="card-items">
