@@ -91,10 +91,6 @@ Page({
         myProfile: user,
         isAdmin: user.userRole === UserRole.Admin.value
       });
-    } else {
-      wx.navigateTo({
-        url: '/pages/user/profile/profile',
-      });
     }
     return user;
   },
@@ -163,11 +159,17 @@ Page({
   },
 
   async joinAsync(event: any) {
-    const { join_more } = event.currentTarget.dataset;
-    await ExcuteWithProcessingAsync(async () => {
-      await JoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
-      await this.loadActivity();
-    });
+    if (this.data.myMemberId > 0) {
+      const { join_more } = event.currentTarget.dataset;
+      await ExcuteWithProcessingAsync(async () => {
+        await JoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
+        await this.loadActivity();
+      });
+    } else {
+      wx.navigateTo({
+        url: '/pages/user/profile/profile',
+      });
+    }
   },
 
   async cancelAsync(event: any) {

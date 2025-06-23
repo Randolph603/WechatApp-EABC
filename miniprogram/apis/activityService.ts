@@ -34,13 +34,13 @@ export const LoadActivityByIdAsync = async (id: string) => {
 
   const { activity } = await CallCloudFuncAsync('activity_getById', data);
 
-  activity.date = `${ToShortDateString(activity.startTime)}(${ToDayOfWeekString(activity.startTime)})`;
+  activity.date = `${ToShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
   activity.time = ToShortTimeRange(activity.startTime, activity.during);
 
   activity.Attendees.forEach((user: any) => {
     user.userLevelType = LevelArray[user.userLevel];
     user.key = `${user.memberId}${user.joinMore}`;
-    // user.userLevelImageSrc = `/images/rank/${user.userLevel}.png`;
+    user.userLevelImageSrc = `/static/ranks/${user.userLevel}.png`;
     if (user.avatarUrl.startsWith('cloud')) {
       user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
     }

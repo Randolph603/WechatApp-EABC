@@ -81,18 +81,18 @@
             <view class="attention-row">
               <view class="section" wx:for="{{section.attendees}}" wx:key="key" wx:for-item="user">
                 <text wx:if="{{section.index!= 0 && ((user.memberId === myMemberId && !activity.isCompleted) || isAdmin)}}" class="button" bindtap="moveAsync" data-section_index="{{section.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
-                <!-- wx:if="{{joinMore >= 0}}" -->
-                <block>
+
+                <block wx:if="{{myMemberId > 0}}">
                   <view class="head-img">
                     <image-loader ext-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                   </view>
                   <text class="name">{{user.displayName || user.nickName}}</text>
                   <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
                 </block>
-                <!-- <block wx:else>
-                  <image class="avatar" mode="aspectFill" src="{{user.userLevelImageSrc}}" />              
-                  <text class="name">{{user.userLevelType.displayName}}</text>                  
-                </block> -->
+                <block wx:else>
+                  <image class="avatar level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
+                  <text class="name">{{user.userLevelType.displayName}}</text>
+                </block>
 
                 <text wx:if="{{(section.index!= allSections.length -1) && ((user.memberId === myMemberId && !activity.isCompleted) || isAdmin)}}" class="button" bindtap="moveAsync" data-section_index="{{section.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
               </view>

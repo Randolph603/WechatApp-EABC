@@ -49,7 +49,12 @@
   },
   "libVersion": "2.32.3",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "../idea"
+      }
+    ],
     "include": []
   },
   "appid": "wx1d85f7df5bbea6d4",
