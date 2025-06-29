@@ -1,0 +1,22 @@
+module.exports.includesUser = function (attendees, memberId) {
+  var findMatch = false;
+  for (var i = 0; i < attendees.length; i++) {
+    var user = attendees[i];
+    if (user.memberId === memberId) {
+      findMatch = true;
+    }
+  }
+  return findMatch;
+};
+
+module.exports.includes = function (array, element) {
+  if (!array) return false;
+  var findMatch = false;
+  for (var i = 0; i < array.length; i++) {
+    var item = array[i];
+    if (item === element) {
+      findMatch = true;
+    }
+  }
+  return findMatch;
+};

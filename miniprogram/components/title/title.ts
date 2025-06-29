@@ -8,6 +8,10 @@ Component({
     url: {
       type: String,
       value: ""
+    },
+    more: {
+      type: String,
+      value: ""
     }
   },
   data: {

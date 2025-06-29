@@ -1,0 +1,92 @@
+<view>
+  <view style="height: {{navBarHeight}}px;" />
+
+  <r-navigation-bar class="skyline-nav-bar" title="" back="{{false}}">
+    <view class="nav-left" slot="left">
+      <image class="nav-logo" mode="aspectFill" src="/static/images/icon.png" />
+      <view class="nav-title">
+        <text>EABC羽毛球助手</text>
+      </view>
+    </view>
+  </r-navigation-bar>
+</view>
+
+<scroll-view scroll-y class="panel" style="height: calc(100vh - {{navBarHeight}}px);" type="custom" refresher-enabled scroll-with-animation lower-threshold="{{100}}" bindscrolltolower="handleScrollLower" bindrefresherrefresh="fetchAllDataAsync" refresher-triggered="{{triggered}}" scroll-top="{{top}}">
+  <view>
+    <view class="banner">
+      <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay interval="4000">
+        <swiper-item>
+          <image src="/static/images/home1.jpg" mode="aspectFill" />
+        </swiper-item>
+        <swiper-item>
+          <image src="/static/images/home2.jpg" mode="aspectFill" />
+        </swiper-item>
+        <swiper-item>
+          <image src="/static/images/home3.jpg" mode="aspectFill" />
+        </swiper-item>
+      </swiper>
+    </view>
+
+    <view class="studio-header">
+      <image class="logo" src="/static/images/icon.png" mode="aspectFill" />
+      <view class="title">EABC 东羽羽毛球</view>
+    </view>
+
+    <view class="section">
+      <view class="context">
+        EABC东羽是一个面向大众开放的羽毛球俱乐部，致力于推广羽毛球运动、提高技术水平和丰富业余生活，营造积极向上的运动氛围。无论你是初学者还是进阶选手，都能在这里找到属于自己的舞台。
+      </view>
+    </view>
+  </view>
+
+  <sticky-section push-pinned-header="{{false}}">
+    <sticky-header>
+      <r-title ext-class="section-title" title="活动" url="/pages/activity/list/list" more="更多" />
+    </sticky-header>
+  </sticky-section>
+
+  <image wx:if="{{!isLoaded}}" style="width:100%" mode="aspectFit" src="/static/images/loading2.gif"></image>
+
+  <grid-view cross-axis-gap="6" cross-axis-count="2" type="masonry">
+    <view class="grid-item" wx:for="{{activities}}" wx:key="index">
+      <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
+      <view class="card">
+        <navigator url="/pages/activity/details/details?id={{item._id}}">
+          <image lazy-load="true" class="boxPic" mode="widthFix" src="{{item.coverImageSrc}}">
+          </image>
+          <view class="boxTxt">
+            <view class="title">[{{_lang.area}}] {{item.title}}</view>
+            <view class="info"> {{_lang.address}}: {{item.address}}</view>
+            <view class="info"> {{_lang.date}}: {{item.date}} ({{item.dayOfWeek}})</view>
+            <view class="bottom">
+              <view class="info"> {{_lang.attendee}}：{{item.Attendees.length}}/{{item.maxAttendee}}</view>
+              <view class="look">
+                <image src="/static/icons/look.png" class="lookpic" />
+                <text>{{item.viewCount}}</text>
+              </view>
+            </view>
+          </view>
+        </navigator>
+      </view>
+    </view>
+  </grid-view>
+
+  <!-- <r-title ext-class="section-title" title="教练介绍" />
+
+  <view class="section">
+    <section-title myTitle="导师介绍" topTitle="Tutor Introduction" />
+    <view class="tutor-box" bindtap="handleJuneYinShowAll">
+      <view>
+        <image class="avatar" src="/static/images/icon.png" mode="aspectFill" />
+      </view>
+      <view class="tutor">
+        <view class="info">
+          <view class="name">June Yin <text class="title">全能舞者</text></view>
+          <image class="icon" src="/images/icons64/right-arrow-8a8a8a.png" />
+        </view>
+        <view class="description">北京舞蹈学院民族舞专业，多年国内高校教学经验。2019国际辣妈大赛新西兰赛区优雅组冠军。</view>
+      </view>
+    </view>
+  </view> -->
+
+</scroll-view>

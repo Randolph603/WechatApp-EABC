@@ -88,7 +88,7 @@
           <image class="icon72" src="/static/icons/badge/15weeks.png" mode="heightFix" />
           <text>连续15周</text>
         </view>
-       
+
       </view>
     </scroll-view>
   </view>
@@ -128,23 +128,26 @@
   <view class="feature-card">
     <mp-cells title="Features">
       <mp-cell link hover value="{{_lang.wallet}}">
-        <image slot="title" src="/static/icons/body-armor.png" class="mp-cell-icon" />
+        <image slot="icon" src="/static/icons/wallet.png" class="mp-cell-icon" />
       </mp-cell>
       <mp-cell link hover value="{{_lang.history}}">
-        <image slot="title" src="/static/icons/gauntlet-gloves.png" class="mp-cell-icon" />
+        <image slot="icon" src="/static/icons/purchase-order.png" class="mp-cell-icon" />
       </mp-cell>
       <mp-cell link hover value="{{_lang.topup}}">
-        <image slot="title" src="/static/icons/greek-helmet.png" class="mp-cell-icon" />
+        <image slot="icon" src="/static/icons/payment.png" class="mp-cell-icon" />
       </mp-cell>
       <mp-cell link value="{{_lang.contactUs}}">
         <button style="border: 0" class="contact-btn" plain="true" open-type="contact" />
-        <image slot="icon" src="/static/icons/knight-shield.png" class="mp-cell-icon" />
+        <image slot="icon" src="/static/icons/contact-us.png" class="mp-cell-icon" />
       </mp-cell>
       <mp-cell link>
-        <image slot="icon" src="/static/icons/shield.png" class="mp-cell-icon" />
+        <image slot="icon" src="/static/icons/language.png" class="mp-cell-icon" />
         <picker bindchange="languagePickerChange" range="{{languageArray}}" range-key="name" value="{{currentLanguage.index}}">
           <view class="picker"> {{currentLanguage.setting}} </view>
         </picker>
+      </mp-cell>
+      <mp-cell wx:if="{{isAdmin}}" link hover url="/pages/admin/settingList/settingList" value="{{_lang.adminSetting}}">
+        <image slot="icon" src="/static/icons/setting.png" class="mp-cell-icon" />
       </mp-cell>
     </mp-cells>
   </view>

@@ -1,3 +1,4 @@
+import { GetCurrentUrl } from '@Lib/utils';
 import { GetCloudAsync, GetUnionIdAsync } from './databaseService';
 
 export const CallCloudFuncAsync = async (funcName: string, data: object) => {
@@ -23,13 +24,15 @@ export const UpdateRecordAsync = async (collection: string, where: object, data:
 };
 
 export const HandleException = async (functionName: string, error: any) => {
+  const currentUrl = GetCurrentUrl();
+
   const app = await GetCloudAsync();
   const db = app.database();
   const unionId = await GetUnionIdAsync();
 
   await db.collection('Sys_Exceptions').add({
     data: {
-      functionName: functionName,
+      functionName: `${currentUrl} - ${functionName}`,
       operationUserId: unionId,
       date: new Date(),
       exception: error,

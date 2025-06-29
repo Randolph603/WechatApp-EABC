@@ -1,0 +1,156 @@
+<wxs src="/utils/comm.wxs" module="utils" />
+
+<mp-navigation-bar title="{{activityId ? '活动信息' : '添加活动' }}" back=" {{true}}" />
+
+<view class="tab-list">
+  <view class="tab-item {{selectedTab === 0 ? 'actived' : ''}}" data-index="0" bindtap="onTapTab">活动信息</view>
+  <view class="tab-item {{selectedTab === 1 ? 'actived' : ''}}" data-index="1" bindtap="onTapTab">活动球友</view>
+</view>
+
+<swiper style="height: calc(100vh - {{navBarHeight}}px);" current="{{selectedTab}}" bindchange="onChange">
+  <!-- Information Page -->
+  <swiper-item>
+    <scroll-view style="height: calc(100vh - {{navBarHeight}}px);" scroll-y>
+      <mp-form id="form" rules="{{rules}}" models="{{formData}}">
+        <mp-cells title="活动信息">
+          <mp-cell show-error prop="title">
+            <view slot="title" class="weui-label">名称</view>
+            <input bindinput="formTextChange" data-field="title" value="{{formData.title}}" />
+          </mp-cell>
+          <mp-cell show-error prop="type">
+            <view slot="title" class="weui-label">类别</view>
+            <picker bindchange="typePickerChange" range="{{typeArray}}" range-key="name" value="{{type}}">
+              <view class="weui-label">{{type.name}}</view>
+            </picker>
+          </mp-cell>
+          <mp-cell show-error prop="address">
+            <view slot="title" class="weui-label">地点</view>
+            <input bindinput="formTextChange" data-field="address" value="{{formData.address}}" />
+          </mp-cell>
+          <mp-cell show-error prop="court">
+            <view slot="title" class="weui-label">场地</view>
+            <checkbox-group bindchange="courtCheckboxChange">
+              <label class="checkbox" wx:for="{{courtArray}}" wx:key="value">
+                <checkbox value="{{item}}" checked="{{utils.includes(formData.courts, item)}}" />{{item}} 号场地
+              </label>
+            </checkbox-group>
+          </mp-cell>
+          <mp-cell show-error prop="coverImageSrc" title="封面">
+            <radio-group class="wrap-row" bindchange="coverImageRadioChange">
+              <radio wx:for="{{converPageArray}}" wx:key="index" value="{{index}}" checked="{{formData.coverImageSrc === item}}">
+                <image class="pic" src="{{item}}" mode="aspectFill" />
+              </radio>
+            </radio-group>
+          </mp-cell>
+          <mp-cell show-error prop="date">
+            <view slot="title" class="weui-label">日期</view>
+            <picker mode="date" value="{{date}}" bindchange="formDateChange">
+              <view>{{date}}</view>
+            </picker>
+          </mp-cell>
+          <mp-cell>
+            <view slot="title" class="weui-label">完成活动</view>
+            <switch checked="{{formData.isCompleted}}" bindchange="formTextChange" data-field="isCompleted" />
+            <text>{{formData.isCompleted === true ? '是' : '否'}}</text>
+          </mp-cell>
+          <mp-cell>
+            <view slot="title" class="weui-label">公开活动</view>
+            <switch checked="{{formData.toPublic}}" bindchange="formTextChange" data-field="toPublic" />
+            <text>{{formData.toPublic === true ? '是' : '否'}}</text>
+          </mp-cell>
+        </mp-cells>
+
+        <mp-cells title="活动分区">
+          <mp-cell show-error prop="section">
+            <button slot="title" type="warn" size="mini" bindtap="removeSection">减少</button>
+            <button slot="footer" type="default" size="mini" bindtap="addSection">增加</button>
+          </mp-cell>
+        </mp-cells>
+
+        <block wx:for="{{formData.sections}}" wx:key="index" wx:for-index="id" wx:for-item="section">
+          <mp-cells title="Section {{id+1}}">
+            <mp-cell>
+              <view slot="title" class="weui-label">标题</view>
+              <input bindinput="handleSectionChange" data-id="{{id}}" data-field="title" value="{{section.title}}" />
+              <view slot="footer" class="footer">
+                <input style="width: 50px;" type="number" bindinput="handleSectionChange" data-id="{{id}}" data-field="price" value="{{section.price}}" />
+                <text>$</text>
+              </view>
+            </mp-cell>
+            <mp-cell>
+              <view slot="title" class="weui-label">开始时间</view>
+              <picker mode="time" value="{{section.time}}" data-id="{{id}}" data-field="time" bindchange="handleSectionChange">
+                <view>{{section.time}}</view>
+              </picker>
+              <view slot="footer" class="footer">
+                <input style="width: 50px;" bindinput="handleSectionChange" type="number" data-id="{{id}}" data-field="during" value="{{section.during}}" />
+                <text>分钟</text>
+              </view>
+            </mp-cell>
+            <mp-cell>
+              <view slot="title" class="weui-label">最大人数</view>
+              <input bindinput="handleSectionChange" type="number" data-field="maxAttendee" value="{{section.maxAttendee}}" data-id="{{id}}" />
+              <text slot="footer">人</text>
+            </mp-cell>
+          </mp-cells>
+        </block>
+
+
+        <view class="bottom-btn-area">
+          <button class="weui-btn" type="primary" bindtap="submitForm">{{activityId ? '更新' : '添加' }}</button>
+        </view>
+      </mp-form>
+    </scroll-view>
+  </swiper-item>
+  <!-- Attendees Page -->
+  <swiper-item>
+    <scroll-view wx:if="{{activityId}}" style="height: calc(100vh - {{navBarHeight}}px);" scroll-y>
+      <mp-cells wx:if="{{!formData.isCompleted}}" title="手动添加参与会员:">
+        <mp-cell>
+          <view slot="title" class="row-title">
+            <image class="icon" src="/static/icons/search-user.png" />
+            <input style="margin-left: 20rpx;" class="weui-input" placeholder="输入姓名" type="text" confirm-type="search" value="{{searchTerm}}" bindinput="onSearchInputChange" bindconfirm="searchUser" />
+          </view>
+          <image wx:if="{{searchTerm}}" bindtap="onSearchCancel" class="icon" slot="footer" src="/static/icons/close.png" />
+        </mp-cell>
+
+        <mp-cell wx:for="{{matchedUsers}}" wx:key="_id" wx:for-item="user">
+          <view slot="title" class="row-title">
+            <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' width="80rpx" height="80rpx" borderRadius="50%" mode="aspectFill" />
+            <text style="margin-left: 20rpx;">{{user.nickName}}{{user.displayName?'('+user.displayName+')':''}}</text>
+          </view>
+          <view wx:if="{{!utils.includesUser(activeAttendees, user.memberId)}}" slot="footer">
+            <button type="default" size="mini" data-user="{{user}}" bindtap="addAttendeeAsync">添加</button>
+          </view>
+        </mp-cell>
+      </mp-cells>
+
+      <view wx:if="{{!formData.isCompleted && activeAttendees.length === 0}}" class="weui-btn-area">
+        <button class="weui-btn bottom-btn" type="primary" bindtap="autoAddAttendeesAsync">自动添加</button>
+      </view>
+
+      <mp-cells wx:if="{{activeAttendees.length > 0}}" class="scroll" title="参与者 (报名时间排序):" footer="* 左滑删除缺席者">
+        <block wx:for="{{activeAttendees}}" wx:key="_id" wx:for-item="user">
+          <mp-slideview buttons="{{[{type: 'warn',text: '移除'}]}}" data-id="{{user.memberId}}" bindbuttontap="slideButtonTap" disable="{{activity.isCompleted}}">
+            <mp-cell link="{{!activity.isCompleted}}" hover style="font-size: 0.85rem;" bindtap="showAttendeeDialog" data-user="{{user}}">
+              <view slot="title" class="row-title">
+                <image-loader bindtap="goToUserDetails" data-user="{{user}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' width="80rpx" height="80rpx" borderRadius="50%" mode="aspectFill" />
+                <view class="main-section">
+                  <text>{{user.userLevelType.name}}</text>
+                  <text>{{user.displayName || user.nickName}} (+{{user.joinMore||0}}) / ContiWeek: {{user.continueWeeklyJoin}}</text>
+                </view>
+              </view>
+              <view slot="footer" class="row-footer">
+                <text>{{user.creditBalance}} NZD</text>
+              </view>
+            </mp-cell>
+          </mp-slideview>
+        </block>
+      </mp-cells>
+
+      <view wx:if="{{!formData.isCompleted && activeAttendees.length > 0}}" class="weui-btn-area">
+        <button class="weui-btn bottom-btn" type="primary" bindtap="confirmActivityAsync">活动完成并扣款</button>
+      </view>
+    </scroll-view>
+  </swiper-item>
+</swiper>

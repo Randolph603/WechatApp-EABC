@@ -2,25 +2,26 @@
 import { config } from "../configs/index";
 import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
 import { LoadAllActivitiesAsync as MockLoadAllActivitiesAsync } from "../configs/mocks";
-import { ToDayOfWeekString, ToShortDateString, ToShortTimeRange } from "@Lib/dateExtension";
+import { ToDayOfWeekString, ToNZShortDateString, ToNZTimeRangeString } from "@Lib/dateExtension";
 import { LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { GetCloudAsync } from "./databaseService";
+import { iActivity } from "miniprogram/models";
 
-export const LoadAllActivitiesAsync = async (limit: number = 20) => {
+export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boolean | undefined) => {
   if (config.useMock === true) {
     return MockLoadAllActivitiesAsync();
   }
 
   let data = {
-    where: { isCancelled: false, type: undefined, toPublic: true },
+    where: { isCancelled: false, type: undefined, toPublic: onlyPublic },
     sort: { startTime: -1 },
     limit: limit,
   };
   const { activities } = await CallCloudFuncAsync('activity_search', data)
   activities.forEach((activity: any) => {
     activity.coverImageSrc = "/static" + activity.coverImageSrc;
-    activity.date = ToShortDateString(activity.startTime);
+    activity.date = ToNZShortDateString(activity.startTime);
     activity.dayOfWeek = ToDayOfWeekString(activity.startTime);
   });
   return activities;
@@ -34,8 +35,8 @@ export const LoadActivityByIdAsync = async (id: string) => {
 
   const { activity } = await CallCloudFuncAsync('activity_getById', data);
 
-  activity.date = `${ToShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
-  activity.time = ToShortTimeRange(activity.startTime, activity.during);
+  activity.date = `${ToNZShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
+  activity.time = ToNZTimeRangeString(activity.startTime, activity.during);
 
   activity.Attendees.forEach((user: any) => {
     user.userLevelType = LevelArray[user.userLevel];
@@ -74,7 +75,7 @@ export const JoinActivityAsync = async (activityId: string, memberId: number, jo
   }
 }
 
-export const CancelJoinActivityAsync = async (activityId: string, memberId: number, joinMore: number) => {
+export const CancelJoinActivityAsync = async (activityId: string, memberId: number, joinMore: number | undefined) => {
   try {
     await UpdateRecordAsync('Attendees',
       { activityId: activityId, memberId: memberId, joinMore: joinMore },
@@ -94,5 +95,17 @@ export const AttendeeMoveSectionAsync = async (activityId: string, memberId: num
     );
   } catch (error) {
     console.log(error);
+  }
+}
+
+export const AddActivityAsync = async (activityToAdd: iActivity): Promise<any> => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    const result = await db.collection('Activities').add(activityToAdd);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
   }
 }

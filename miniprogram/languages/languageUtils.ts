@@ -7,7 +7,7 @@ export const Languages = {
 };
 export const LanguageArray = [Languages.English, Languages.Chinese];
 
-export const GetLanguageVersion = () => {
+const GetLanguageVersion = () => {
   const appBaseInfo = wx.getAppBaseInfo();
   let defaultLang = Languages.English.value;
   switch (appBaseInfo.language.toLocaleLowerCase()) {

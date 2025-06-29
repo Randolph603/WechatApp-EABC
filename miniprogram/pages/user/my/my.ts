@@ -1,7 +1,8 @@
 import { HandleException } from '@API/commonHelper';
 import { GetUserByUnionId } from '@API/userService';
 import { GetLaguageMap, GetCurrentLanguage, LanguageArray, ChangeLanguage } from '@Language/languageUtils';
-import { GetNavBarHeight, InitialiseTabPageAndCheckUser, UpdateTabBarLaguage } from '@Lib/utils';
+import { UserRole } from '@Lib/types';
+import { GetCurrentUrl, GetNavBarHeight, UpdateTabBarLaguage } from '@Lib/utils';
 
 const Mottos = [
   "球伴技术好，你赢球的可能性就大.",
@@ -29,14 +30,16 @@ Page({
     // Variables   
     currentLanguage: GetCurrentLanguage(),
     languageArray: LanguageArray,
-    motto: Mottos[Math.floor(Math.random() * Mottos.length)]
+    motto: Mottos[Math.floor(Math.random() * Mottos.length)],
+    // Security
+    isAdmin: false,
   },
 
   async onLoad() {
     try {
       await this.LoadUser();
     } catch (error) {
-      await HandleException('pages/user/my/my - onLoad', error)
+      await HandleException('onLoad', error)
     }
   },
 
@@ -61,7 +64,8 @@ Page({
         hasAuth: true,
         myMemberId: user.memberId,
         myProfile: user,
-        motto: Mottos[index]
+        motto: Mottos[index],
+        isAdmin: user.userRole === UserRole.Admin.value
       });
     } else {
       this.setData({
@@ -73,8 +77,9 @@ Page({
   },
 
   editProfile() {
+    const currentUrl = GetCurrentUrl();
     wx.navigateTo({
-      url: '/pages/user/profile/profile?memberId=' + this.data.myMemberId,
+      url: `/pages/user/profile/profile?memberId=${this.data.myMemberId}&callbackUrl=${currentUrl}`
     })
   },
 

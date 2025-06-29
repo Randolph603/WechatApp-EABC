@@ -1,0 +1,22 @@
+<mp-navigation-bar title='所有活动 ({{filterActivity.length}})' back="{{true}}" />
+
+<!-- <search-bar placeholder="Search" cancelText="Cancel" clear controlled value="{{searchTerm}}"
+  bind:cancel="onSearchCancel" bind:change="onSearchChange" /> -->
+<scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loadAllActivityAsync"
+  refresher-triggered="{{triggered}}">
+  <mp-cells>
+    <block wx:for="{{filterActivity}}" wx:key="_id" wx:for-item="activity">
+      <mp-slideview buttons="{{[{type: 'warn', text: '删除'}]}}" data-id="{{activity._id}}"
+        bindbuttontap="slideButtonTap">
+        <mp-cell link hover url="/pages/admin/activityDetail/activityDetail?id={{activity._id}}">
+          <view slot="title">
+            {{activity.title}}
+          </view>
+          <view slot="footer">
+            {{activity.date}}
+          </view>
+        </mp-cell>
+      </mp-slideview>
+    </block>
+  </mp-cells>
+</scroll-view>

@@ -1,5 +1,5 @@
 {
-  "libVersion": "3.8.9",
+  "libVersion": "3.8.0",
   "projectname": "WechatApp-EABC",
   "setting": {
     "urlCheck": false,
@@ -23,11 +23,39 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/admin/settingList/settingList",
+          "pathName": "pages/admin/settingList/settingList",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
+          "name": "pages/admin/activityList/activityList",
+          "pathName": "pages/admin/activityList/activityList",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/user/profile/profile",
+          "pathName": "pages/user/profile/profile",
+          "query": "memberId=10024",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/activity/details/details",
           "pathName": "pages/activity/details/details",
           "query": "id=557814e1685896280385102239b48e94",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/rank/rank",

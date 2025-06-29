@@ -7,7 +7,7 @@
 </view>
 
 <view class="tab-list">
-  <view wx:for="{{tabList}}" wx:key="id" class="tab-item {{selectedTab === index ? 'actived' : ''}}" data-index="{{index}}" bind:tap="onTapTab">{{item.name}}</view>
+  <view wx:for="{{tabList}}" wx:key="id" class="tab-item {{selectedTab === index ? 'actived' : ''}}" data-index="{{index}}" bindtap="onTapTab">{{item.name}}</view>
 </view>
 
 <swiper class="swiper" current="{{selectedTab}}" bindchange="onChange">
@@ -34,6 +34,10 @@
         <text class="my-rank-number">我的排名 34</text>
       </view>
     </view>
+  </swiper-item>
+  <swiper-item class="item">
+    <image mode="widthFix" src="/static/images/no_history.png"></image>
+    <text>No records</text>
   </swiper-item>
   <swiper-item class="item">
     <image mode="widthFix" src="/static/images/no_history.png"></image>

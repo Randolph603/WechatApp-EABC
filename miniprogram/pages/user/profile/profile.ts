@@ -1,4 +1,4 @@
-import { CallCloudFuncAsync, UpdateRecordAsync } from "@API/commonHelper";
+import { UpdateRecordAsync } from "@API/commonHelper";
 import { GetUserByMemberId, RegisterNewUserAsync, UploadAvatarImageAsync } from "@API/userService";
 import { GetLaguageMap } from "@Language/languageUtils";
 import { LevelArray, UserGender, UserGenderArray, UserLevel } from "@Lib/types";
@@ -115,7 +115,7 @@ Page({
 
             if (this.data.callbackUrl) {
               wx.reLaunch({
-                url: '/' + this.data.callbackUrl + '?fromCallback=true',
+                url: '/' + this.data.callbackUrl + '?fromCallback=true',                
               })
             } else {
               wx.navigateBack({ delta: 0 })
@@ -131,15 +131,13 @@ Page({
   async save(user: any) {
     const { memberId, avatarUrl } = user;
     if (!memberId) return;
-    await ExcuteWithProcessingAsync(async () => {
-      const { avatarUrl: filePath } = this.data;
-      if (filePath !== avatarUrl && filePath !== defaultAvatarUrl) {
-        await UploadAvatarImageAsync(filePath, memberId, avatarUrl, this.data.formData);
-      } else {
-        const updateData = { ...this.data.formData };
-        await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
-      }
-    });
+    const { avatarUrl: filePath } = this.data;
+    if (filePath !== avatarUrl && filePath !== defaultAvatarUrl) {
+      await UploadAvatarImageAsync(filePath, memberId, avatarUrl, this.data.formData);
+    } else {
+      const updateData = { ...this.data.formData };
+      await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
+    }
   },
 
   //#endregion

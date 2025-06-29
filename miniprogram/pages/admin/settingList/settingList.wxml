@@ -1,0 +1,20 @@
+<mp-navigation-bar title='管理系统' back="{{true}}" />
+
+<mp-cells title="管理">
+  <mp-cell link hover url='/pages/admin/userList/userList'>
+    <view>会员信息</view>
+    <image slot="icon" src="/static/icons/members.png" class="mp-cell-icon" />
+  </mp-cell>
+  <mp-cell link hover url='/pages/admin/activityList/activityList'>
+    <view>活动信息</view>
+    <image slot="title" class="mp-cell-icon" src="/static/icons/activity.png" />
+  </mp-cell>
+  <mp-cell link hover url='/pages/admin/activityDetail/activityDetail'>
+    <view>添加活动</view>
+    <image slot="title" class="mp-cell-icon" src="/static/icons/add.png" />
+  </mp-cell>
+</mp-cells>
+
+<mp-cells title="操作">
+
+</mp-cells>

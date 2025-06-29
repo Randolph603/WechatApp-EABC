@@ -93,3 +93,15 @@ export const SearchAllUsersAsync = async () => {
   });
   return users;
 }
+
+export const SearchUsersAsync = async (searchText: string) => {
+  const { users } = await CallCloudFuncAsync('user_search', {
+    searchText: searchText, limit: 5
+  });
+
+  users.forEach((u: any) => {
+    SetupUserTypes(u);
+  });
+  return users;
+}
+

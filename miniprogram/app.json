@@ -1,12 +1,16 @@
 {
   "pages": [
+    "pages/home/home",
     "pages/activity/list/list",
     "pages/activity/details/details",
     "pages/rank/rank",
     "pages/shop/shop",
     "pages/user/my/my",
     "pages/user/profile/profile",
-    "pages/user/creditHistory/creditHistory"
+    "pages/user/creditHistory/creditHistory",
+    "pages/admin/settingList/settingList",
+    "pages/admin/activityDetail/activityDetail",
+    "pages/admin/activityList/activityList"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -22,7 +26,7 @@
     "selectedColor": "#2D8DB8",
     "list": [
       {
-        "pagePath": "pages/activity/list/list",
+        "pagePath": "pages/home/home",
         "iconPath": "static/icons/tabbar/badminton-7A7A7A.png",
         "selectedIconPath": "static/icons/tabbar/badminton-90CAF9.png",
         "text": "活动"
@@ -66,6 +70,7 @@
   "resolveAlias": {
     "@Language/*": "languages/*",
     "@API/*": "apis/*",
-    "@Lib/*": "utils/*"
+    "@Lib/*": "utils/*",
+    "@Model/*": "models/*"
   }
 }

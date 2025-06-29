@@ -2,7 +2,6 @@ import { AttendeeMoveSectionAsync, CancelJoinActivityAsync, JoinActivityAsync, L
 import { CallCloudFuncAsync } from '@API/commonHelper';
 import { GetUserByUnionId } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
-import { ParseISOString } from '@Lib/dateExtension';
 import { UserRole } from '@Lib/types';
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync } from '@Lib/utils';
 
@@ -100,8 +99,7 @@ Page({
     if (id.length > 0) {
       const activity = await LoadActivityByIdAsync(id);
 
-      const allAttendees = activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) =>
-        ParseISOString(a.updateDate) - ParseISOString(b.updateDate));
+      const allAttendees = activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => new Date(a.updateDate) > new Date(b.updateDate) ? 1 : -1);
 
       const allJoinedAttendees = allAttendees.filter((a: any) => a.isCancelled === false);
       const allCancelledAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
@@ -148,7 +146,7 @@ Page({
 
   navigateHome() {
     wx.switchTab({
-      url: '/pages/activity/list/list',
+      url: '/pages/home/home',
     })
   },
 

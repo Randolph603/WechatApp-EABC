@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "r-title": "/components/title/title",
+    "r-navigation-bar": "/components/navigation-bar"
+  },
+  "renderer": "skyline",
+  "disableScroll": true,
+  "navigationStyle": "custom"
+}
