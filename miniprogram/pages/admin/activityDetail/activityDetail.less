@@ -48,20 +48,32 @@ text,
 
 
 // attendee page
-.row-title {
+.cell-row {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+
+  .avatar {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+  }
+
+  .footer-icon {
+    height: 64rpx;
+    width: 64rpx;
+    margin: 0 15rpx;
+  }
+
+  .column-section {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20rpx;
+  }
 }
 
 .icon {
-  height: 42rpx;
+  height: 48rpx;
   width: 48rpx;
-}
-
-.main-section {
-  display: flex;
-  flex-direction: column;
-  margin-left: 20rpx;
 }

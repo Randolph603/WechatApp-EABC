@@ -1,6 +1,6 @@
-import { AddActivityAsync, CancelJoinActivityAsync, JoinActivityAsync, LoadActivityByIdAsync } from "@API/activityService";
+import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, JoinActivityAsync, LoadActivityByIdAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
-import { SearchUsersAsync } from "@API/userService";
+import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
 import { ToNZDateString, ToNZTimeRangeString, ToNZTimeString } from "@Lib/dateExtension";
 import { ActivityType, ActivityTypeArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight, ToNumberOrString } from "@Lib/utils";
@@ -50,7 +50,8 @@ Page({
     //Attendees page
     searchTerm: '',
     matchedUsers: [],
-    activeAttendees: []
+    allActiveAttendees: [] as any[],
+    groupedAttendees: [] as any[]
   },
 
   async onLoad(options: Record<string, string | undefined>) {
@@ -82,32 +83,40 @@ Page({
     await ExcuteWithLoadingAsync(async () => {
       const activity = await LoadActivityByIdAsync(activityId);
       const formData = ToActivity(activity);
-
-      const activeAttendees: any = [];
-      const groupedActiveAttendees = activity.Attendees
-        .filter((a: any) => !a.isCancelled)
-        .reduce((acc: any, currentValue: any) => {
-          let groupKey = currentValue['memberId'];
-          if (!acc[groupKey]) {
-            acc[groupKey] = [];
-          }
-          acc[groupKey].push(currentValue);
-          return acc;
-        }, {});
-
-      Object.values(groupedActiveAttendees).forEach((atts: any) => {
-        const first = atts[0];
-        first.joinMore = atts.length - 1;
-        activeAttendees.push(first);
-      });
-
+      const allActiveAttendees = activity.Attendees.filter((a: any) => !a.isCancelled);
       this.setData({
         activityId: activityId,
         date: ToNZDateString(activity.startTime),
         type: ActivityTypeArray.find(x => x.value === activity.type),
         formData: formData,
-        activeAttendees: activeAttendees,
+        allActiveAttendees: allActiveAttendees
       });
+
+      this.generateGroupAttendees();
+    });
+  },
+
+  generateGroupAttendees() {
+    const groupedAttendees: any = [];
+    const activeAttendeesGroup = this.data.allActiveAttendees
+      .reduce((acc: any, currentValue: any) => {
+        let groupKey = currentValue['memberId'];
+        if (!acc[groupKey]) {
+          acc[groupKey] = [];
+        }
+        acc[groupKey].push(currentValue);
+        return acc;
+      }, {});
+
+    Object.values(activeAttendeesGroup).forEach((atts: any) => {
+      const first = atts[0];
+      first.totalJoinMore = atts.length - 1;
+      first.sectionIndexs = atts.map((a: any) => a.sectionIndex);
+      groupedAttendees.push(first);
+    });
+
+    this.setData({
+      groupedAttendees: groupedAttendees
     });
   },
 
@@ -262,7 +271,7 @@ Page({
   async searchUser(e: IOption) {
     await ExcuteWithProcessingAsync(async () => {
       const searchText = e.detail.value;
-      const users = await SearchUsersAsync(searchText);
+      const users = await SearchUsersByKeyAsync(searchText);
 
       this.setData({
         searchTerm: searchText,
@@ -272,33 +281,108 @@ Page({
   },
 
   async addAttendeeAsync(e: IOption) {
-    const { user } = e.currentTarget.dataset;
+    const { user, more } = e.currentTarget.dataset;
     if (!user) return;
 
     await ExcuteWithProcessingAsync(async () => {
       const activityId = this.data.activityId;
       if (activityId) {
-        await JoinActivityAsync(activityId, user.memberId, 0);
-        const activeAttendees = [user, ...this.data.activeAttendees] as any;
+        await JoinActivityAsync(activityId, user.memberId, more);
+        user.joinMore = more;
         this.setData({
-          activeAttendees: activeAttendees
+          allActiveAttendees: [user, ...this.data.allActiveAttendees]
         });
+        this.generateGroupAttendees();
       };
     }, false);
   },
 
-  async slideButtonTap(e: IOption) {
-    const { id } = e.currentTarget.dataset;
-    const memberId = Number(id);
+  async removeAttendeeAsync(e: IOption) {
+    const { user, more } = e.currentTarget.dataset;
+    if (!user) return;
+
+    const memberId = user.memberId;
     const activityId = this.data.activityId;
 
     await ExcuteWithProcessingAsync(async () => {
-      await CancelJoinActivityAsync(activityId, memberId, undefined);
-      const activeAttendees = this.data.activeAttendees.filter((a: any) => a.memberId !== memberId);
+      let allActiveAttendees = [];
+      if (more > 0) {
+        await CancelJoinActivityAsync(activityId, memberId, more);
+        allActiveAttendees = this.data.allActiveAttendees
+          .filter((a: any) => !(a.memberId === memberId && a.joinMore === more));
+      } else {
+        await CancelJoinActivityAsync(activityId, memberId, undefined);
+        allActiveAttendees = this.data.allActiveAttendees
+          .filter((a: any) => a.memberId !== memberId);
+      }
+
       this.setData({
-        activeAttendees: activeAttendees
+        allActiveAttendees: allActiveAttendees
       });
+      this.generateGroupAttendees();
     }, false);
+  },
+
+  goToUserDetails(e: IOption) {
+    const { memberId } = e.currentTarget.dataset['user'];
+    wx.navigateTo({
+      url: '/pages/admin/userDetail/userDetail?memberId=' + memberId,
+    });
+  },
+
+  async autoAddAttendeesAsync() {
+    await ExcuteWithProcessingAsync(async () => {
+      const activityId = this.data.activityId;
+      const users = await SearchUsersSortByContinuelyWeeksAsync() as any[];
+      const promiseList = [] as any[];
+      users.forEach(user => {
+        const promise = JoinActivityAsync(activityId, user.memberId, 0);
+        promiseList.push(promise);
+        user.sectionIndex = 0;
+      });
+      await Promise.all(promiseList);
+
+      this.setData({
+        allActiveAttendees: users
+      });
+      this.generateGroupAttendees();
+    }, false);
+  },
+
+  async confirmActivityAsync() {
+    const vipMemberIds = [10024, 10000];
+
+    const activityId = this.data.activityId;
+    const sections = this.data.formData.sections;
+    const confirmToBeUsers = this.data.groupedAttendees
+      .map(a => {
+        const discount = (a.continueWeeklyJoin || 0) > 3 ? 3 : (a.continueWeeklyJoin || 0);
+        let charge = 0;
+        a.sectionIndexs.forEach((sectionIndex: number) => {
+          const section = sections[sectionIndex];
+          let price = section.price - discount;
+          if (vipMemberIds.includes(a.memberId)) {
+            price = 14;
+          }
+          charge = charge + price;
+        });
+
+        return {
+          memberId: a.memberId,
+          count: a.joinMore,
+          discount: discount,
+          charge: charge,
+        };
+      })
+      .filter(a => a !== undefined && a !== null);
+
+    const resCount = await ConfrimActivityAsync(activityId, confirmToBeUsers);
+    if (resCount > 0) {
+      wx.showToast({ title: `成功`, icon: 'success' });
+      wx.navigateBack({ delta: 0 });
+    } else {
+      wx.showToast({ title: '失败', icon: 'none' });
+    }
   },
   //#endregion
 })

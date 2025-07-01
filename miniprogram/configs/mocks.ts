@@ -648,7 +648,5 @@ const ActivityList = [
 ];
 
 export const LoadAllActivitiesAsync = () => {
-  
-
   return ActivityList;
 }

@@ -86,22 +86,33 @@ export const UploadAvatarImageAsync = async (filePath: string, memberId: number,
   }
 }
 
-export const SearchAllUsersAsync = async () => {
-  const { users } = await CallCloudFuncAsync('user_search', { sort: { powerPoint: -1 }, limit: 20 });
-  users.forEach((u: any) => {
-    SetupUserTypes(u);
+export const SearchUsersForRankAsync = async () => {
+  const { users } = await CallCloudFuncAsync('user_search', {
+    sort: { powerPoint: -1 },
+    limit: 20
   });
+  users.forEach((u: any) => SetupUserTypes(u));
   return users;
 }
 
-export const SearchUsersAsync = async (searchText: string) => {
+export const SearchUsersByKeyAsync = async (searchText: string) => {
   const { users } = await CallCloudFuncAsync('user_search', {
-    searchText: searchText, limit: 5
+    searchText: searchText,
+    limit: 5
   });
+  users.forEach((u: any) => SetupUserTypes(u));
+  return users;
+}
 
-  users.forEach((u: any) => {
-    SetupUserTypes(u);
+export const SearchUsersSortByContinuelyWeeksAsync = async () => {
+  const app = await GetCloudAsync();
+  const db = app.database();
+  const _ = db.command;
+  const { users } = await CallCloudFuncAsync('user_search', {
+    where: { continueWeeklyJoin: _.gt(0) },
+    limit: 30
   });
+  users.forEach((u: any) => SetupUserTypes(u));
   return users;
 }
 

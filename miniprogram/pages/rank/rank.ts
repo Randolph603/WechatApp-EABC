@@ -1,4 +1,4 @@
-import { SearchAllUsersAsync } from "@API/userService";
+import { SearchUsersForRankAsync } from "@API/userService";
 import { InitialiseTabPageAndCheckUser } from "@Lib/utils";
 
 Page({
@@ -30,7 +30,7 @@ Page({
   async onLoad() {
     await InitialiseTabPageAndCheckUser();
 
-    const users = await SearchAllUsersAsync();
+    const users = await SearchUsersForRankAsync();
     this.setData({
       users: users
     });

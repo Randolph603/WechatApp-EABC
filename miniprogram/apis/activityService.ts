@@ -40,7 +40,7 @@ export const LoadActivityByIdAsync = async (id: string) => {
 
   activity.Attendees.forEach((user: any) => {
     user.userLevelType = LevelArray[user.userLevel];
-    user.key = `${user.memberId}${user.joinMore}`;
+    user.key = `${user.memberId}+${user.joinMore}`;
     user.userLevelImageSrc = `/static/ranks/${user.userLevel}.png`;
     if (user.avatarUrl.startsWith('cloud')) {
       user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
@@ -108,4 +108,13 @@ export const AddActivityAsync = async (activityToAdd: iActivity): Promise<any> =
     console.log(error);
     return null;
   }
+}
+
+export const ConfrimActivityAsync = async (activityId: string, confirmToBeUsers: any[]) => {
+  const data = {
+    activityId: activityId,
+    confirmToBeUsers: confirmToBeUsers,
+  };
+  const { updatedCount } = await CallCloudFuncAsync('activity_confirm', data);
+  return updatedCount;
 }

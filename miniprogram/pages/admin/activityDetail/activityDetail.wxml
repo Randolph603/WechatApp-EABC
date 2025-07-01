@@ -3,8 +3,9 @@
 <mp-navigation-bar title="{{activityId ? '活动信息' : '添加活动' }}" back=" {{true}}" />
 
 <view class="tab-list">
-  <view class="tab-item {{selectedTab === 0 ? 'actived' : ''}}" data-index="0" bindtap="onTapTab">活动信息</view>
-  <view class="tab-item {{selectedTab === 1 ? 'actived' : ''}}" data-index="1" bindtap="onTapTab">活动球友</view>
+  <view class="tab-item {{selectedTab === 0 ? 'actived' : ''}}" data-index="0" bindtap="onTapTab">基础信息</view>
+  <view class="tab-item {{selectedTab === 1 ? 'actived' : ''}}" data-index="1" bindtap="onTapTab">参与信息</view>
+  <view class="tab-item {{selectedTab === 2 ? 'actived' : ''}}" data-index="2" bindtap="onTapTab">分组比分</view>
 </view>
 
 <swiper style="height: calc(100vh - {{navBarHeight}}px);" current="{{selectedTab}}" bindchange="onChange">
@@ -107,48 +108,50 @@
     <scroll-view wx:if="{{activityId}}" style="height: calc(100vh - {{navBarHeight}}px);" scroll-y>
       <mp-cells wx:if="{{!formData.isCompleted}}" title="手动添加参与会员:">
         <mp-cell>
-          <view slot="title" class="row-title">
+          <view slot="title" class="cell-row">
             <image class="icon" src="/static/icons/search-user.png" />
-            <input style="margin-left: 20rpx;" class="weui-input" placeholder="输入姓名" type="text" confirm-type="search" value="{{searchTerm}}" bindinput="onSearchInputChange" bindconfirm="searchUser" />
+            <input style="margin-left: 20rpx;" placeholder="输入姓名" type="text" confirm-type="search" value="{{searchTerm}}" bindinput="onSearchInputChange" bindconfirm="searchUser" />
           </view>
           <image wx:if="{{searchTerm}}" bindtap="onSearchCancel" class="icon" slot="footer" src="/static/icons/close.png" />
         </mp-cell>
 
-        <mp-cell wx:for="{{matchedUsers}}" wx:key="_id" wx:for-item="user">
-          <view slot="title" class="row-title">
-            <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' width="80rpx" height="80rpx" borderRadius="50%" mode="aspectFill" />
-            <text style="margin-left: 20rpx;">{{user.nickName}}{{user.displayName?'('+user.displayName+')':''}}</text>
+        <mp-cell wx:for="{{matchedUsers}}" wx:key="key" wx:for-item="user">
+          <view slot="title" class="cell-row">
+            <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+            <text style="margin-left: 20rpx;">{{user.nickName}} {{user.displayName?'('+user.displayName+')':''}}</text>
           </view>
-          <view wx:if="{{!utils.includesUser(activeAttendees, user.memberId)}}" slot="footer">
-            <button type="default" size="mini" data-user="{{user}}" bindtap="addAttendeeAsync">添加</button>
+          <view wx:if="{{!utils.includesUser(groupedAttendees, user.memberId)}}" slot="footer">
+            <button type="default" size="mini" data-user="{{user}}" data-more="{{0}}" bindtap="addAttendeeAsync">添加</button>
           </view>
         </mp-cell>
       </mp-cells>
 
-      <view wx:if="{{!formData.isCompleted && activeAttendees.length === 0}}" class="weui-btn-area">
+      <view wx:if="{{!formData.isCompleted && groupedAttendees.length === 0}}" class="weui-btn-area">
         <button class="weui-btn bottom-btn" type="primary" bindtap="autoAddAttendeesAsync">自动添加</button>
       </view>
 
-      <mp-cells wx:if="{{activeAttendees.length > 0}}" class="scroll" title="参与者 (报名时间排序):" footer="* 左滑删除缺席者">
-        <block wx:for="{{activeAttendees}}" wx:key="_id" wx:for-item="user">
-          <mp-slideview buttons="{{[{type: 'warn',text: '移除'}]}}" data-id="{{user.memberId}}" bindbuttontap="slideButtonTap" disable="{{activity.isCompleted}}">
-            <mp-cell link="{{!activity.isCompleted}}" hover style="font-size: 0.85rem;" bindtap="showAttendeeDialog" data-user="{{user}}">
-              <view slot="title" class="row-title">
-                <image-loader bindtap="goToUserDetails" data-user="{{user}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' width="80rpx" height="80rpx" borderRadius="50%" mode="aspectFill" />
-                <view class="main-section">
-                  <text>{{user.userLevelType.name}}</text>
-                  <text>{{user.displayName || user.nickName}} (+{{user.joinMore||0}}) / ContiWeek: {{user.continueWeeklyJoin}}</text>
+      <mp-cells wx:if="{{groupedAttendees.length > 0}}" class="scroll" title="参与者 (报名时间排序):" footer="* 左滑删除缺席者">
+        <block wx:for="{{groupedAttendees}}" wx:key="memberId" wx:for-item="user">
+          <mp-slideview buttons="{{[{type: 'warn',text: '移除'}]}}" data-user="{{user}}" data-more="{{0}}" bindbuttontap="removeAttendeeAsync" disable="{{activity.isCompleted}}">
+            <mp-cell style="font-size: 0.85rem;">
+              <view slot="title" class="cell-row">
+                <image-loader bindtap="goToUserDetails" data-user="{{user}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                <view class="column-section">
+                  <text>{{user.displayName || user.nickName}} ({{user.creditBalance}} NZD)</text>
+                  <text>{{user.continueWeeklyJoin || 0}} Weeks</text>
                 </view>
               </view>
-              <view slot="footer" class="row-footer">
-                <text>{{user.creditBalance}} NZD</text>
+              <view slot="footer" class="cell-row">
+                <image data-user="{{user}}" data-more="{{user.totalJoinMore}}" bindtap="removeAttendeeAsync" class="footer-icon" src="/static/icons/minus.png" />
+                <text>+{{user.totalJoinMore||0}}</text>
+                <image data-user="{{user}}" data-more="{{user.totalJoinMore + 1}}" bindtap="addAttendeeAsync" class="footer-icon" src="/static/icons/add.png" />
               </view>
             </mp-cell>
           </mp-slideview>
         </block>
       </mp-cells>
 
-      <view wx:if="{{!formData.isCompleted && activeAttendees.length > 0}}" class="weui-btn-area">
+      <view wx:if="{{!formData.isCompleted && groupedAttendees.length > 0}}" class="weui-btn-area">
         <button class="weui-btn bottom-btn" type="primary" bindtap="confirmActivityAsync">活动完成并扣款</button>
       </view>
     </scroll-view>
