@@ -20,7 +20,7 @@
             <text class="user-name">{{myProfile.displayName || myProfile.nickName}}</text>
           </view>
           <button class="user-edit" plain="true" size="mini" bindtap='editProfile'>
-            编辑资料
+            {{_lang.editProfile}}
           </button>
         </view>
         <view class="view-row">
@@ -28,26 +28,26 @@
           <image bindtap="tapMemberId" class="user-id-icon" src="/static/icons/copy.png" mode="aspectFit" />
         </view>
         <view class="view-row">
-          <text class="user-motto">羽球格言： {{motto}}</text>
+          <text class="user-motto">{{_lang.motto}}: {{motto}}</text>
         </view>
       </view>
     </view>
     <view class="view-row user-values">
       <view class="view-column" style="align-items: center;">
-        <view>{{myProfile.creditBalance}} <text style="font-size: 12px;">NZD</text></view>
-        <text>余额</text>
+        <view>{{myProfile.creditBalance}} <text style="font-size: 11px;">NZD</text></view>
+        <text>{{_lang.balance}}</text>
       </view>
       <view class="view-column" style="align-items: center;">
-        <view>{{myProfile.continueWeeklyJoin}} <text style="font-size: 12px;">周</text></view>
-        <text>连周</text>
+        <view>{{myProfile.continueWeeklyJoin}} <text style="font-size: 11px;">{{_lang.week}}</text></view>
+        <text>{{_lang.continueWeekly}}</text>
       </view>
       <view class="view-column" style="align-items: center;">
         <text>{{myProfile.powerPoint}}</text>
-        <text>积分</text>
+        <text>{{_lang.points}}</text>
       </view>
       <view class="view-column" style="align-items: center;">
         <text>{{myProfile.userLevelType.displayName}}</text>
-        <text>级别</text>
+        <text>{{_lang.userLevel}}</text>
       </view>
     </view>
 
@@ -60,40 +60,40 @@
 
 <scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="LoadUser" refresher-triggered="{{triggered}}">
 
-  <view class="card">
+  <!-- <view class="card">
     <view class="card-title">我的成就</view>
     <scroll-view scroll-x="{{true}}">
       <view class="card-items">
         <navigator class="card-item" url="/pages/home/home" open-type="switchTab">
           <image class="icon72 image-disable" src="/static/icons/badge/week.png" mode="heightFix" />
-          <text>周冠军</text>
+          <text>{{_lang.championWeek}}</text>
         </navigator>
         <view class="card-item">
-          <image class="icon72" src="/static/icons/badge/month.png" mode="heightFix" />
-          <text>月冠军</text>
+          <image class="icon72 image-disable" src="/static/icons/badge/month.png" mode="heightFix" />
+          <text>{{_lang.championMonth}}</text>
         </view>
         <view class="card-item">
-          <image class="icon72" src="/static/icons/badge/year.png" mode="heightFix" />
-          <text>总冠军</text>
+          <image class="icon72 image-disable" src="/static/icons/badge/year.png" mode="heightFix" />
+          <text>{{_lang.championYear}}</text>
         </view>
         <view class="card-item">
-          <image class="icon72" src="/static/icons/badge/5weeks.png" mode="heightFix" />
-          <text>连续5周</text>
+          <image class="icon72 image-disable" src="/static/icons/badge/5weeks.png" mode="heightFix" />
+          <text>{{_lang.continueWeeklyJoin5}}</text>
         </view>
         <view class="card-item">
-          <image class="icon72" src="/static/icons/badge/10weeks.png" mode="heightFix" />
-          <text>连续10周</text>
+          <image class="icon72 image-disable" src="/static/icons/badge/10weeks.png" mode="heightFix" />
+          <text>{{_lang.continueWeeklyJoin10}}</text>
         </view>
         <view class="card-item">
-          <image class="icon72" src="/static/icons/badge/15weeks.png" mode="heightFix" />
-          <text>连续15周</text>
+          <image class="icon72 image-disable" src="/static/icons/badge/15weeks.png" mode="heightFix" />
+          <text>{{_lang.continueWeeklyJoin15}}</text>
         </view>
 
       </view>
     </scroll-view>
-  </view>
+  </view> -->
 
-  <view class="card">
+  <!-- <view class="card">
     <view class="card-title">推荐服务</view>
     <scroll-view scroll-x="{{true}}">
       <view class="card-items">
@@ -123,10 +123,10 @@
         </view>
       </view>
     </scroll-view>
-  </view>
+  </view> -->
 
   <view class="feature-card">
-    <mp-cells title="Features">
+    <mp-cells title="{{_lang.features}}">
       <mp-cell link hover value="{{_lang.wallet}}">
         <image slot="icon" src="/static/icons/wallet.png" class="mp-cell-icon" />
       </mp-cell>

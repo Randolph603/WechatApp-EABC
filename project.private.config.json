@@ -23,11 +23,25 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/admin/settingList/settingList",
-          "pathName": "pages/admin/settingList/settingList",
+          "name": "pages/user/my/my",
+          "pathName": "pages/user/my/my",
           "query": "",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/activity/details/details",
+          "pathName": "pages/activity/details/details",
+          "query": "id=29dca3d568610c210413e7797002bfaf",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/admin/settingList/settingList",
+          "pathName": "pages/admin/settingList/settingList",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/admin/activityList/activityList",

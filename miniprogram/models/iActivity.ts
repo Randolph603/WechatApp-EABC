@@ -1,4 +1,4 @@
-interface iSection {
+export interface iSection {
   index: number; 
   title: string; 
   price: number;
@@ -6,10 +6,12 @@ interface iSection {
   during: number;
   timeRange: string;
   maxAttendee: number;
+  courts: Array<number>;
+  isLocked: boolean;
 }
 export interface iActivity {
   title: string;
-  type: string;
+  type: number;
   address: string;
   courts: Array<number>;
   // maxAttendee: number;

@@ -20,9 +20,10 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
   };
   const { activities } = await CallCloudFuncAsync('activity_search', data)
   activities.forEach((activity: any) => {
-    activity.coverImageSrc = "/static" + activity.coverImageSrc;
+    activity.coverImageSrc = "/static/images/badmintonCover1.jpg"; //"/static" + activity.coverImageSrc;
     activity.date = ToNZShortDateString(activity.startTime);
     activity.dayOfWeek = ToDayOfWeekString(activity.startTime);
+    activity.maxAttendee = activity.maxAttendee ?? activity.sections.reduce((acc: number, element: any) => acc + element.maxAttendee, 0);
   });
   return activities;
 }
@@ -37,6 +38,7 @@ export const LoadActivityByIdAsync = async (id: string) => {
 
   activity.date = `${ToNZShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
   activity.time = ToNZTimeRangeString(activity.startTime, activity.during);
+  activity.maxAttendee = activity.maxAttendee ?? activity.sections.reduce((acc: number, element: any) => acc + element.maxAttendee, 0);
 
   activity.Attendees.forEach((user: any) => {
     user.userLevelType = LevelArray[user.userLevel];
@@ -91,7 +93,8 @@ export const AttendeeMoveSectionAsync = async (activityId: string, memberId: num
   try {
     await UpdateRecordAsync('Attendees',
       { activityId: activityId, memberId: memberId, joinMore: joinMore },
-      { sectionIndex: sectionIndex }
+      { sectionIndex: sectionIndex },
+      { updateDate: JSON.stringify(new Date()) }
     );
   } catch (error) {
     console.log(error);

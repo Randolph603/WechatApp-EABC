@@ -4,21 +4,23 @@ import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@A
 import { ToNZDateString, ToNZTimeRangeString, ToNZTimeString } from "@Lib/dateExtension";
 import { ActivityType, ActivityTypeArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight, ToNumberOrString } from "@Lib/utils";
-import { IOption, iActivity, ToActivity } from "@Model/index";
+import { IOption, iActivity, ToActivity, iSection } from "@Model/index";
 
 const converPageArray = [
   '/static/images/badmintonCover1.jpg',
   '/static/images/badmintonCover2.jpg',
 ];
 
-const newSection = {
-  index: 1,
+const newSection: iSection = {
+  index: 0,
   title: '娱乐区',
   price: 17,
   time: ToNZTimeString(new Date()),
   timeRange: ToNZTimeRangeString(new Date(), 120),
   during: 120,
   maxAttendee: 24,
+  courts: [1, 2, 3, 4],
+  isLocked: false,
 }
 
 Page({
@@ -27,7 +29,7 @@ Page({
     selectedTab: 0,
     activityId: '',
     date: ToNZDateString(new Date()),
-    type: ActivityType.Happy,
+    type: ActivityType.Section,
     formData: {} as iActivity,
     typeArray: ActivityTypeArray,
     courtArray: [1, 2, 3, 4, 5, 6, 7, 8],
@@ -61,7 +63,7 @@ Page({
     } else {
       const initData = {
         title: '双打羽毛球',
-        type: ActivityType.Happy.value,
+        type: ActivityType.Section.value,
         address: 'Lloyd Elsmore Park Badminton',
         courts: [5, 6, 7, 8],
         coverImageSrc: converPageArray[0],
@@ -135,29 +137,30 @@ Page({
   //#endregion
 
   //#region information page private method
-  formTextChange(e: any) {
+  formTextChange(e: IOption) {
     const { field } = e.currentTarget.dataset
     this.setData({
       [`formData.${field}`]: e.detail.value
     });
   },
 
-  typePickerChange(e: any) {
+  typePickerChange(e: IOption) {
     const typeArrayIndex = Number(e.detail.value);
+    const selectedType = this.data.typeArray[typeArrayIndex];
     this.setData({
-      [`type`]: this.data.typeArray[typeArrayIndex],
-      [`formData.type`]: this.data.typeArray[typeArrayIndex].value
+      [`type`]: selectedType,
+      [`formData.type`]: selectedType.value
     });
   },
 
-  courtCheckboxChange(e: any) {
+  courtCheckboxChange(e: IOption) {
     const newCourts = e.detail.value.map((str: any) => Number(str)).sort((a: number, b: number) => (a - b));
     this.setData({
       [`formData.courts`]: newCourts
     });
   },
 
-  formDateChange(e: any) {
+  formDateChange(e: IOption) {
     const existingDate = new Date(this.data.formData.startTime);
     const newDate = new Date(e.detail.value);
     existingDate.setFullYear(newDate.getFullYear());
@@ -169,7 +172,7 @@ Page({
     });
   },
 
-  coverImageRadioChange(e: { detail: { value: any; }; }) {
+  coverImageRadioChange(e: IOption) {
     const coverIndex = Number(e.detail.value);
     const coverImageSrc = converPageArray[coverIndex];
     this.setData({
@@ -179,8 +182,8 @@ Page({
 
   addSection() {
     const existing = this.data.formData.sections;
-    const addSection = { ...newSection };
-    addSection.index = existing.length + 1;
+    const addSection = existing.length > 0 ? { ...existing[0] } : { ...newSection };
+    addSection.index = existing.length;
     existing.push(addSection);
     this.setData({
       [`formData.sections`]: existing
@@ -197,8 +200,9 @@ Page({
 
   handleSectionChange(e: IOption) {
     const { id, field } = e.currentTarget.dataset;
+    console.log(e.detail.value);
     const newValue = ToNumberOrString(e.detail.value);
-
+    console.log(newValue);
     this.setData({
       [`formData.sections[${id}].${field}`]: newValue
     });
@@ -216,6 +220,21 @@ Page({
         [`formData.sections[${id}].timeRange`]: timeRange
       });
     }
+  },
+
+  sectionCourtCheckboxChange(e: IOption) {
+    const newCourts = e.detail.value.map((str: any) => Number(str)).sort((a: number, b: number) => (a - b));
+    const { id } = e.currentTarget.dataset;
+    this.setData({
+      [`formData.sections[${id}].courts`]: newCourts
+    });
+  },
+
+  sectionBooleanChange(e: IOption) {
+    const { id, field } = e.currentTarget.dataset;
+    this.setData({
+      [`formData.sections[${id}].${field}`]: e.detail.value
+    });
   },
 
   async submitForm() {

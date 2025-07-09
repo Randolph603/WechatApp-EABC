@@ -90,6 +90,6 @@ export const IsNumeric = (value: string): boolean => {
   return !isNaN(Number(value));
 }
 
-export const ToNumberOrString = (value: string): string | number => {
+export const ToNumberOrString = (value: any): string | number | boolean => {
   return IsNumeric(value) ? Number(value) : value;
 }

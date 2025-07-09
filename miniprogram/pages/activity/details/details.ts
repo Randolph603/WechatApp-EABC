@@ -2,8 +2,11 @@ import { AttendeeMoveSectionAsync, CancelJoinActivityAsync, JoinActivityAsync, L
 import { CallCloudFuncAsync } from '@API/commonHelper';
 import { GetUserByUnionId } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
+import { ToNZTimeRangeString } from '@Lib/dateExtension';
 import { UserRole } from '@Lib/types';
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync } from '@Lib/utils';
+import { iSection } from '@Model/index';
+// import { iSection } from '@Model/';
 
 Page({
   data: {
@@ -17,7 +20,7 @@ Page({
     activityId: '',
     activity: { wxActivityExpirationTime: 0, startTime: '' },
     attendTitle: '',
-    // allSections: [],
+    allSections: [] as any[],
     allJoinedOnWaitAttendees: [],
     allCancelledAttendees: [],
     joinMore: 0,
@@ -101,27 +104,21 @@ Page({
 
       const allAttendees = activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => new Date(a.updateDate) > new Date(b.updateDate) ? 1 : -1);
 
-      const allJoinedAttendees = allAttendees.filter((a: any) => a.isCancelled === false);
+      const allJoinedAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
       const allCancelledAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
-      const allJoinedOnWaitAttendees = allJoinedAttendees.slice(activity.maxAttendee, allJoinedAttendees.length);
 
-      const joinMore = allJoinedAttendees.filter((a: { memberId: null; }) => a.memberId === this.data.myMemberId).length - 1;
+      const joinMore = allJoinedAttendees.filter(
+        (a: { memberId: number; }) => a.memberId === this.data.myMemberId).length - 1;
 
-      var enrolledAttendees = allJoinedAttendees.slice(0, activity.maxAttendee);
-      const allSections = [];
+      const allSections: Array<any> = [];
       if (activity.sections) {
-        activity.sections.forEach((v: any, i: any) => {
+        activity.sections.forEach((s: iSection) => {
+          const sectionAttendees = allJoinedAttendees.filter((a: { sectionIndex: number; }) => (a.sectionIndex ?? 0) === s.index);
           allSections.push({
-            index: i,
-            title: v,
-            attendees: enrolledAttendees.filter((a: { sectionIndex: any; }) => (a.sectionIndex ?? 0) === i)
+            info: s,
+            attendees: sectionAttendees.slice(0, s.maxAttendee),
+            onWaitAttendees: sectionAttendees.slice(s.maxAttendee, sectionAttendees.length),
           });
-        });
-      } else {
-        allSections.push({
-          index: 0,
-          title: '',
-          attendees: enrolledAttendees
         });
       }
 
@@ -130,7 +127,6 @@ Page({
         attendTitle,
         activity,
         allSections,
-        allJoinedOnWaitAttendees,
         allCancelledAttendees,
         joinMore,
         isLoaded: true

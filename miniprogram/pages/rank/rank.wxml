@@ -25,14 +25,14 @@
         </block>
       </scroll-view>
       <!-- 我的排名 -->
-      <view class="my-rank">
-        <!-- <image class="avatar" src="/images/me.png" /> -->
+      <!-- <view class="my-rank">
+        <image class="avatar" src="/static/images/blank-profile.jpg" />
         <view class="info">
           <text class="name">蕉泥先生</text>
           <text class="score">拍力值 3562</text>
         </view>
         <text class="my-rank-number">我的排名 34</text>
-      </view>
+      </view> -->
     </view>
   </swiper-item>
   <swiper-item class="item">

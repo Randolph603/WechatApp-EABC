@@ -42,11 +42,15 @@ export const LanguageMap: iLanguageMap = {
     failed: "Failed!"
   },
   my: {
-    "title": "Profile Centre",
-    "register": "One-click login",
-    "memberId": "Member Id",
-    "continueWeeklyJoin": "Continue Weekly Join",
-    "week": "Week",
+    register: "One-click login",
+    editProfile: "Edit Profile",
+    motto: "Motto",
+    balance: "Credits",
+    continueWeekly: "Continuously",
+    week: "week(s)",
+    points: "Points",
+    userLevel: "Level",
+    features: "Features",
     "wallet": "My Wallet",
     "information": "My Information",
     "history": "History",
@@ -60,7 +64,13 @@ export const LanguageMap: iLanguageMap = {
     topUpRef: "Ref",
     topUpTip: "Please ref your member id or name, it will take 1-2 working days.",
     topUpCancel: "Cancel",
-    topUpCopy: "Copy Account"
+    topUpCopy: "Copy Account",
+    championWeek: "Week",
+    championMonth: "Month",
+    championYear: "Final",
+    continueWeeklyJoin5: "5 Weeks",
+    continueWeeklyJoin10: "10 Weeks",
+    continueWeeklyJoin15: "15 Weeks",
   },
   userProfile: {
     title: "Basic Information",
@@ -107,17 +117,16 @@ export const LanguageMap: iLanguageMap = {
     address: "Address",
     fee: "Fee",
     feeSuffix: "PP",
-    discount: "Discount: Continuous activities",
-    week: "weeks",
+    attendeeMax: "Max",
     equipment: "Equipment: Please bring your own badminton racket and shoe",
     facility: "Facility: Changing room, toilet, shower",
-    member: "members",
+    member: "players",
     down: "Down",
     up: "Up",
-    backUpJoin: "Back up registration (auto joined when someone cancelled)",
+    backUpJoin: "Wait in line (Auto-join if canceled)",
     activity: "Activity",
     my: "My",
-    contact: "Consult",    
+    contact: "Consult",
     join: "Join Now",
     cancel: "Cancel",
     cancelPolicy: "Cancel 24 hours in advance",
@@ -129,4 +138,4 @@ export const LanguageMap: iLanguageMap = {
     lowCreditBalanceDesc: "Friendly reminder: Your current balance is：",
   }
 }
-export const AttendTitle = (a:number, b: number) => `${a} members joined, ${b} in total.`;
+export const AttendTitle = (a: number, b: number) => `${a} members joined, ${b} in total.`;

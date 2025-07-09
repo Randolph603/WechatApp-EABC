@@ -20,7 +20,7 @@
           </mp-cell>
           <mp-cell show-error prop="type">
             <view slot="title" class="weui-label">类别</view>
-            <picker bindchange="typePickerChange" range="{{typeArray}}" range-key="name" value="{{type}}">
+            <picker bindchange="typePickerChange" range="{{typeArray}}" range-key="name" value="{{formData.type}}">
               <view class="weui-label">{{type.name}}</view>
             </picker>
           </mp-cell>
@@ -30,16 +30,16 @@
           </mp-cell>
           <mp-cell show-error prop="court">
             <view slot="title" class="weui-label">场地</view>
-            <checkbox-group bindchange="courtCheckboxChange">
+            <checkbox-group class="wrap-row" bindchange="courtCheckboxChange">
               <label class="checkbox" wx:for="{{courtArray}}" wx:key="value">
-                <checkbox value="{{item}}" checked="{{utils.includes(formData.courts, item)}}" />{{item}} 号场地
+                <checkbox style="margin: 4rpx 0;" value="{{item}}" checked="{{utils.includes(formData.courts, item)}}" />{{item}} 号场
               </label>
             </checkbox-group>
           </mp-cell>
           <mp-cell show-error prop="coverImageSrc" title="封面">
             <radio-group class="wrap-row" bindchange="coverImageRadioChange">
               <radio wx:for="{{converPageArray}}" wx:key="index" value="{{index}}" checked="{{formData.coverImageSrc === item}}">
-                <image class="pic" src="{{item}}" mode="aspectFill" />
+                <image class="coverImage" src="{{item}}" mode="aspectFill" />
               </radio>
             </radio-group>
           </mp-cell>
@@ -73,7 +73,7 @@
             <mp-cell>
               <view slot="title" class="weui-label">标题</view>
               <input bindinput="handleSectionChange" data-id="{{id}}" data-field="title" value="{{section.title}}" />
-              <view slot="footer" class="footer">
+              <view slot="footer" class="view-row-centre">
                 <input style="width: 50px;" type="number" bindinput="handleSectionChange" data-id="{{id}}" data-field="price" value="{{section.price}}" />
                 <text>$</text>
               </view>
@@ -83,19 +83,31 @@
               <picker mode="time" value="{{section.time}}" data-id="{{id}}" data-field="time" bindchange="handleSectionChange">
                 <view>{{section.time}}</view>
               </picker>
-              <view slot="footer" class="footer">
+              <view slot="footer" class="view-row-centre">
                 <input style="width: 50px;" bindinput="handleSectionChange" type="number" data-id="{{id}}" data-field="during" value="{{section.during}}" />
                 <text>分钟</text>
               </view>
             </mp-cell>
             <mp-cell>
               <view slot="title" class="weui-label">最大人数</view>
-              <input bindinput="handleSectionChange" type="number" data-field="maxAttendee" value="{{section.maxAttendee}}" data-id="{{id}}" />
+              <input bindinput="handleSectionChange" type="number" data-field="maxAttendee" data-id="{{id}}" value="{{section.maxAttendee}}" />
               <text slot="footer">人</text>
+            </mp-cell>
+            <mp-cell>
+              <view slot="title" class="weui-label">场地</view>
+              <checkbox-group class="wrap-row" bindchange="sectionCourtCheckboxChange" data-id="{{id}}">
+                <label class="checkbox" wx:for="{{courtArray}}" wx:key="value">
+                  <checkbox style="margin: 4rpx 0;" value="{{item}}" checked="{{utils.includes(section.courts, item)}}" />{{item}} 号场
+                </label>
+              </checkbox-group>
+            </mp-cell>
+            <mp-cell>
+              <view slot="title" class="weui-label">区域锁定</view>
+              <switch checked="{{section.isLocked}}" bindchange="sectionBooleanChange" data-id="{{id}}" data-field="isLocked" />
+              <text>{{section.isLocked === true ? '是' : '否'}}</text>
             </mp-cell>
           </mp-cells>
         </block>
-
 
         <view class="bottom-btn-area">
           <button class="weui-btn" type="primary" bindtap="submitForm">{{activityId ? '更新' : '添加' }}</button>
@@ -108,15 +120,15 @@
     <scroll-view wx:if="{{activityId}}" style="height: calc(100vh - {{navBarHeight}}px);" scroll-y>
       <mp-cells wx:if="{{!formData.isCompleted}}" title="手动添加参与会员:">
         <mp-cell>
-          <view slot="title" class="cell-row">
-            <image class="icon" src="/static/icons/search-user.png" />
+          <view slot="title" class="view-row">
+            <image class="icon24" src="/static/icons/search-user.png" mode="heightFix" />
             <input style="margin-left: 20rpx;" placeholder="输入姓名" type="text" confirm-type="search" value="{{searchTerm}}" bindinput="onSearchInputChange" bindconfirm="searchUser" />
           </view>
-          <image wx:if="{{searchTerm}}" bindtap="onSearchCancel" class="icon" slot="footer" src="/static/icons/close.png" />
+          <image wx:if="{{searchTerm}}" bindtap="onSearchCancel" class="icon24" slot="footer" src="/static/icons/close.png" mode="heightFix" />
         </mp-cell>
 
         <mp-cell wx:for="{{matchedUsers}}" wx:key="key" wx:for-item="user">
-          <view slot="title" class="cell-row">
+          <view slot="title" class="view-row">
             <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
             <text style="margin-left: 20rpx;">{{user.nickName}} {{user.displayName?'('+user.displayName+')':''}}</text>
           </view>
@@ -134,14 +146,14 @@
         <block wx:for="{{groupedAttendees}}" wx:key="memberId" wx:for-item="user">
           <mp-slideview buttons="{{[{type: 'warn',text: '移除'}]}}" data-user="{{user}}" data-more="{{0}}" bindbuttontap="removeAttendeeAsync" disable="{{activity.isCompleted}}">
             <mp-cell style="font-size: 0.85rem;">
-              <view slot="title" class="cell-row">
+              <view slot="title" class="view-row">
                 <image-loader bindtap="goToUserDetails" data-user="{{user}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
                 <view class="column-section">
                   <text>{{user.displayName || user.nickName}} ({{user.creditBalance}} NZD)</text>
                   <text>{{user.continueWeeklyJoin || 0}} Weeks</text>
                 </view>
               </view>
-              <view slot="footer" class="cell-row">
+              <view slot="footer" class="view-row">
                 <image data-user="{{user}}" data-more="{{user.totalJoinMore}}" bindtap="removeAttendeeAsync" class="footer-icon" src="/static/icons/minus.png" />
                 <text>+{{user.totalJoinMore||0}}</text>
                 <image data-user="{{user}}" data-more="{{user.totalJoinMore + 1}}" bindtap="addAttendeeAsync" class="footer-icon" src="/static/icons/add.png" />
@@ -151,8 +163,36 @@
         </block>
       </mp-cells>
 
-      <view wx:if="{{!formData.isCompleted && groupedAttendees.length > 0}}" class="weui-btn-area">
-        <button class="weui-btn bottom-btn" type="primary" bindtap="confirmActivityAsync">活动完成并扣款</button>
+      <view wx:if="{{!formData.isCompleted && groupedAttendees.length > 0}}" class="bottom-btn-area">
+        <button class="weui-btn" type="primary" bindtap="confirmActivityAsync">活动完成并扣款</button>
+      </view>
+    </scroll-view>
+  </swiper-item>
+  <!-- Group and score page -->
+  <swiper-item>
+    <scroll-view wx:if="{{activityId}}" style="height: calc(100vh - {{navBarHeight}}px);" scroll-y>
+      <block wx:for="{{formData.sections}}" wx:key="index" wx:for-index="id" wx:for-item="section">
+        <mp-cell>
+          <view slot="title" class="weui-label">标题</view>
+          {{section.title}}
+          <view slot="footer" class="view-row-centre">
+            <button type="primary" size="mini">Generate</button>
+          </view>
+        </mp-cell>
+        <mp-cells wx:for="{{section.courts}}" wx:key="index" title="Court {{item}}">
+          <mp-cell>
+            <view slot="title" class="weui-label" style="width: 50px;">
+              <input type="number" value="15" />
+            </view>
+            <view class="view-row-centre">VS</view>
+            <view slot="footer" class="view-row-centre" style="width: 50px;">
+              <input type="number" value="15" />
+            </view>
+          </mp-cell>
+        </mp-cells>
+      </block>
+      <view wx:if="{{!formData.isCompleted && groupedAttendees.length > 0}}" class="bottom-btn-area">
+        <button class="weui-btn" type="primary">保存比分</button>
       </view>
     </scroll-view>
   </swiper-item>

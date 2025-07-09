@@ -3,12 +3,11 @@ import { GetLaguageMap } from "@Language/languageUtils";
 const lang = GetLaguageMap().type;
 
 const activityType = {
-  Happy: { value: 'happy', name: '娱乐场' },
-  Group: { value: 'group', name: '分组场' },
-  Rank: { value: 'rank', name: '排位场' },
+  Section: { value: 0, name: '分组场', title: 'group' },
+  Rank: { value: 1, name: '排位场', title: 'rank' },
 };
 export const ActivityType = activityType;
-export const ActivityTypeArray = [activityType.Happy, activityType.Group, activityType.Rank];
+export const ActivityTypeArray = [activityType.Section, activityType.Rank];
 
 const userRole = {
   Unknown: { value: 0, name: 'New' },

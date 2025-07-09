@@ -20,7 +20,7 @@ Page({
     _lang: GetLaguageMap().my,
     year: new Date().getFullYear(),
     version: wx.getAccountInfoSync().miniProgram.version,
-    navBarHeight: GetNavBarHeight() + 100,
+    navBarHeight: GetNavBarHeight() + 110,
     // Status:
     isLoaded: false,
     myMemberId: 0,
