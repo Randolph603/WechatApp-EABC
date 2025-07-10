@@ -2,7 +2,7 @@ import { LoadAllActivitiesAsync } from "@API/activityService";
 import { HandleException } from "@API/commonHelper";
 import { GetLaguageMap } from "@Language/languageUtils";
 import { ActivityType } from "@Lib/types";
-import { GetNavBarHeight, UpdateTabBarLaguage } from "@Lib/utils";
+import { GetNavBarHeight } from "@Lib/utils";
 
 Page({
   data: {
@@ -15,8 +15,8 @@ Page({
     // Variables   
     tabs: [
       { type: 'all', display: GetLaguageMap().activityList.tabs.all },
-      { type: ActivityType.Happy.value, display: GetLaguageMap().activityList.tabs.happy },
-      { type: ActivityType.Group.value, display: GetLaguageMap().activityList.tabs.group },
+      { type: ActivityType.Section.value, display: GetLaguageMap().activityList.tabs.section },
+      { type: ActivityType.Rank.value, display: GetLaguageMap().activityList.tabs.rank },
       { type: 'my', display: GetLaguageMap().activityList.tabs.my },
     ],
     selectedTabType: 'all',

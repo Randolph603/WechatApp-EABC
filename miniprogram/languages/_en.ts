@@ -3,7 +3,6 @@ export const LanguageMap: iLanguageMap = {
     list: [
       { text: 'Activities' },
       { text: 'Rank' },
-      { text: 'Shop' },
       { text: 'My' },
     ]
   },
@@ -97,8 +96,8 @@ export const LanguageMap: iLanguageMap = {
     title: "Activity List",
     tabs: {
       all: "All",
-      happy: "Happy",
-      group: "Group",
+      section: "Group",
+      rank: "Rank",
       my: "My"
     },
     area: "East",

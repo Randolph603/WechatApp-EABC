@@ -22,7 +22,6 @@ export const GetNavBarHeight = () => {
 
 export const UpdateTabBarLaguage = () => {
   GetLaguageMap()["tabbar"].list.forEach(({ text }, i) => {
-    if (i === 2) return;
     wx.setTabBarItem({
       index: i,
       text: text

@@ -3,7 +3,6 @@ export const LanguageMap: iLanguageMap = {
     list: [
       { text: '活动' },
       { text: '排名' },
-      { text: '商城' },
       { text: '我的' },
     ]
   },
@@ -97,8 +96,8 @@ export const LanguageMap: iLanguageMap = {
     title: "活动列表",
     tabs: {
       all: "全部",
-      happy: "娱乐",
-      group: "分组",
+      section: "分组",
+      rank: "天梯",
       my: "我的"
     },
     area: "东区",
