@@ -19,8 +19,8 @@
             <text class="rank-number">{{index + 1}}</text>
             <image-loader ext-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
             <text class="name">{{user.displayName || user.nickName}}</text>
-            <text class="power">{{user.powerPoint || 0}}</text>
             <image wx:if="{{user.userLevel > 0}}" class="badge" src="/static/ranks/{{user.userLevel}}.png" />
+            <text class="power">{{user.powerPoint || 0}}</text>
           </view>
         </block>
       </scroll-view>

@@ -36,6 +36,11 @@
               </label>
             </checkbox-group>
           </mp-cell>
+          <mp-cell>
+            <view slot="title" class="weui-label">最大人数</view>
+            <text> {{formData.maxAttendee}} </text>
+            <text slot="footer">人</text>
+          </mp-cell>
           <mp-cell show-error prop="coverImageSrc" title="封面">
             <radio-group class="wrap-row" bindchange="coverImageRadioChange">
               <radio wx:for="{{converPageArray}}" wx:key="index" value="{{index}}" checked="{{formData.coverImageSrc === item}}">

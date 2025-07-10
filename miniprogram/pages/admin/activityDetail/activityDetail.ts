@@ -39,6 +39,7 @@ Page({
       { name: 'type', rules: { required: true } },
       { name: 'address', rules: { required: true } },
       { name: 'courts', rules: { required: true, message: '请输入场地' } },
+      { name: 'maxAttendee', rules: { required: true } },
       { name: 'coverImageSrc', rules: { required: true } },
       { name: 'startTime', rules: { required: true, message: '请输入日期和时间' } },
       { name: 'sections', rules: { required: true, minlength: 1, message: 'Section不能为空' }, },
@@ -66,6 +67,7 @@ Page({
         type: ActivityType.Section.value,
         address: 'Lloyd Elsmore Park Badminton',
         courts: [5, 6, 7, 8],
+        maxAttendee: newSection.maxAttendee,
         coverImageSrc: converPageArray[0],
         startTime: new Date(),
         updateDate: new Date(),
@@ -200,9 +202,7 @@ Page({
 
   handleSectionChange(e: IOption) {
     const { id, field } = e.currentTarget.dataset;
-    console.log(e.detail.value);
     const newValue = ToNumberOrString(e.detail.value);
-    console.log(newValue);
     this.setData({
       [`formData.sections[${id}].${field}`]: newValue
     });
@@ -218,6 +218,12 @@ Page({
       const timeRange = ToNZTimeRangeString(dateTime, existing.during);
       this.setData({
         [`formData.sections[${id}].timeRange`]: timeRange
+      });
+    }
+
+    if (field === 'maxAttendee') {
+      this.setData({
+        [`formData.maxAttendee`]: this.data.formData.sections.reduce((acc: number, element: iSection) => acc + element.maxAttendee, 0)
       });
     }
   },

@@ -23,7 +23,6 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
     activity.coverImageSrc = "/static/images/badmintonCover1.jpg"; //"/static" + activity.coverImageSrc;
     activity.date = ToNZShortDateString(activity.startTime);
     activity.dayOfWeek = ToDayOfWeekString(activity.startTime);
-    activity.maxAttendee = activity.maxAttendee ?? activity.sections.reduce((acc: number, element: any) => acc + element.maxAttendee, 0);
   });
   return activities;
 }
@@ -38,7 +37,6 @@ export const LoadActivityByIdAsync = async (id: string) => {
 
   activity.date = `${ToNZShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
   activity.time = ToNZTimeRangeString(activity.startTime, activity.during);
-  activity.maxAttendee = activity.maxAttendee ?? activity.sections.reduce((acc: number, element: any) => acc + element.maxAttendee, 0);
 
   activity.Attendees.forEach((user: any) => {
     user.userLevelType = LevelArray[user.userLevel];

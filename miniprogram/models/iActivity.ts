@@ -14,11 +14,10 @@ export interface iActivity {
   type: number;
   address: string;
   courts: Array<number>;
-  // maxAttendee: number;
+  maxAttendee: number;
   coverImageSrc: string;
   startTime: Date;
   updateDate: Date;
-  // during: number;
   isCancelled: boolean;
   isCompleted: boolean;
   toPublic: boolean;
@@ -33,11 +32,10 @@ export const ToActivity = (raw: any): iActivity => {
     type: raw.type,
     address: raw.address,
     courts: raw.courts,
-    // maxAttendee: raw.maxAttendee,
+    maxAttendee: raw.maxAttendee,
     coverImageSrc: raw.coverImageSrc,
     startTime: new Date(raw.startTime),
     updateDate: new Date(raw.updateDate),
-    // during: raw.during,
     isCancelled: raw.isCancelled,
     isCompleted: raw.isCompleted,
     toPublic: raw.toPublic,
