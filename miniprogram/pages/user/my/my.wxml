@@ -127,13 +127,13 @@
 
   <view class="feature-card">
     <mp-cells title="{{_lang.features}}">
-      <mp-cell link hover value="{{_lang.wallet}}">
+      <!-- <mp-cell wx:if='{{hasAuth}}' link hover value="{{_lang.wallet}}">
         <image slot="icon" src="/static/icons/wallet.png" class="mp-cell-icon" />
-      </mp-cell>
-      <mp-cell link hover value="{{_lang.history}}">
+      </mp-cell> -->
+      <mp-cell wx:if='{{hasAuth}}' link hover url="/pages/user/creditHistory/creditHistory?memberId={{myProfile.memberId}}" value="{{_lang.history}}">
         <image slot="icon" src="/static/icons/purchase-order.png" class="mp-cell-icon" />
       </mp-cell>
-      <mp-cell link hover value="{{_lang.topup}}">
+      <mp-cell wx:if='{{hasAuth}}' link hover value="{{_lang.topup}}">
         <image slot="icon" src="/static/icons/payment.png" class="mp-cell-icon" />
       </mp-cell>
       <mp-cell link value="{{_lang.contactUs}}">

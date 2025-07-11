@@ -1,4 +1,3 @@
-import { GetUserByUnionId } from "@API/userService";
 import { GetLaguageMap } from "@Language/languageUtils";
 
 export const ConvertFileIdToHttps = (fileId: string) => {
@@ -34,23 +33,6 @@ export const GetCurrentUrl = () => {
   const currentPage = pages[pages.length - 1];
   const currentUrl = currentPage.route;
   return currentUrl;
-}
-
-export const CheckUserExistsAsync = async () => {
-  const user = await GetUserByUnionId();
-  if (!user) {
-    const currentUrl = GetCurrentUrl();
-    wx.navigateTo({
-      url: '/pages/user/profile/profile?callbackUrl=' + currentUrl,
-    });
-  }
-  return user;
-}
-
-// this is for all tab page.
-export const InitialiseTabPageAndCheckUser = async () => {
-  UpdateTabBarLaguage();
-  await CheckUserExistsAsync();
 }
 
 export const ExcuteWithProcessingAsync = async (actionAsync: Function, showToast: boolean = true) => {

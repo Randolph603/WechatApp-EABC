@@ -1,5 +1,5 @@
 import { GetLaguageMap } from "@Language/languageUtils";
-import { InitialiseTabPageAndCheckUser } from "@Lib/utils";
+import { UpdateTabBarLaguage } from "@Lib/utils";
 
 const generateGridList = (childCount: number) => {
   const ans = []
@@ -19,7 +19,7 @@ Page({
   },
 
   async onLoad() {
-    await InitialiseTabPageAndCheckUser();
+    UpdateTabBarLaguage();
   },
 
   onReady() {

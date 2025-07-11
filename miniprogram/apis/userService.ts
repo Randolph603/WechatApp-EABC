@@ -20,7 +20,7 @@ export const RegisterNewUserAsync = async () => {
   return await CallCloudFuncAsync('eabc_user_register', { unionId });
 }
 
-export const GetUserByUnionId = async () => {
+export const CheckUserExistsAsync = async () => {
   if (config.useMock === true) {
     return MockGetUserByUnionId();
   }
@@ -37,7 +37,8 @@ export const GetUserByUnionId = async () => {
     // if user not exists, delete union id from storage
     wx.removeStorageSync('unionid');
   }
-  return user;
+
+  return config.mockNewUser ? null : user;
 }
 
 export const GetUserByMemberId = async (memberId: number) => {
@@ -111,6 +112,14 @@ export const SearchUsersSortByContinuelyWeeksAsync = async () => {
   const { users } = await CallCloudFuncAsync('user_search', {
     where: { continueWeeklyJoin: _.gt(0) },
     limit: 30
+  });
+  users.forEach((u: any) => SetupUserTypes(u));
+  return users;
+}
+
+export const SearchAllUsersAsync = async () => {
+  const { users } = await CallCloudFuncAsync('user_search', {
+    sort: { continueWeeklyJoin: -1, memberId: -1 }
   });
   users.forEach((u: any) => SetupUserTypes(u));
   return users;

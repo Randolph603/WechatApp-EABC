@@ -10,7 +10,9 @@
     "pages/user/creditHistory/creditHistory",
     "pages/admin/settingList/settingList",
     "pages/admin/activityDetail/activityDetail",
-    "pages/admin/activityList/activityList"
+    "pages/admin/activityList/activityList",
+    "pages/admin/userList/userList",
+    "pages/admin/userDetail/userDetail"
   ],
   "window": {
     "backgroundTextStyle": "light",

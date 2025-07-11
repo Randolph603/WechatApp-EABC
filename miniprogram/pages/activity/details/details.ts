@@ -1,12 +1,16 @@
-import { AttendeeMoveSectionAsync, CancelJoinActivityAsync, JoinActivityAsync, LoadActivityByIdAsync } from '@API/activityService';
+import {
+  AttendeeMoveSectionAsync,
+  CancelJoinActivityAsync,
+  JoinActivityAsync,
+  LoadActivityByIdAsync
+} from '@API/activityService';
 import { CallCloudFuncAsync } from '@API/commonHelper';
-import { GetUserByUnionId } from '@API/userService';
+import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
-import { ToNZTimeRangeString } from '@Lib/dateExtension';
+import { SortDate } from '@Lib/dateExtension';
 import { UserRole } from '@Lib/types';
-import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync } from '@Lib/utils';
+import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetCurrentUrl } from '@Lib/utils';
 import { iSection } from '@Model/index';
-// import { iSection } from '@Model/';
 
 Page({
   data: {
@@ -15,7 +19,7 @@ Page({
     // Status:
     isLoaded: false,
     myMemberId: 0,
-    myProfile: {},
+    myProfile: {} as any,
     // Variables
     activityId: '',
     activity: { wxActivityExpirationTime: 0, startTime: '' },
@@ -69,12 +73,14 @@ Page({
     });
 
     await ExcuteWithLoadingAsync(async () => {
-      const user = await this.LoadMe();
-      if ((user?.creditBalance ?? 0) < 0) {
+      const loadActivityTask = this.loadActivity();
+      const loadMeTask = this.LoadMe();
+      await Promise.all([loadActivityTask, loadMeTask]);
+
+      if ((this.data.myProfile.creditBalance ?? 0) < 0) {
         this.setData({ showLowCreditBalance: true });
       }
 
-      await this.loadActivity();
       if (this.data.activity) {
         const currentTimestamp = Date.parse(new Date().toString()) / 1000;
         if (this.data.activity.wxActivityExpirationTime > currentTimestamp) {
@@ -86,15 +92,14 @@ Page({
 
   //#region private method
   async LoadMe() {
-    const user = await GetUserByUnionId();
-    if (user) {
+    const myProfile = await CheckUserExistsAsync();
+    if (myProfile) {
       this.setData({
-        myMemberId: user.memberId,
-        myProfile: user,
-        isAdmin: user.userRole === UserRole.Admin.value
+        myMemberId: myProfile.memberId,
+        myProfile: myProfile,
+        isAdmin: myProfile.userRole === UserRole.Admin.value
       });
     }
-    return user;
   },
 
   async loadActivity() {
@@ -102,7 +107,8 @@ Page({
     if (id.length > 0) {
       const activity = await LoadActivityByIdAsync(id);
 
-      const allAttendees = activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => new Date(a.updateDate) > new Date(b.updateDate) ? 1 : -1);
+      const allAttendees = activity.Attendees.sort(
+        (a: { updateDate: any; }, b: { updateDate: any; }) => SortDate(a.updateDate, b.updateDate));
 
       const allJoinedAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
       const allCancelledAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
@@ -160,8 +166,9 @@ Page({
         await this.loadActivity();
       });
     } else {
+      const currentUrl = GetCurrentUrl();
       wx.navigateTo({
-        url: '/pages/user/profile/profile',
+        url: '/pages/user/profile/profile?callbackUrl=' + currentUrl,
       });
     }
   },

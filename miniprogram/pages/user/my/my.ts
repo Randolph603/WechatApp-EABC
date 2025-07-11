@@ -1,5 +1,5 @@
 import { HandleException } from '@API/commonHelper';
-import { GetUserByUnionId } from '@API/userService';
+import { CheckUserExistsAsync } from '@API/userService';
 import { GetLaguageMap, GetCurrentLanguage, LanguageArray, ChangeLanguage } from '@Language/languageUtils';
 import { UserRole } from '@Lib/types';
 import { GetCurrentUrl, GetNavBarHeight, UpdateTabBarLaguage } from '@Lib/utils';
@@ -55,17 +55,17 @@ Page({
 
   //#region private method
   async LoadUser() {
-    const user = await GetUserByUnionId();
-    if (user) {
+    const myProfile = await CheckUserExistsAsync();
+    if (myProfile) {
       const index = Math.floor(Math.random() * Mottos.length);
       this.setData({
         isLoaded: true,
         triggered: false,
         hasAuth: true,
-        myMemberId: user.memberId,
-        myProfile: user,
+        myMemberId: myProfile.memberId,
+        myProfile: myProfile,
         motto: Mottos[index],
-        isAdmin: user.userRole === UserRole.Admin.value
+        isAdmin: myProfile.userRole === UserRole.Admin.value
       });
     } else {
       this.setData({

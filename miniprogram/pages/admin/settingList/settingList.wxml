@@ -16,5 +16,8 @@
 </mp-cells>
 
 <mp-cells title="操作">
-
+  <mp-cell link hover>
+    <view>每周更新</view>
+    <image slot="title" class="mp-cell-icon" src="/static/icons/update.png" />
+  </mp-cell>
 </mp-cells>

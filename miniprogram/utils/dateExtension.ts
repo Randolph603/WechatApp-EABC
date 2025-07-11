@@ -67,3 +67,15 @@ export const ToDayOfWeekString = (value: string | Date) => {
   }
   return null;
 }
+
+export const SortDate = (a: string | Date, b: string | Date): number => {
+  const aDataTime = ConverToDate(a);
+  const bDataTime = ConverToDate(b);
+  return aDataTime > bDataTime ? 1 : -1
+}
+
+export const SortDateDesc = (a: string | Date, b: string | Date): number => {
+  const aDataTime = ConverToDate(a);
+  const bDataTime = ConverToDate(b);
+  return aDataTime > bDataTime ? -1 : 1
+}

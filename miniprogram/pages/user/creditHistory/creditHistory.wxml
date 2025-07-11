@@ -1,2 +1,21 @@
-<!--pages/user/creditHistory/creditHistory.wxml-->
-<text>pages/user/creditHistory/creditHistory.wxml</text>
+<mp-navigation-bar title='{{_lang.title}}' ext-class="nav-bar" back="{{true}}" />
+<scroll-view class="scroll" scroll-y>
+  <!-- empty page -->
+  <view wx:if="{{isLoaded && creditHistory.length === 0}}" class="empty">
+    <image src="/static/images/no_history.png" mode="aspectFill" />
+    <text>{{_lang.noHistory}}</text>
+  </view>
+
+  <mp-cells wx:if="{{isLoaded && creditHistory.length > 0}}">
+    <mp-cell wx:for="{{creditHistory}}" wx:key="history" wx:for-item="history">
+      <image slot="title"
+        src="{{history.pos === true ? '/static/icons/wallet.png': '/static/icons/activity.png'}}"
+        class="row-title" />
+      <view class="row-value">
+        <text>{{history.title}}</text>
+        <text class="date">{{history.date}}</text>
+      </view>
+      <view class="{{history.pos === true ? 'pos': 'neg'}}" slot="footer">{{history.value}} NZD</view>
+    </mp-cell>    
+  </mp-cells>
+</scroll-view>

@@ -1,5 +1,5 @@
 import { SearchUsersForRankAsync } from "@API/userService";
-import { InitialiseTabPageAndCheckUser } from "@Lib/utils";
+import { UpdateTabBarLaguage } from "@Lib/utils";
 
 Page({
   data: {
@@ -28,12 +28,12 @@ Page({
   },
 
   async onLoad() {
-    await InitialiseTabPageAndCheckUser();
+    UpdateTabBarLaguage();
 
+    wx.showLoading({ title: 'Loading...' });
     const users = await SearchUsersForRankAsync();
-    this.setData({
-      users: users
-    });
+    this.setData({ users: users });
+    wx.hideLoading();
   },
 
   onShareAppMessage() {
