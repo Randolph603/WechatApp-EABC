@@ -15,18 +15,18 @@ import { iSection } from '@Model/index';
 Page({
   data: {
     // Static
-    _lang: GetLaguageMap().activityList,
+    _lang: GetLaguageMap().activityDetail,
     // Status:
     isLoaded: false,
     myMemberId: 0,
     myProfile: {} as any,
     // Variables
     activityId: '',
-    activity: { wxActivityExpirationTime: 0, startTime: '' },
+    activity: {} as any,
     attendTitle: '',
     allSections: [] as any[],
-    allJoinedOnWaitAttendees: [],
-    allCancelledAttendees: [],
+    allJoinedAttendeesCount: 0,
+    allCancelledAttendees: [] as any[],
     joinMore: 0,
     // Dialog
     showLowCreditBalance: false,
@@ -35,40 +35,49 @@ Page({
     isAdmin: false,
   },
 
-  // onShareAppMessage: async function () {
-  //   const activity = this.data.activity;
-  //   const attendeeCount = this.data.allJoinedAttendees.length;
-  //   const attendeeMax = activity.maxAttendee;
+  onShareAppMessage() {
+    const activity = this.data.activity;
+    const attendeeCount = this.data.allJoinedAttendeesCount;
+    const attendeeMax = activity.maxAttendee;
 
-  //   const result = await CallCloudFuncAsync('activity_share', { activityId: activity._id, router: 'createActivityId' });
-  //   const wxActivityId = result.wxActivityId;
+    const promise = new Promise((resolve, reject) => {
+      CallCloudFuncAsync('eabc_activity_share', { activityId: activity._id, router: 'createActivityId' })
+        .then(result => {
+          console.log(result);
+          const wxActivityId = result.wxActivityId;
+          wx.updateShareMenu({
+            withShareTicket: true,
+            isUpdatableMessage: true,
+            activityId: wxActivityId,
+            templateInfo: {
+              templateId: "",
+              parameterList: [{
+                name: 'member_count',
+                value: `${attendeeCount}`
+              }, {
+                name: 'room_limit',
+                value: `${attendeeMax}`
+              }]
+            }
+          });
+          resolve({
+            title: `${activity.date}, ${activity.title}, ${this.data._lang.shareMessage}`,
+            imageUrl: `${activity.coverImageSrc}`,
+          })
+        })
+        .catch(error => reject(error));
+    });
 
-  //   wx.updateShareMenu({
-  //     withShareTicket: true,
-  //     isUpdatableMessage: true,
-  //     activityId: wxActivityId,
-  //     templateInfo: {
-  //       templateId: "",
-  //       parameterList: [{
-  //         name: 'member_count',
-  //         value: `${attendeeCount}`
-  //       }, {
-  //         name: 'room_limit',
-  //         value: `${attendeeMax}`
-  //       }]
-  //     }
-  //   });
-
-  //   return {
-  //     title: `${activity.date}, ${activity.title}, ${this.data._lang.shareMessage}`,
-  //     imageUrl: `${activity.coverImageSrc}`
-  //   };
-  // },
+    return {
+      title: `${activity.date}, ${activity.title}, ${this.data._lang.shareMessage} 333`,
+      imageUrl: `${activity.coverImageSrc}`,
+      promise
+    };
+  },
 
   async onLoad(options: Record<string, string | undefined>) {
     const id = options.id;
     this.setData({
-      _lang: GetLaguageMap().activityDetail,
       activityId: id
     });
 
@@ -82,12 +91,14 @@ Page({
       }
 
       if (this.data.activity) {
-        const currentTimestamp = Date.parse(new Date().toString()) / 1000;
-        if (this.data.activity.wxActivityExpirationTime > currentTimestamp) {
-          await CallCloudFuncAsync('activity_share', { activityId: id, router: 'setUpdatableMsg' });
-        }
+        const joinMore = this.data.activity.Attendees.filter(
+          (a: any) => a.memberId === this.data.myMemberId && a.isCancelled === false).length - 1;
+        this.setData({ joinMore });
+        await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
       }
-    })
+    });
+
+    
   },
 
   //#region private method
@@ -113,9 +124,6 @@ Page({
       const allJoinedAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
       const allCancelledAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
 
-      const joinMore = allJoinedAttendees.filter(
-        (a: { memberId: number; }) => a.memberId === this.data.myMemberId).length - 1;
-
       const allSections: Array<any> = [];
       if (activity.sections) {
         activity.sections.forEach((s: iSection) => {
@@ -133,8 +141,8 @@ Page({
         attendTitle,
         activity,
         allSections,
+        allJoinedAttendeesCount: allJoinedAttendees.length,
         allCancelledAttendees,
-        joinMore,
         isLoaded: true
       });
     }
@@ -207,8 +215,9 @@ Page({
     // 36e5 is the scientific notation for 60*60*1000
     const startTime = new Date(this.data.activity.startTime);
     const durationInHours = (startTime.getTime() - new Date().getTime()) / 36e5;
-    const attendeeOnWaitCount = this.data.allJoinedOnWaitAttendees.length;
-    if (durationInHours < 24 && attendeeOnWaitCount < 1) {
+    const attendeesCount = this.data.allJoinedAttendeesCount;
+    const maxAttendeesCount = this.data.activity.maxAttendee;
+    if (durationInHours < 24 && attendeesCount <= maxAttendeesCount) {
       this.setData({ showCancelDialog: true });
       wx.hideLoading();
       return true;

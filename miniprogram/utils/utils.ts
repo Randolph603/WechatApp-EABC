@@ -1,3 +1,4 @@
+import { HandleException } from "@API/commonHelper";
 import { GetLaguageMap } from "@Language/languageUtils";
 
 export const ConvertFileIdToHttps = (fileId: string) => {
@@ -48,6 +49,7 @@ export const ExcuteWithProcessingAsync = async (actionAsync: Function, showToast
   } catch (error) {
     wx.hideLoading();
     wx.showToast({ title: lang.failed, icon: 'none' });
+    await HandleException('ExcuteWithProcessingAsync', error);
   }
 }
 
@@ -60,6 +62,7 @@ export const ExcuteWithLoadingAsync = async (actionAsync: Function) => {
   } catch (error) {
     wx.hideLoading();
     wx.showToast({ title: lang.failed, icon: 'none' });
+    await HandleException('ExcuteWithLoadingAsync', error);
   }
 }
 

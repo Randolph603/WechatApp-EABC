@@ -25,7 +25,7 @@ export const GetUnionIdAsync = async () => {
   if (!unionid) {
     const { code } = await WxLoginAsync();
     console.log("WxCode:", code);
-    var response = await App.callFunction({ name: 'jscode2session', data: { code: code } });
+    var response = await App.callFunction({ name: 'eabc_security', data: { router: 'jscode2session', code: code } });
     console.log("jscode2session:", response.result);
     unionid = response.result.unionid;
     wx.setStorageSync('unionid', unionid)

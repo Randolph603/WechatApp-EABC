@@ -15,10 +15,6 @@ Component({
       type: String,
       value: ''
     },
-    color: {
-      type: String,
-      value: ''
-    },
     back: {
       type: Boolean,
       value: true
