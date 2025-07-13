@@ -14,11 +14,10 @@ Component({
       value: ""
     }
   },
-  data: {
 
+  data: {
   },
 
   methods: {
-
   }
 })
