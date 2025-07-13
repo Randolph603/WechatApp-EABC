@@ -31,11 +31,9 @@ export const HandleException = async (functionName: string, error: any) => {
   const unionId = await GetUnionIdAsync();
 
   await db.collection('Sys_Exceptions').add({
-    data: {
-      functionName: `${currentUrl} - ${functionName}`,
-      operationUserId: unionId,
-      date: new Date(),
-      exception: error,
-    }
+    functionName: `${currentUrl} - ${functionName}`,
+    operationUserId: unionId,
+    date: new Date(),
+    exception: error,
   });
 };

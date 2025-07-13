@@ -1,7 +1,7 @@
 <view>
   <view style="height: {{navBarHeight}}px;" />
 
-  <r-navigation-bar class="skyline-nav-bar" title="" back="{{false}}">
+  <r-navigation-bar extClass="skyline-nav-bar" title="" back="{{false}}">
     <view class="nav-left" slot="left">
       <image class="nav-logo" mode="aspectFill" src="/static/images/icon.png" />
       <view class="nav-title">
@@ -45,14 +45,14 @@
     </sticky-header>
   </sticky-section>
 
-  <image wx:if="{{!isLoaded}}" style="width:100%" mode="aspectFit" src="/static/images/loading2.gif"></image>
+  <image wx:if="{{!isLoaded}}" style="width:100%" mode="widthFix" src="/static/images/loading2.gif"></image>
 
   <grid-view cross-axis-gap="6" cross-axis-count="2" type="masonry">
     <view class="grid-item" wx:for="{{activities}}" wx:key="index">
       <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
       <view class="card">
         <navigator url="/pages/activity/details/details?id={{item._id}}">
-          <image lazy-load="true" class="boxPic" mode="widthFix" src="{{item.coverImageSrc}}">
+          <image lazy-load="true" style="width:100%" mode="widthFix" src="{{item.coverImageSrc}}">
           </image>
           <view class="boxTxt">
             <view class="title">[{{_lang.area}}] {{item.title}}</view>
@@ -72,9 +72,7 @@
   </grid-view>
 
   <!-- <r-title ext-class="section-title" title="教练介绍" />
-
   <view class="section">
-    <section-title myTitle="导师介绍" topTitle="Tutor Introduction" />
     <view class="tutor-box" bindtap="handleJuneYinShowAll">
       <view>
         <image class="avatar" src="/static/images/icon.png" mode="aspectFill" />
@@ -82,7 +80,6 @@
       <view class="tutor">
         <view class="info">
           <view class="name">June Yin <text class="title">全能舞者</text></view>
-          <image class="icon" src="/images/icons64/right-arrow-8a8a8a.png" />
         </view>
         <view class="description">北京舞蹈学院民族舞专业，多年国内高校教学经验。2019国际辣妈大赛新西兰赛区优雅组冠军。</view>
       </view>

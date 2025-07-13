@@ -8,6 +8,7 @@ import { CallCloudFuncAsync } from '@API/commonHelper';
 import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { SortDate } from '@Lib/dateExtension';
+import { WxShowModalAsync } from '@Lib/promisify';
 import { UserRole } from '@Lib/types';
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetCurrentUrl } from '@Lib/utils';
 import { iSection } from '@Model/index';
@@ -15,18 +16,18 @@ import { iSection } from '@Model/index';
 Page({
   data: {
     // Static
-    _lang: GetLaguageMap().activityList,
+    _lang: GetLaguageMap().activityDetail,
     // Status:
     isLoaded: false,
     myMemberId: 0,
     myProfile: {} as any,
     // Variables
     activityId: '',
-    activity: { wxActivityExpirationTime: 0, startTime: '' },
+    activity: {} as any,
     attendTitle: '',
     allSections: [] as any[],
-    allJoinedOnWaitAttendees: [],
-    allCancelledAttendees: [],
+    allJoinedAttendeesCount: 0,
+    allCancelledAttendees: [] as any[],
     joinMore: 0,
     // Dialog
     showLowCreditBalance: false,
@@ -35,59 +36,62 @@ Page({
     isAdmin: false,
   },
 
-  // onShareAppMessage: async function () {
-  //   const activity = this.data.activity;
-  //   const attendeeCount = this.data.allJoinedAttendees.length;
-  //   const attendeeMax = activity.maxAttendee;
+  onShareAppMessage() {
+    const activity = this.data.activity;
+    const attendeeCount = this.data.allJoinedAttendeesCount;
+    const attendeeMax = activity.maxAttendee;
 
-  //   const result = await CallCloudFuncAsync('activity_share', { activityId: activity._id, router: 'createActivityId' });
-  //   const wxActivityId = result.wxActivityId;
+    const promise = new Promise((resolve, reject) => {
+      CallCloudFuncAsync('eabc_activity_share', { activityId: activity._id, router: 'createActivityId' })
+        .then(result => {
+          console.log(result);
+          const wxActivityId = result.wxActivityId;
+          wx.updateShareMenu({
+            withShareTicket: true,
+            isUpdatableMessage: true,
+            activityId: wxActivityId,
+            templateInfo: {
+              templateId: "",
+              parameterList: [{
+                name: 'member_count',
+                value: `${attendeeCount}`
+              }, {
+                name: 'room_limit',
+                value: `${attendeeMax}`
+              }]
+            }
+          });
+          resolve({
+            title: `${activity.date}, ${activity.title}, ${this.data._lang.shareMessage}`,
+            imageUrl: `${activity.coverImageSrc}`,
+          })
+        })
+        .catch(error => reject(error));
+    });
 
-  //   wx.updateShareMenu({
-  //     withShareTicket: true,
-  //     isUpdatableMessage: true,
-  //     activityId: wxActivityId,
-  //     templateInfo: {
-  //       templateId: "",
-  //       parameterList: [{
-  //         name: 'member_count',
-  //         value: `${attendeeCount}`
-  //       }, {
-  //         name: 'room_limit',
-  //         value: `${attendeeMax}`
-  //       }]
-  //     }
-  //   });
-
-  //   return {
-  //     title: `${activity.date}, ${activity.title}, ${this.data._lang.shareMessage}`,
-  //     imageUrl: `${activity.coverImageSrc}`
-  //   };
-  // },
+    return {
+      title: `${activity.date}, ${activity.title}, ${this.data._lang.shareMessage} 333`,
+      imageUrl: `${activity.coverImageSrc}`,
+      promise
+    };
+  },
 
   async onLoad(options: Record<string, string | undefined>) {
     const id = options.id;
     this.setData({
-      _lang: GetLaguageMap().activityDetail,
       activityId: id
     });
 
     await ExcuteWithLoadingAsync(async () => {
-      const loadActivityTask = this.loadActivity();
+      const loadActivityTask = this.LoadActivity();
       const loadMeTask = this.LoadMe();
       await Promise.all([loadActivityTask, loadMeTask]);
 
+      await this.PopulateMyJoin();
       if ((this.data.myProfile.creditBalance ?? 0) < 0) {
         this.setData({ showLowCreditBalance: true });
       }
-
-      if (this.data.activity) {
-        const currentTimestamp = Date.parse(new Date().toString()) / 1000;
-        if (this.data.activity.wxActivityExpirationTime > currentTimestamp) {
-          await CallCloudFuncAsync('activity_share', { activityId: id, router: 'setUpdatableMsg' });
-        }
-      }
-    })
+    });
   },
 
   //#region private method
@@ -102,7 +106,7 @@ Page({
     }
   },
 
-  async loadActivity() {
+  async LoadActivity() {
     const id = this.data.activityId;
     if (id.length > 0) {
       const activity = await LoadActivityByIdAsync(id);
@@ -112,9 +116,6 @@ Page({
 
       const allJoinedAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
       const allCancelledAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
-
-      const joinMore = allJoinedAttendees.filter(
-        (a: { memberId: number; }) => a.memberId === this.data.myMemberId).length - 1;
 
       const allSections: Array<any> = [];
       if (activity.sections) {
@@ -133,10 +134,20 @@ Page({
         attendTitle,
         activity,
         allSections,
+        allJoinedAttendeesCount: allJoinedAttendees.length,
         allCancelledAttendees,
-        joinMore,
         isLoaded: true
       });
+    }
+  },
+
+  async PopulateMyJoin() {
+    if (this.data.activity) {
+      const allMyJoins = this.data.activity.Attendees.filter(
+        (a: any) => a.memberId === this.data.myMemberId && a.isCancelled === false);
+      const joinMore = allMyJoins.length - 1;
+      this.setData({ joinMore });
+      await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
     }
   },
 
@@ -163,7 +174,8 @@ Page({
       const { join_more } = event.currentTarget.dataset;
       await ExcuteWithProcessingAsync(async () => {
         await JoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
-        await this.loadActivity();
+        await this.LoadActivity();
+        await this.PopulateMyJoin();
       });
     } else {
       const currentUrl = GetCurrentUrl();
@@ -175,31 +187,28 @@ Page({
 
   async cancelAsync(event: any) {
     const { join_more } = event.currentTarget.dataset;
-    await ExcuteWithProcessingAsync(async () => {
-      if (this.showCancelPolicyDialog()) {
+    if (this.showCancelPolicyDialog()) {
+      return;
+    }
+
+    if (this.data.myProfile.continueWeeklyJoin && this.data.myProfile.continueWeeklyJoin > 0) {
+      const continueWeeklyJoin = this.data.myProfile.continueWeeklyJoin;
+      const discount = continueWeeklyJoin > 3 ? 3 : continueWeeklyJoin;
+      const { confirm } = await WxShowModalAsync({
+        title: '取消提示',
+        content: `您已经连续参加活动${continueWeeklyJoin}周次了，这次活动将有${discount} NZD折扣，取消后下次活动将不再享有折扣。`,
+        cancelText: '再想想',
+        confirmText: '难过取消'
+      });
+      if (confirm !== true) {
         return;
       }
+    }
 
-      // if (this.data.myProfile.continueWeeklyJoin && this.data.myProfile.continueWeeklyJoin > 0) {
-      //   wx.hideLoading();
-      //   const continueWeeklyJoin = this.data.myProfile.continueWeeklyJoin;
-      //   const activityPrice = this.data.activity.price;
-      //   const priceWithDisc = activityPrice - (continueWeeklyJoin > 3 ? 3 : continueWeeklyJoin);
-      //   const { cancel } = await utilWX.showModalPromisified({
-      //     title: '取消提示',
-      //     content: `您已经连续参加活动${continueWeeklyJoin}周次了，这次活动只需要${priceWithDisc} NZD，中断后下次活动将恢复至${activityPrice} NZD`,
-      //     cancelText: 'No',
-      //     confirmText: 'Yes'
-      //   });
-      //   if (cancel) {
-      //     return;
-      //   } else {
-      //     wx.showLoading({ title: 'Processing...', mask: true });
-      //   }
-      // }
-
+    await ExcuteWithProcessingAsync(async () => {
       await CancelJoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
-      await this.loadActivity();
+      await this.LoadActivity();
+      await this.PopulateMyJoin();
     });
   },
 
@@ -207,8 +216,9 @@ Page({
     // 36e5 is the scientific notation for 60*60*1000
     const startTime = new Date(this.data.activity.startTime);
     const durationInHours = (startTime.getTime() - new Date().getTime()) / 36e5;
-    const attendeeOnWaitCount = this.data.allJoinedOnWaitAttendees.length;
-    if (durationInHours < 24 && attendeeOnWaitCount < 1) {
+    const attendeesCount = this.data.allJoinedAttendeesCount;
+    const maxAttendeesCount = this.data.activity.maxAttendee;
+    if (durationInHours < 24 && attendeesCount <= maxAttendeesCount) {
       this.setData({ showCancelDialog: true });
       wx.hideLoading();
       return true;
@@ -220,10 +230,8 @@ Page({
     const { section_index, join_more, member_id } = event.currentTarget.dataset;
     await ExcuteWithProcessingAsync(async () => {
       await AttendeeMoveSectionAsync(this.data.activityId, member_id, join_more, section_index);
-      await this.loadActivity();
+      await this.LoadActivity();
     });
   }
-
   //#endregion
-
 })
