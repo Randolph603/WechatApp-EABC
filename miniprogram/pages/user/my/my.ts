@@ -3,6 +3,7 @@ import { CheckUserExistsAsync } from '@API/userService';
 import { GetLaguageMap, GetCurrentLanguage, LanguageArray, ChangeLanguage } from '@Language/languageUtils';
 import { UserRole } from '@Lib/types';
 import { GetCurrentUrl, GetNavBarHeight, UpdateTabBarLaguage } from '@Lib/utils';
+import { IOption } from '@Model/index';
 
 const Mottos = [
   "球伴技术好，你赢球的可能性就大.",
@@ -26,6 +27,7 @@ Page({
     myMemberId: 0,
     myProfile: {},
     hasAuth: false,
+    dialogShow: false,
     triggered: false,
     // Variables   
     currentLanguage: GetCurrentLanguage(),
@@ -85,6 +87,15 @@ Page({
 
   tapMemberId() {
     wx.setClipboardData({ data: this.data.myMemberId.toString() });
+  },
+
+  async tapDialog(event: IOption) {
+    if (event.detail.index === 1) {
+      wx.setClipboardData({ data: '06-0869-0723571-05' })
+    }
+    this.setData({
+      dialogShow: !this.data.dialogShow
+    });
   },
 
   languagePickerChange(e: { detail: { value: string } }) {

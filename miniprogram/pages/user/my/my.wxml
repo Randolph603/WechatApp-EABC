@@ -133,7 +133,7 @@
       <mp-cell wx:if='{{hasAuth}}' link hover url="/pages/user/creditHistory/creditHistory?memberId={{myProfile.memberId}}" value="{{_lang.history}}">
         <image slot="icon" src="/static/icons/purchase-order.png" class="mp-cell-icon" />
       </mp-cell>
-      <mp-cell wx:if='{{hasAuth}}' link hover value="{{_lang.topup}}">
+      <mp-cell wx:if='{{hasAuth}}' link hover value="{{_lang.topup}}" bindtap="tapDialog" data-value="{{true}}">
         <image slot="icon" src="/static/icons/payment.png" class="mp-cell-icon" />
       </mp-cell>
       <mp-cell link value="{{_lang.contactUs}}">
@@ -161,3 +161,17 @@
     </view>
   </view>
 </scroll-view>
+
+<mp-dialog show="{{dialogShow}}" bindbuttontap="tapDialog" buttons="{{[{text: _lang.topUpCancel},{text: _lang.topUpCopy}]}}" title="{{_lang.topUpTitle}}">
+  <view class="dialog-box">
+    <view class="row">
+      <text class="name">{{_lang.topUpAccount}}:</text>
+      <text class="value">06-0869-0723571-05</text>
+    </view>
+    <view class="row">
+      <text class="name">{{_lang.topUpRef}}:</text>
+      <text class="value">{{myMemberId}}</text>
+    </view>
+    <view class="backup">* {{_lang.topUpTip}}</view>
+  </view>
+</mp-dialog>

@@ -2,7 +2,8 @@
   "usingComponents": {
     "image-loader": "/components/image-loader/image-loader",
     "mp-cell": "weui-miniprogram/cell/cell",
-    "mp-cells": "weui-miniprogram/cells/cells"
+    "mp-cells": "weui-miniprogram/cells/cells",
+    "mp-dialog": "weui-miniprogram/dialog/dialog"
   },
   "renderer": "webview"
 }

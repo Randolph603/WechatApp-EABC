@@ -47,7 +47,7 @@
 
   <image wx:if="{{!isLoaded}}" style="width:100%" mode="widthFix" src="/static/images/loading2.gif"></image>
 
-  <grid-view cross-axis-gap="6" cross-axis-count="2" type="masonry">
+  <grid-view wx:else cross-axis-gap="6" cross-axis-count="2" type="masonry">
     <view class="grid-item" wx:for="{{activities}}" wx:key="index">
       <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
       <view class="card">

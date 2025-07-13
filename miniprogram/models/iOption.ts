@@ -1,4 +1,4 @@
 export interface IOption {
   currentTarget: { dataset: any; };
-  detail: { value: any }
+  detail: { index: number, value: any }
 }
