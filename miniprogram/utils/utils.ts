@@ -50,6 +50,7 @@ export const ExcuteWithProcessingAsync = async (actionAsync: Function, showToast
     wx.hideLoading();
     wx.showToast({ title: lang.failed, icon: 'none' });
     await HandleException('ExcuteWithProcessingAsync', error);
+    console.log(error);
   }
 }
 

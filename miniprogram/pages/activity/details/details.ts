@@ -8,6 +8,7 @@ import { CallCloudFuncAsync } from '@API/commonHelper';
 import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { SortDate } from '@Lib/dateExtension';
+import { WxShowModalAsync } from '@Lib/promisify';
 import { UserRole } from '@Lib/types';
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetCurrentUrl } from '@Lib/utils';
 import { iSection } from '@Model/index';
@@ -82,23 +83,15 @@ Page({
     });
 
     await ExcuteWithLoadingAsync(async () => {
-      const loadActivityTask = this.loadActivity();
+      const loadActivityTask = this.LoadActivity();
       const loadMeTask = this.LoadMe();
       await Promise.all([loadActivityTask, loadMeTask]);
 
+      await this.PopulateMyJoin();
       if ((this.data.myProfile.creditBalance ?? 0) < 0) {
         this.setData({ showLowCreditBalance: true });
       }
-
-      if (this.data.activity) {
-        const joinMore = this.data.activity.Attendees.filter(
-          (a: any) => a.memberId === this.data.myMemberId && a.isCancelled === false).length - 1;
-        this.setData({ joinMore });
-        await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
-      }
     });
-
-    
   },
 
   //#region private method
@@ -113,7 +106,7 @@ Page({
     }
   },
 
-  async loadActivity() {
+  async LoadActivity() {
     const id = this.data.activityId;
     if (id.length > 0) {
       const activity = await LoadActivityByIdAsync(id);
@@ -148,6 +141,16 @@ Page({
     }
   },
 
+  async PopulateMyJoin() {
+    if (this.data.activity) {
+      const allMyJoins = this.data.activity.Attendees.filter(
+        (a: any) => a.memberId === this.data.myMemberId && a.isCancelled === false);
+      const joinMore = allMyJoins.length - 1;
+      this.setData({ joinMore });
+      await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
+    }
+  },
+
   navigateBack() {
     wx.navigateBack({
       delta: 0,
@@ -171,7 +174,8 @@ Page({
       const { join_more } = event.currentTarget.dataset;
       await ExcuteWithProcessingAsync(async () => {
         await JoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
-        await this.loadActivity();
+        await this.LoadActivity();
+        await this.PopulateMyJoin();
       });
     } else {
       const currentUrl = GetCurrentUrl();
@@ -183,31 +187,28 @@ Page({
 
   async cancelAsync(event: any) {
     const { join_more } = event.currentTarget.dataset;
-    await ExcuteWithProcessingAsync(async () => {
-      if (this.showCancelPolicyDialog()) {
+    if (this.showCancelPolicyDialog()) {
+      return;
+    }
+
+    if (this.data.myProfile.continueWeeklyJoin && this.data.myProfile.continueWeeklyJoin > 0) {
+      const continueWeeklyJoin = this.data.myProfile.continueWeeklyJoin;
+      const discount = continueWeeklyJoin > 3 ? 3 : continueWeeklyJoin;
+      const { confirm } = await WxShowModalAsync({
+        title: '取消提示',
+        content: `您已经连续参加活动${continueWeeklyJoin}周次了，这次活动将有${discount} NZD折扣，取消后下次活动将不再享有折扣。`,
+        cancelText: '再想想',
+        confirmText: '难过取消'
+      });
+      if (confirm !== true) {
         return;
       }
+    }
 
-      // if (this.data.myProfile.continueWeeklyJoin && this.data.myProfile.continueWeeklyJoin > 0) {
-      //   wx.hideLoading();
-      //   const continueWeeklyJoin = this.data.myProfile.continueWeeklyJoin;
-      //   const activityPrice = this.data.activity.price;
-      //   const priceWithDisc = activityPrice - (continueWeeklyJoin > 3 ? 3 : continueWeeklyJoin);
-      //   const { cancel } = await utilWX.showModalPromisified({
-      //     title: '取消提示',
-      //     content: `您已经连续参加活动${continueWeeklyJoin}周次了，这次活动只需要${priceWithDisc} NZD，中断后下次活动将恢复至${activityPrice} NZD`,
-      //     cancelText: 'No',
-      //     confirmText: 'Yes'
-      //   });
-      //   if (cancel) {
-      //     return;
-      //   } else {
-      //     wx.showLoading({ title: 'Processing...', mask: true });
-      //   }
-      // }
-
+    await ExcuteWithProcessingAsync(async () => {
       await CancelJoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
-      await this.loadActivity();
+      await this.LoadActivity();
+      await this.PopulateMyJoin();
     });
   },
 
@@ -229,10 +230,8 @@ Page({
     const { section_index, join_more, member_id } = event.currentTarget.dataset;
     await ExcuteWithProcessingAsync(async () => {
       await AttendeeMoveSectionAsync(this.data.activityId, member_id, join_more, section_index);
-      await this.loadActivity();
+      await this.LoadActivity();
     });
   }
-
   //#endregion
-
 })

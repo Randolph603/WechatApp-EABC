@@ -23,11 +23,18 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/activity/list/list",
+          "pathName": "pages/activity/list/list",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/user/my/my",
           "pathName": "pages/user/my/my",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/activity/details/details",
@@ -61,13 +68,6 @@
           "name": "pages/admin/activityDetail/activityDetail",
           "pathName": "pages/admin/activityDetail/activityDetail",
           "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/activity/details/details",
-          "pathName": "pages/activity/details/details",
-          "query": "id=557814e1685896280385102239b48e94",
           "launchMode": "default",
           "scene": null
         },

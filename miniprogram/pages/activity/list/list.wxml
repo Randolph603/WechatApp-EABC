@@ -1,7 +1,7 @@
 <view>
   <view style="height: {{navBarHeight}}px;" />
 
-  <r-navigation-bar class="skyline-nav-bar" title="List" back="{{false}}">
+  <r-navigation-bar extClass="skyline-nav-bar" title="List" back="{{false}}">
     <view class="nav-left" slot="left">
       <image class="nav-back-image" bindtap="navigateHome" src="/static/icons/navigationbar/back-light.png" />
       <image class="nav-home-image" bindtap="navigateHome" src="/static/icons/navigationbar/home-light.png" />

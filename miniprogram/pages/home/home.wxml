@@ -1,7 +1,7 @@
 <view>
   <view style="height: {{navBarHeight}}px;" />
 
-  <r-navigation-bar class="skyline-nav-bar" title="" back="{{false}}">
+  <r-navigation-bar extClass="skyline-nav-bar" title="" back="{{false}}">
     <view class="nav-left" slot="left">
       <image class="nav-logo" mode="aspectFill" src="/static/images/icon.png" />
       <view class="nav-title">
