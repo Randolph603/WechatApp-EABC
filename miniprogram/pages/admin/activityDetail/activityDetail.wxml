@@ -135,7 +135,7 @@
         <mp-cell wx:for="{{matchedUsers}}" wx:key="key" wx:for-item="user">
           <view slot="title" class="view-row">
             <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-            <text style="margin-left: 20rpx;">{{user.nickName}} {{user.displayName?'('+user.displayName+')':''}}</text>
+            <text style="margin-left: 20rpx;">{{user.displayName}}</text>
           </view>
           <view wx:if="{{!utils.includesUser(groupedAttendees, user.memberId)}}" slot="footer">
             <button type="default" size="mini" data-user="{{user}}" data-more="{{0}}" bindtap="addAttendeeAsync">添加</button>
@@ -143,7 +143,7 @@
         </mp-cell>
       </mp-cells>
 
-      <view wx:if="{{!formData.isCompleted && groupedAttendees.length === 0}}" class="weui-btn-area">
+      <view wx:if="{{!formData.isCompleted && groupedAttendees.length === 0}}">
         <button class="weui-btn bottom-btn" type="primary" bindtap="autoAddAttendeesAsync">自动添加</button>
       </view>
 
@@ -154,7 +154,7 @@
               <view slot="title" class="view-row">
                 <image-loader bindtap="goToUserDetails" data-user="{{user}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
                 <view class="column-section">
-                  <text>{{user.displayName || user.nickName}} ({{user.creditBalance}} NZD)</text>
+                  <text>{{user.displayName}} ({{user.creditBalance}} NZD)</text>
                   <text>{{user.continueWeeklyJoin || 0}} Weeks</text>
                 </view>
               </view>

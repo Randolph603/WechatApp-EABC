@@ -4,7 +4,7 @@ import { GetUserByUnionId as MockGetUserByUnionId } from "../configs/mocks";
 import { UserRoleArray, LevelArray, UserGenderArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { WxGetFileInfoAsync } from "@Lib/promisify";
-import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
+import { CallCloudFuncAsync } from "./commonHelper";
 
 const SetupUserTypes = (user: any) => {
   if (user.avatarUrl.startsWith('cloud')) {
@@ -53,7 +53,7 @@ export const GetUserByMemberId = async (memberId: number) => {
   return user;
 }
 
-export const UploadAvatarImageAsync = async (filePath: string, memberId: number, avatarUrl: string, formData = {}) => {
+export const UploadAvatarImageAsync = async (filePath: string, memberId: number, avatarUrl: string) => {
   try {
     const fileRes = await WxGetFileInfoAsync({ filePath });
     if (fileRes.size > 1024 * 1024 * 2) {
@@ -61,29 +61,25 @@ export const UploadAvatarImageAsync = async (filePath: string, memberId: number,
         title: 'No more than 2MB',
         icon: 'none'
       })
-    } else {
-      if (memberId) {
-        const random6String = (Math.random() + 1).toString(36).substring(7);
-        const fileTypeArray = filePath.match(/\.[^.]+?$/);
-        const fileType = fileTypeArray ? fileTypeArray[0] : '';
-        const cloudPath = 'avatar/' + memberId + '-' + random6String + '-' + fileType;
+    } else if (memberId) {
+      const random6String = (Math.random() + 1).toString(36).substring(7);
+      const fileTypeArray = filePath.match(/\.[^.]+?$/);
+      const fileType = fileTypeArray ? fileTypeArray[0] : '';
+      const cloudPath = 'avatar/' + memberId + '-' + random6String + '-' + fileType;
 
-        const app = await GetCloudAsync();
-        // const UploadFileAsync = wxPromisify<any, any>(app.uploadFile); is not work
-        app.uploadFile({
-          cloudPath,//云存储图片名字
-          filePath,//临时路径
-          method: "post"
-        })
-          .then(async ({ fileID }) => {
-            const updateData = { ...formData, avatarUrl: fileID };
-            await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
-            await app.deleteFile({ fileList: [avatarUrl] });
-          });
-      }
+      const app = await GetCloudAsync();
+      const { fileID } = await app.uploadFile({
+        cloudPath,//云存储图片名字
+        filePath,//临时路径
+        method: "post"
+      });
+      await app.deleteFile({ fileList: [avatarUrl] });
+      return fileID;
     }
+    return null;
   } catch (error) {
     console.log(error);
+    return null;
   }
 }
 
@@ -124,4 +120,3 @@ export const SearchAllUsersAsync = async () => {
   users.forEach((u: any) => SetupUserTypes(u));
   return users;
 }
-

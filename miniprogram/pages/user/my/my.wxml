@@ -17,7 +17,7 @@
           <view class="view-row">
             <text class="user-status">{{myProfile.userRoleType.name}}</text>
             <image wx:if="{{myProfile.gender > 0}}" class="user-icon" src="/static/icons/{{myProfile.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-            <text class="user-name">{{myProfile.displayName || myProfile.nickName}}</text>
+            <text class="user-name">{{myProfile.displayName}}</text>
           </view>
           <button class="user-edit" plain="true" size="mini" bindtap='editProfile'>
             {{_lang.editProfile}}

@@ -1,6 +1,6 @@
 <mp-navigation-bar title='All ({{allUsers.length}}) {{total}}NZD' back="{{true}}" />
 
-<mp-searchbar placeholder="Search" cancelText="Cancel" value="{{searchTerm}}" bindclear="onSearchCancel" bindselectresult="onSearchChange" />
+<mp-searchbar placeholder="Search" cancelText="Cancel" value="{{searchTerm}}" bindclear="onSearchCancel" bindinput="onSearchChange" />
 
 <scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loadUserListAsync" refresher-triggered="{{triggered}}">
   <mp-cells>
@@ -11,7 +11,7 @@
             <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" mode="aspectFill" />
             <view class="info">
               <view class="{{user.isDeleted ? 'deleted' : ''}}">
-                <text>{{user.displayName || user.nickName}}</text>
+                <text>{{user.displayName}}</text>
               </view>
               <text class="member-id"> #{{user.memberId}} / {{user.userRoleType.name}}</text>
               <text class="member-id"> Continue: {{user.continueWeeklyJoin}}</text>

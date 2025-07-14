@@ -1,5 +1,6 @@
 import { SearchAllUsersAsync } from "@API/userService";
 import { ExcuteWithLoadingAsync } from "@Lib/utils"
+import { IOption } from "@Model/index";
 
 Page({
   data: {
@@ -35,6 +36,19 @@ Page({
     this.setData({
       searchTerm: '',
       filterUsers: this.data.allUsers,
+    });
+  },
+
+  onSearchChange(e: IOption) {
+    const searchText = e.detail.value;
+    const filterUsers = this.data.allUsers.filter((user: any) =>
+      user.displayName?.toLowerCase().includes(searchText.toLowerCase())
+      || user.bankName?.toLowerCase().includes(searchText.toLowerCase())
+      || user.memberId.toString().includes(searchText.toLowerCase())
+    );
+    this.setData({
+      searchTerm: searchText,
+      filterUsers: filterUsers,
     });
   },
 })

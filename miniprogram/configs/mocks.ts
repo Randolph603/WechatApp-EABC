@@ -1,7 +1,7 @@
 const UserList = [
   {
     avatarUrl: "/mocks/avatar1.jpg",
-    nickName: "尝尝唱唱唱changchangchang",
+    displayName: "尝尝唱唱唱changchangchang",
     gender: 1,
     memberId: 10001,
     powerPoint: 123,
@@ -11,7 +11,7 @@ const UserList = [
   },
   {
     avatarUrl: "/mocks/avatar2.jpg",
-    nickName: "Juliet",
+    displayName: "Juliet",
     gender: 2,
     memberId: 10002,
     powerPoint: 123,
@@ -21,7 +21,7 @@ const UserList = [
   },
   {
     avatarUrl: "/mocks/avatar3.jpg",
-    nickName: "KK",
+    displayName: "KK",
     gender: 0,
     memberId: 10003,
     powerPoint: 123,
@@ -31,7 +31,7 @@ const UserList = [
   },
   {
     avatarUrl: "/mocks/avatar4.jpg",
-    nickName: "KK",
+    displayName: "KK",
     gender: 2,
     memberId: 10004,
     powerPoint: 123,
@@ -41,7 +41,7 @@ const UserList = [
   },
   {
     avatarUrl: "/mocks/avatar5.jpg",
-    nickName: "KK",
+    displayName: "KK",
     gender: 1,
     memberId: 10005,
     powerPoint: 123,

@@ -7,5 +7,6 @@
     "mp-badge": "weui-miniprogram/badge/badge",
     "image-loader": "/components/image-loader/image-loader"
   },
+  "disableScroll": true,
   "renderer": "webview"
 }

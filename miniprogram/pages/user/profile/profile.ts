@@ -3,6 +3,7 @@ import { GetUserByMemberId, RegisterNewUserAsync, UploadAvatarImageAsync } from 
 import { GetLaguageMap } from "@Language/languageUtils";
 import { LevelArray, UserGender, UserGenderArray, UserLevel } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
+import { ProfileModel } from "@Model/iUser";
 
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
 
@@ -16,11 +17,11 @@ Page({
     callbackUrl: '',
     // Variables
     avatarUrl: defaultAvatarUrl,
-    user: null,
+    user: null as any,
     formData: {},
     rules: [
       { name: 'displayName', rules: { required: true, maxlength: 20, message: 'name is required with max 20 characters' } },
-      { name: 'gender', rules: { required: true } },
+      { name: 'gender', rules: { required: true, min: 1, message: 'Gender is required' } },
       { name: 'genderType', rules: { required: false } },
       { name: 'userLevel', rules: { required: true } },
       { name: 'userLevelType', rules: { required: false } },
@@ -58,7 +59,6 @@ Page({
         }
       }
       this.setData({ user, formData, isLoaded: true });
-
     });
   },
 
@@ -92,30 +92,31 @@ Page({
   },
 
   async submitForm() {
-    await ExcuteWithProcessingAsync(() => {
-      this.selectComponent('#form').validate(async (valid: any, errors: any) => {
-        if (!valid) {
-          const firstError = Object.keys(errors);
-          console.log(firstError);
-          if (firstError.length) {
-            wx.showToast({
-              title: errors[firstError[0]].message,
-              icon: 'none',
-            });
-          }
-        } else {
+    this.selectComponent('#form').validate(async (valid: any, errors: any) => {
+      if (!valid) {
+        const firstError = Object.keys(errors);
+        console.log(firstError);
+        if (firstError.length) {
+          wx.showToast({
+            title: errors[firstError[0]].message,
+            icon: 'none',
+          });
+        }
+      } else {
+        await ExcuteWithProcessingAsync(async () => {
           try {
-            if (!this.data.user) {
+            const existingUser = this.data.user;
+            if (!existingUser) {
               // update avatar need to know member id, register first if no member id
               const newUser = await RegisterNewUserAsync();
-              await this.save(newUser);
+              await this.Save(newUser.memberId, newUser.avatarUrl);
             } else {
-              await this.save(this.data.user);
+              await this.Save(existingUser.memberId, existingUser.avatarUrl);
             }
 
             if (this.data.callbackUrl) {
               wx.reLaunch({
-                url: '/' + this.data.callbackUrl + '?fromCallback=true',                
+                url: '/' + this.data.callbackUrl + '?fromCallback=true',
               })
             } else {
               wx.navigateBack({ delta: 0 })
@@ -123,19 +124,21 @@ Page({
           } catch (e) {
             console.log(e);
           }
-        }
-      })
+        });
+      }
     });
   },
 
-  async save(user: any) {
-    const { memberId, avatarUrl } = user;
+  async Save(memberId: number, avatarUrl: string) {
     if (!memberId) return;
-    const { avatarUrl: filePath } = this.data;
-    if (filePath !== avatarUrl && filePath !== defaultAvatarUrl) {
-      await UploadAvatarImageAsync(filePath, memberId, avatarUrl, this.data.formData);
+    const { avatarUrl: newAvatarUrl } = this.data;
+    if (newAvatarUrl !== avatarUrl && newAvatarUrl !== defaultAvatarUrl) {
+      const fileID = await UploadAvatarImageAsync(newAvatarUrl, memberId, avatarUrl);
+      const updateData = { ...new ProfileModel(this.data.formData), avatarUrl: fileID };
+      await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
     } else {
-      const updateData = { ...this.data.formData };
+      // Save without AvatarUrl
+      const updateData = new ProfileModel(this.data.formData);
       await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
     }
   },

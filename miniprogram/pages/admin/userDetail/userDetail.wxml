@@ -1,2 +1,36 @@
-<!--pages/admin/userDetail/userDetail.wxml-->
-<text>pages/admin/userDetail/userDetail.wxml</text>
+<mp-navigation-bar title='会员' ext-class="nav-bar" back="{{true}}" />
+
+<scroll-view wx:if="{{isLoaded}}" class="scroll" scroll-y>
+  <mp-form id="form" rules="{{rules}}" models="{{formData}}">
+    <mp-cells title="会员信息">
+      <mp-cell title="会员号">
+        <text>#{{user.memberId}}</text>
+        <image-loader slot="footer" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' width="100rpx" height="100rpx" mode="aspectFill" />
+      </mp-cell>
+      <mp-cell title="昵称">
+        <input bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.displayNamePlaceholder}}" />
+      </mp-cell>
+      <mp-cell show-error prop="userRole" title="权限">
+        <picker bindchange="rolePickerChange" range="{{userRoleArray}}" range-key="name" value="{{formData.userRole}}">
+          <view class="picker"> {{formData.userRoleType.name}} </view>
+        </picker>
+      </mp-cell>
+      <mp-cell title="性别" show-error prop="gender">
+        <picker bindchange="genderPickerChange" range="{{genderArray}}" range-key="name" value="{{formData.gender}}">
+          <view class="picker"> {{formData.genderType.name}} </view>
+        </picker>
+      </mp-cell>
+      <mp-cell title="级别" show-error prop="userLevel">
+        <picker bindchange="levelPickerChange" range="{{levelArray}}" range-key="name" value="{{formData.userLevel}}">
+          <view class="picker"> {{formData.userLevelType.name}} </view>
+        </picker>
+      </mp-cell>
+    </mp-cells>
+
+    <view class="bottom-btn-area">
+      <button class="weui-btn" style="background: #346Fc2" type="primary" bindtap="submitForm">
+        保存
+      </button>
+    </view>
+  </mp-form>
+</scroll-view>

@@ -2,47 +2,36 @@
 
 <scroll-view wx:if="{{isLoaded}}" class="scroll" scroll-y>
   <mp-form id="form" rules="{{rules}}" models="{{formData}}">
-    <mp-cells>
-      <mp-cell>
-        <view slot="title" class="weui-label">{{_lang.memberId}}</view>
-        <text class="weui-input">{{user ? '#'+user.memberId : _lang.noMemberId}}</text>
-      </mp-cell>
+    <mp-cell title="{{_lang.memberId}}">
+      <text>{{user ? '#'+user.memberId : _lang.noMemberId}}</text>
+    </mp-cell>
+    <mp-cell title="{{_lang.avatar}}">
+      <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{avatarUrl}}' ext-class="user-avatar" mode="aspectFill" />
 
-      <mp-cell>
-        <view slot="title" class="weui-label">{{_lang.avatar}}</view>
+      <button slot="footer" style="color: #346FC2; font-size: 14px; border-color: #346FC2;" size="mini" plain="true" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">{{_lang.setAvatar}}</button>
+    </mp-cell>
 
-        <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{avatarUrl}}' ext-class="user-avatar" mode="aspectFill" />
+    <mp-cell title="*{{_lang.displayName}}" show-error prop="displayName">
+      <input bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.displayNamePlaceholder}}" />
+    </mp-cell>
 
-        <button slot="footer" style="color: #346FC2; font-size: 14px; border-color: #346FC2;" size="mini" plain="true" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">{{_lang.setAvatar}}</button>
-      </mp-cell>
+    <mp-cell title="*{{_lang.gender}}" show-error prop="gender">
+      <picker bindchange="genderPickerChange" range="{{genderArray}}" range-key="name" value="{{formData.gender}}">
+        <view class="picker"> {{formData.genderType.name}} </view>
+      </picker>
+    </mp-cell>
 
-      <mp-cell show-error prop="displayName">
-        <view slot="title" class="weui-label">{{_lang.nickName}}</view>
+    <mp-cell title="{{_lang.level}}" show-error prop="userLevel">
+      <picker bindchange="levelPickerChange" range="{{levelArray}}" range-key="name" value="{{formData.userLevel}}">
+        <view class="picker"> {{formData.userLevelType.name}} </view>
+      </picker>
+      <mp-badge slot="footer" wx:if="{{formData.userLevel === 0}}" content="New" color="#888" extClass="view-row" />
+    </mp-cell>
 
-        <input bindinput="formTextChange" class="weui-input" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.nickNamePlaceholder}}" />
-      </mp-cell>
+    <text style="font-size: 12px; margin-left: 17px; color: rgb(167, 160, 160);">*为必填选项</text>
 
-      <mp-cell show-error prop="gender">
-        <view slot="title" class="weui-label"> {{_lang.gender}} </view>
-        <picker bindchange="genderPickerChange" range="{{genderArray}}" range-key="name" value="{{formData.gender}}">
-          <view class="picker"> {{formData.genderType.name}} </view>
-        </picker>
-        <mp-badge slot="footer" wx:if="{{formData.gender === 0}}" content="New" color="#888" extClass="mp-row" />
-      </mp-cell>
-
-      <mp-cell show-error prop="userLevel">
-        <view class="weui-cell__hd" slot="title">
-          <view class="weui-label">{{_lang.level}} </view>
-        </view>
-        <picker bindchange="levelPickerChange" range="{{levelArray}}" range-key="name" value="{{formData.userLevel}}">
-          <view class="picker"> {{formData.userLevelType.name}} </view>
-        </picker>
-        <mp-badge slot="footer" wx:if="{{formData.userLevel === 0}}" content="New" color="#888" extClass="mp-row" />
-      </mp-cell>
-    </mp-cells>
-
-    <view class="weui-btn-area" style="display: flex;">
-      <button class="weui-btn bottom-btn" style="background: #346Fc2" type="primary" bindtap="submitForm">
+    <view class="bottom-btn-area">
+      <button class="weui-btn" style="background: #346Fc2" type="primary" bindtap="submitForm">
         {{user ? _lang.save: _lang.register}}
       </button>
     </view>
