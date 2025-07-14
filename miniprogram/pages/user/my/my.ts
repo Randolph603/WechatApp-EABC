@@ -78,6 +78,13 @@ Page({
     }
   },
 
+  register() {
+    const currentUrl = GetCurrentUrl();
+    wx.redirectTo({
+      url: `/pages/user/profile/profile?callbackUrl=${currentUrl}`,
+    });
+  },
+
   editProfile() {
     const currentUrl = GetCurrentUrl();
     wx.navigateTo({

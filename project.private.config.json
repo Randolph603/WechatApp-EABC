@@ -23,11 +23,18 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/user/my/my",
+          "pathName": "pages/user/my/my",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
           "name": "pages/admin/userDetail/userDetail",
           "pathName": "pages/admin/userDetail/userDetail",
           "query": "memberId=10024",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/admin/userList/userList",

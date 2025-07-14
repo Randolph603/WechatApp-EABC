@@ -3,7 +3,7 @@
   <view class="view-row" wx:if='{{!hasAuth}}'>
     <image class="user-avatar" src='/static/images/blank-profile.jpg' mode="aspectFill" />
     <button wx:if='{{!isLoaded}}'>Loading...</button>
-    <button wx:else bindtap='loginOrRefresh'>
+    <button wx:else bindtap='register'>
       {{_lang.register}}
     </button>
   </view>
@@ -38,11 +38,11 @@
         <text>{{_lang.balance}}</text>
       </view>
       <view class="view-column" style="align-items: center;">
-        <view>{{myProfile.continueWeeklyJoin}} <text style="font-size: 11px;">{{_lang.week}}</text></view>
+        <view>{{myProfile.continueWeeklyJoin || 0}} <text style="font-size: 11px;">{{_lang.week}}</text></view>
         <text>{{_lang.continueWeekly}}</text>
       </view>
       <view class="view-column" style="align-items: center;">
-        <text>{{myProfile.powerPoint}}</text>
+        <text>{{myProfile.powerPoint || 0}}</text>
         <text>{{_lang.points}}</text>
       </view>
       <view class="view-column" style="align-items: center;">

@@ -16,11 +16,14 @@ Page({
   },
 
   async onLoad() {
+    UpdateTabBarLaguage();
+  },
+
+  async onShow(){
     try {
-      UpdateTabBarLaguage();
       await this.fetchAllDataAsync();
     } catch (error) {
-      await HandleException('onLoad', error)
+      await HandleException('onShow', error)
     }
   },
 
