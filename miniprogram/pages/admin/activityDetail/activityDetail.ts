@@ -1,27 +1,31 @@
-import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, JoinActivityAsync, LoadActivityByIdAsync } from "@API/activityService";
+import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityByIdAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
-import { ToNZDateString, ToNZTimeRangeString, ToNZTimeString } from "@Lib/dateExtension";
-import { ActivityType, ActivityTypeArray } from "@Lib/types";
-import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight, ToNumberOrString } from "@Lib/utils";
-import { IOption, iActivity, ToActivity, iSection } from "@Model/index";
+import { ToNZTimeRangeString } from "@Lib/dateExtension";
+import { ActivityTypeArray, ConverPageArray } from "@Lib/types";
+import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
+import { ActivityModel } from "@Model/Activity";
+import { IOption, iSection } from "@Model/index";
 
-const converPageArray = [
-  'badmintonCover1.jpg',
-  'badmintonCover2.jpg',
+const rules = [
+  { name: 'title', rules: { required: true, message: '请输入名称' } },
+  { name: 'organizerMemberId', rules: { required: true } },
+  { name: 'type', rules: { required: true } },
+  { name: 'address', rules: { required: true } },
+  { name: 'courts', rules: { required: true, message: '请输入场地' } },
+  { name: 'maxAttendee', rules: { required: true } },
+  { name: 'coverImage', rules: { required: true } },
+  { name: 'startTime', rules: { required: true, message: '请输入日期和时间' } },
+  { name: 'sections', rules: { required: true, minlength: 1, message: 'Section不能为空' }, },
+  { name: 'isCancelled', rules: { required: true } },
+  { name: 'isCompleted', rules: { required: true } },
+  { name: 'toPublic', rules: { required: true } },
+  { name: 'updateDate', rules: { required: false } },
+  { name: 'viewCount', rules: { required: false } },
+  { name: 'shareCount', rules: { required: false } },
 ];
 
-const newSection: iSection = {
-  index: 0,
-  title: '娱乐区',
-  price: 17,
-  time: ToNZTimeString(new Date()),
-  timeRange: ToNZTimeRangeString(new Date(), 120),
-  during: 120,
-  maxAttendee: 24,
-  courts: [1, 2, 3, 4],
-  isLocked: false,
-}
+let allActiveAttendees: any[] = [];
 
 Page({
   data: {
@@ -29,34 +33,16 @@ Page({
     navBarHeight: GetNavBarHeight() + 10,
     // Tab
     selectedTab: 0,
-    activityId: '',
     // Info Page
-    date: ToNZDateString(new Date()),
-    type: ActivityType.Section,
-    formData: {} as iActivity,
+    activityId: null as unknown as string,
+    formData: null as unknown as ActivityModel,
     typeArray: ActivityTypeArray,
     courtArray: [1, 2, 3, 4, 5, 6, 7, 8],
-    converPageArray: converPageArray,
-    rules: [
-      { name: 'title', rules: { required: true, message: '请输入名称' } },
-      { name: 'type', rules: { required: true } },
-      { name: 'address', rules: { required: true } },
-      { name: 'courts', rules: { required: true, message: '请输入场地' } },
-      { name: 'maxAttendee', rules: { required: true } },
-      { name: 'coverImage', rules: { required: true } },
-      { name: 'startTime', rules: { required: true, message: '请输入日期和时间' } },
-      { name: 'sections', rules: { required: true, minlength: 1, message: 'Section不能为空' }, },
-      { name: 'isCancelled', rules: { required: true } },
-      { name: 'isCompleted', rules: { required: true } },
-      { name: 'toPublic', rules: { required: true } },
-      { name: 'updateDate', rules: { required: false } },
-      { name: 'viewCount', rules: { required: false } },
-      { name: 'shareCount', rules: { required: false } },
-    ],
+    converPageArray: ConverPageArray,
+    rules: rules,
     //Attendees page
     searchTerm: '',
-    matchedUsers: [],
-    allActiveAttendees: [] as any[],
+    matchedUsers: [] as any[],
     groupedAttendees: [] as any[]
   },
 
@@ -65,47 +51,34 @@ Page({
     if (activityId) {
       await this.ReloadActivityByIdAsync(activityId);
     } else {
-      const initData = {
-        title: '双打羽毛球',
-        organizerMemberId: 10024,
-        type: ActivityType.Section.value,
-        address: 'Lloyd Elsmore Park Badminton',
-        courts: [5, 6, 7, 8],
-        maxAttendee: newSection.maxAttendee,
-        coverImage: converPageArray[0],
-        startTime: new Date(),
-        updateDate: new Date(),
-        isCancelled: false,
-        isCompleted: false,
-        toPublic: true,
-        sections: [newSection],
-        viewCount: 0,
-        shareCount: 0,
-      } as iActivity;
-      this.setData({ formData: initData });
+      const activity = GetNewActivity();
+      const formData = new ActivityModel(activity);
+      this.setData({
+        formData: formData,
+        activity: activity
+      });
     }
   },
 
   async ReloadActivityByIdAsync(activityId: string) {
     await ExcuteWithLoadingAsync(async () => {
       const activity = await LoadActivityByIdAsync(activityId);
-      const formData = ToActivity(activity);
-      const allActiveAttendees = activity.Attendees.filter((a: any) => !a.isCancelled);
+      const formData = new ActivityModel(activity);
+
       this.setData({
         activityId: activityId,
-        date: ToNZDateString(activity.startTime),
-        type: ActivityTypeArray.find(x => x.value === activity.type),
         formData: formData,
-        allActiveAttendees: allActiveAttendees
+        activity: activity
       });
 
+      allActiveAttendees = activity.Attendees.filter((a: any) => !a.isCancelled);
       this.generateGroupAttendees();
     });
   },
 
   generateGroupAttendees() {
     const groupedAttendees: any = [];
-    const activeAttendeesGroup = this.data.allActiveAttendees
+    const activeAttendeesGroup = allActiveAttendees
       .reduce((acc: any, currentValue: any) => {
         let groupKey = currentValue['memberId'];
         if (!acc[groupKey]) {
@@ -153,7 +126,7 @@ Page({
     const typeArrayIndex = Number(e.detail.value);
     const selectedType = this.data.typeArray[typeArrayIndex];
     this.setData({
-      [`type`]: selectedType,
+      [`activity.typeValue`]: selectedType,
       [`formData.type`]: selectedType.value
     });
   },
@@ -172,14 +145,14 @@ Page({
     existingDate.setMonth(newDate.getMonth());
     existingDate.setDate(newDate.getDate());
     this.setData({
-      [`date`]: e.detail.value,
+      [`activity.startTimeDate`]: e.detail.value,
       ['formData.startTime']: existingDate
     });
   },
 
   coverImageRadioChange(e: IOption) {
     const coverIndex = Number(e.detail.value);
-    const coverImage = converPageArray[coverIndex];
+    const coverImage = ConverPageArray[coverIndex];
     this.setData({
       [`formData.coverImage`]: coverImage,
     });
@@ -187,25 +160,29 @@ Page({
 
   addSection() {
     const existing = this.data.formData.sections;
-    const addSection = existing.length > 0 ? { ...existing[0] } : { ...newSection };
+    const addSection = { ...existing[0] };
     addSection.index = existing.length;
     existing.push(addSection);
     this.setData({
-      [`formData.sections`]: existing
+      [`formData.sections`]: existing,
+      [`formData.maxAttendee`]: this.data.formData.sections.reduce((acc: number, element: iSection) => acc + element.maxAttendee, 0)
     });
   },
 
   removeSection() {
     const existing = this.data.formData.sections;
-    existing.pop();
-    this.setData({
-      [`formData.sections`]: existing
-    });
+    if (existing.length > 1) {
+      existing.pop();
+      this.setData({
+        [`formData.sections`]: existing,
+        [`formData.maxAttendee`]: this.data.formData.sections.reduce((acc: number, element: iSection) => acc + element.maxAttendee, 0)
+      });
+    }
   },
 
   handleSectionChange(e: IOption) {
-    const { id, field } = e.currentTarget.dataset;
-    const newValue = ToNumberOrString(e.detail.value);
+    const { id, field, is_number } = e.currentTarget.dataset;
+    const newValue = is_number ? Number(e.detail.value) : e.detail.value;
     this.setData({
       [`formData.sections[${id}].${field}`]: newValue
     });
@@ -239,44 +216,35 @@ Page({
     });
   },
 
-  sectionBooleanChange(e: IOption) {
-    const { id, field } = e.currentTarget.dataset;
-    this.setData({
-      [`formData.sections[${id}].${field}`]: e.detail.value
-    });
-  },
-
   async submitForm() {
-    await ExcuteWithProcessingAsync(() => {
-      this.selectComponent('#form').validate(async (valid: any, errors: any) => {
-        if (!valid) {
-          const firstError = Object.keys(errors)
-          if (firstError.length) {
-            wx.showToast({
-              title: errors[firstError[0]].message,
-              icon: 'none',
-            });
-          }
-        } else {
-          const activityToAdd = { ...this.data.formData };
+    this.selectComponent('#form').validate(async (valid: any, errors: any) => {
+      if (!valid) {
+        const firstError = Object.keys(errors)
+        if (firstError.length) {
+          wx.showToast({
+            title: errors[firstError[0]].message,
+            icon: 'none',
+          });
+        }
+      } else {
+        await ExcuteWithProcessingAsync(async () => {
+          const activityToAdd = this.data.formData;
           if (this.data.activityId) {
             const { startTime, updateDate, ...activityToUpdate } = activityToAdd;
-
             const startTimeString = JSON.stringify(this.data.formData.startTime);
             const updateDateString = JSON.stringify(new Date());
             const updateDateData = { startTime: startTimeString, updateDate: updateDateString };
 
             await UpdateRecordAsync('Activities', { _id: this.data.activityId }, activityToUpdate, updateDateData)
           } else {
-
             // new a activity
             const { id } = await AddActivityAsync(activityToAdd);
             if (id) {
               this.setData({ activityId: id });
             }
           }
-        }
-      });
+        });
+      }
     });
   },
   //#endregion
@@ -317,9 +285,7 @@ Page({
       if (activityId) {
         await JoinActivityAsync(activityId, user.memberId, more);
         user.joinMore = more;
-        this.setData({
-          allActiveAttendees: [user, ...this.data.allActiveAttendees]
-        });
+        allActiveAttendees.push(user);
         this.generateGroupAttendees();
       };
     }, false);
@@ -333,20 +299,18 @@ Page({
     const activityId = this.data.activityId;
 
     await ExcuteWithProcessingAsync(async () => {
-      let allActiveAttendees = [];
+      let newAllActiveAttendees = [];
       if (more > 0) {
         await CancelJoinActivityAsync(activityId, memberId, more);
-        allActiveAttendees = this.data.allActiveAttendees
+        newAllActiveAttendees = allActiveAttendees
           .filter((a: any) => !(a.memberId === memberId && a.joinMore === more));
       } else {
         await CancelJoinActivityAsync(activityId, memberId, undefined);
-        allActiveAttendees = this.data.allActiveAttendees
+        newAllActiveAttendees = allActiveAttendees
           .filter((a: any) => a.memberId !== memberId);
       }
 
-      this.setData({
-        allActiveAttendees: allActiveAttendees
-      });
+      allActiveAttendees = newAllActiveAttendees
       this.generateGroupAttendees();
     }, false);
   },
@@ -370,15 +334,13 @@ Page({
       });
       await Promise.all(promiseList);
 
-      this.setData({
-        allActiveAttendees: users
-      });
+      allActiveAttendees = users;
       this.generateGroupAttendees();
     }, false);
   },
 
   async confirmActivityAsync() {
-    const vipMemberIds = [10000];
+    // const vipMemberIds = [10000];
 
     const activityId = this.data.activityId;
     const sections = this.data.formData.sections;
@@ -389,9 +351,9 @@ Page({
         a.sectionIndexs.forEach((sectionIndex: number) => {
           const section = sections[sectionIndex];
           let price = section.price - discount;
-          if (vipMemberIds.includes(a.memberId)) {
-            price = 14;
-          }
+          // if (vipMemberIds.includes(a.memberId)) {
+          //   price = 14;
+          // }
           charge = charge + price;
         });
 

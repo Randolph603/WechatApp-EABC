@@ -1,4 +1,4 @@
-import { iActivity, iSection, ToActivity } from "./iActivity";
+import { iActivity, iSection } from "./Activity";
 import { IOption } from "./iOption";
 import { iUser } from "./iUser";
 
@@ -6,6 +6,5 @@ export {
   iUser,
   iActivity,
   iSection,
-  ToActivity,
   IOption,
 }

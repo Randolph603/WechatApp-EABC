@@ -1,9 +1,22 @@
 import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
-import { ToDayOfWeekString, ToNZShortDateString, ToNZTimeRangeString } from "@Lib/dateExtension";
-import { LevelArray } from "@Lib/types";
+import { ToDayOfWeekString, ToNZDateString, ToNZShortDateString } from "@Lib/dateExtension";
+import { ActivityTypeArray, LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { GetCloudAsync } from "./databaseService";
-import { iActivity } from "miniprogram/models";
+import { ActivityModel } from "@Model/Activity";
+
+const SetupActivity = (activity: any) => {
+  activity.coverImageSrc = "/static/images/" + activity.coverImage;
+  activity.startTimeDate = ToNZDateString(activity.startTime);
+  activity.date = `${ToNZShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
+  activity.typeValue = ActivityTypeArray[activity.type];
+}
+
+export const GetNewActivity = () => {
+  const activity = new ActivityModel();
+  SetupActivity(activity);
+  return activity;
+}
 
 export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boolean | undefined) => {
   let data = {
@@ -12,11 +25,7 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
     limit: limit,
   };
   const { activities } = await CallCloudFuncAsync('activity_search', data)
-  activities.forEach((activity: any) => {
-    activity.coverImageSrc = "/static/images/" + activity.coverImage;
-    activity.date = ToNZShortDateString(activity.startTime);
-    activity.dayOfWeek = ToDayOfWeekString(activity.startTime);
-  });
+  activities.forEach(SetupActivity);
   return activities;
 }
 
@@ -27,10 +36,7 @@ export const LoadActivityByIdAsync = async (id: string) => {
   };
 
   const { activity } = await CallCloudFuncAsync('activity_getById', data);
-
-  activity.coverImageSrc = "/static/images/" + activity.coverImage;
-  activity.date = `${ToNZShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
-  activity.time = ToNZTimeRangeString(activity.startTime, activity.during);
+  SetupActivity(activity);
 
   activity.Attendees.forEach((user: any) => {
     user.userLevelType = LevelArray[user.userLevel];
@@ -93,7 +99,7 @@ export const AttendeeMoveSectionAsync = async (activityId: string, memberId: num
   }
 }
 
-export const AddActivityAsync = async (activityToAdd: iActivity): Promise<any> => {
+export const AddActivityAsync = async (activityToAdd: ActivityModel): Promise<any> => {
   try {
     const app = await GetCloudAsync();
     const db = app.database();

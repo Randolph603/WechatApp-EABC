@@ -86,8 +86,8 @@ Page({
       const loadActivityTask = this.LoadActivity();
       const loadMeTask = this.LoadMe();
       await Promise.all([loadActivityTask, loadMeTask]);
-
       await this.PopulateMyJoin();
+      this.setData({ isLoaded: true });
       if ((this.data.myProfile.creditBalance ?? 0) < 0) {
         this.setData({ showLowCreditBalance: true });
       }
@@ -135,8 +135,7 @@ Page({
         activity,
         allSections,
         allJoinedAttendeesCount: allJoinedAttendees.length,
-        allCancelledAttendees,
-        isLoaded: true
+        allCancelledAttendees
       });
     }
   },

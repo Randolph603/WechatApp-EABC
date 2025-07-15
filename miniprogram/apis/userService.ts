@@ -44,7 +44,6 @@ export const GetUserByMemberId = async (memberId: number) => {
   if (user) {
     SetupUserTypes(user);
   }
-
   return user;
 }
 

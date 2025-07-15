@@ -9,6 +9,11 @@ const activityType = {
 export const ActivityType = activityType;
 export const ActivityTypeArray = [activityType.Section, activityType.Rank];
 
+export const ConverPageArray = [
+  'badmintonCover1.jpg',
+  'badmintonCover2.jpg',
+];
+
 const userRole = {
   Unknown: { value: 0, name: 'New' },
   Admin: { value: 1, name: 'Admin' },

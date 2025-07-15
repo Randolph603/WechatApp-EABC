@@ -57,7 +57,7 @@
           <view class="boxTxt">
             <view class="title">[{{_lang.area}}] {{item.title}}</view>
             <view class="info"> {{_lang.address}}: {{item.address}}</view>
-            <view class="info"> {{_lang.date}}: {{item.date}} ({{item.dayOfWeek}})</view>
+            <view class="info"> {{_lang.date}}: {{item.date}}</view>
             <view class="bottom">
               <view class="info"> {{_lang.attendee}}：{{item.Attendees.length}}/{{item.maxAttendee}}</view>
               <view class="look">

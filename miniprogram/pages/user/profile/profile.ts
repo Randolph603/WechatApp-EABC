@@ -36,29 +36,31 @@ Page({
       this.setData({ callbackUrl });
     }
 
+    let formData = {
+      displayName: '',
+      gender: UserGender.Unknown.value,
+      genderType: UserGender.Unknown,
+      userLevel: UserLevel.Unknown.value,
+      userLevelType: UserLevel.Unknown,
+    };
+
     await ExcuteWithLoadingAsync(async () => {
-      const id = Number(memberId);
-      const user = await GetUserByMemberId(id);
-      let formData = {};
-      if (user) {
-        formData = {
-          displayName: user.displayName,
-          gender: user.gender,
-          genderType: user.genderType,
-          userLevel: user.userLevel,
-          userLevelType: user.userLevelType,
+      if (memberId) {
+        const id = Number(memberId);
+        const user = await GetUserByMemberId(id);
+        if (user) {
+          formData = {
+            displayName: user.displayName,
+            gender: user.gender,
+            genderType: user.genderType,
+            userLevel: user.userLevel,
+            userLevelType: user.userLevelType,
+          }
+          this.setData({ avatarUrl: user.avatarUrl });
         }
-        this.setData({ avatarUrl: user.avatarUrl });
-      } else {
-        formData = {
-          displayName: '',
-          gender: UserGender.Unknown.value,
-          genderType: UserGender.Unknown,
-          userLevel: UserLevel.Unknown.value,
-          userLevelType: UserLevel.Unknown,
-        }
+        this.setData({ user });
       }
-      this.setData({ user, formData, isLoaded: true });
+      this.setData({ formData, isLoaded: true });
     });
   },
 
@@ -131,16 +133,12 @@ Page({
 
   async Save(memberId: number, avatarUrl: string) {
     if (!memberId) return;
-    const { avatarUrl: newAvatarUrl } = this.data;
-    if (newAvatarUrl !== avatarUrl && newAvatarUrl !== defaultAvatarUrl) {
-      const fileID = await UploadAvatarImageAsync(newAvatarUrl, memberId, avatarUrl);
-      const updateData = { ...new ProfileModel(this.data.formData), avatarUrl: fileID };
-      await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
-    } else {
-      // Save without AvatarUrl
-      const updateData = new ProfileModel(this.data.formData);
-      await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
-    }
+    const newAvatarUrl = this.data.avatarUrl;
+    const fileID = (newAvatarUrl !== avatarUrl && newAvatarUrl !== defaultAvatarUrl)
+      ? await UploadAvatarImageAsync(newAvatarUrl, memberId, avatarUrl)
+      : undefined;
+    const updateData = { ...new ProfileModel(this.data.formData), avatarUrl: fileID };
+    await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
   },
 
   //#endregion

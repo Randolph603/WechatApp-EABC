@@ -66,15 +66,3 @@ export const ExcuteWithLoadingAsync = async (actionAsync: Function) => {
     await HandleException('ExcuteWithLoadingAsync', error);
   }
 }
-
-// console.log(isNumeric("123"));   // true
-// console.log(isNumeric("TEST"));  // false
-// console.log(isNumeric("123abc")); // false
-// console.log(isNumeric("  "));    // false (becomes 0 with Number(), so be careful)
-export const IsNumeric = (value: string): boolean => {
-  return !isNaN(Number(value));
-}
-
-export const ToNumberOrString = (value: any): string | number | boolean => {
-  return IsNumeric(value) ? Number(value) : value;
-}
