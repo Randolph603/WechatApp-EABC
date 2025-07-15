@@ -41,10 +41,10 @@
             <text> {{formData.maxAttendee}} </text>
             <text slot="footer">人</text>
           </mp-cell>
-          <mp-cell show-error prop="coverImageSrc" title="封面">
+          <mp-cell show-error prop="coverImage" title="封面">
             <radio-group class="wrap-row" bindchange="coverImageRadioChange">
-              <radio wx:for="{{converPageArray}}" wx:key="index" value="{{index}}" checked="{{formData.coverImageSrc === item}}">
-                <image class="coverImage" src="{{item}}" mode="aspectFill" />
+              <radio wx:for="{{converPageArray}}" wx:key="index" value="{{index}}" checked="{{formData.coverImage === item}}">
+                <image class="coverImage" src="/static/images/{{item}}" mode="aspectFill" />
               </radio>
             </radio-group>
           </mp-cell>
@@ -159,9 +159,9 @@
                 </view>
               </view>
               <view slot="footer" class="view-row">
-                <image data-user="{{user}}" data-more="{{user.totalJoinMore}}" bindtap="removeAttendeeAsync" class="footer-icon" src="/static/icons/minus.png" />
+                <image wx:if="{{!formData.isCompleted}}" data-user="{{user}}" data-more="{{user.totalJoinMore}}" bindtap="removeAttendeeAsync" class="footer-icon" src="/static/icons/minus.png" />
                 <text>+{{user.totalJoinMore||0}}</text>
-                <image data-user="{{user}}" data-more="{{user.totalJoinMore + 1}}" bindtap="addAttendeeAsync" class="footer-icon" src="/static/icons/add.png" />
+                <image wx:if="{{!formData.isCompleted}}" data-user="{{user}}" data-more="{{user.totalJoinMore + 1}}" bindtap="addAttendeeAsync" class="footer-icon" src="/static/icons/add.png" />
               </view>
             </mp-cell>
           </mp-slideview>

@@ -7,8 +7,8 @@ import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight, ToN
 import { IOption, iActivity, ToActivity, iSection } from "@Model/index";
 
 const converPageArray = [
-  '/static/images/badmintonCover1.jpg',
-  '/static/images/badmintonCover2.jpg',
+  'badmintonCover1.jpg',
+  'badmintonCover2.jpg',
 ];
 
 const newSection: iSection = {
@@ -25,9 +25,12 @@ const newSection: iSection = {
 
 Page({
   data: {
+    // Static
     navBarHeight: GetNavBarHeight() + 10,
+    // Tab
     selectedTab: 0,
     activityId: '',
+    // Info Page
     date: ToNZDateString(new Date()),
     type: ActivityType.Section,
     formData: {} as iActivity,
@@ -40,7 +43,7 @@ Page({
       { name: 'address', rules: { required: true } },
       { name: 'courts', rules: { required: true, message: '请输入场地' } },
       { name: 'maxAttendee', rules: { required: true } },
-      { name: 'coverImageSrc', rules: { required: true } },
+      { name: 'coverImage', rules: { required: true } },
       { name: 'startTime', rules: { required: true, message: '请输入日期和时间' } },
       { name: 'sections', rules: { required: true, minlength: 1, message: 'Section不能为空' }, },
       { name: 'isCancelled', rules: { required: true } },
@@ -64,11 +67,12 @@ Page({
     } else {
       const initData = {
         title: '双打羽毛球',
+        organizerMemberId: 10024,
         type: ActivityType.Section.value,
         address: 'Lloyd Elsmore Park Badminton',
         courts: [5, 6, 7, 8],
         maxAttendee: newSection.maxAttendee,
-        coverImageSrc: converPageArray[0],
+        coverImage: converPageArray[0],
         startTime: new Date(),
         updateDate: new Date(),
         isCancelled: false,
@@ -80,7 +84,6 @@ Page({
       } as iActivity;
       this.setData({ formData: initData });
     }
-
   },
 
   async ReloadActivityByIdAsync(activityId: string) {
@@ -176,9 +179,9 @@ Page({
 
   coverImageRadioChange(e: IOption) {
     const coverIndex = Number(e.detail.value);
-    const coverImageSrc = converPageArray[coverIndex];
+    const coverImage = converPageArray[coverIndex];
     this.setData({
-      [`formData.coverImageSrc`]: coverImageSrc,
+      [`formData.coverImage`]: coverImage,
     });
   },
 
@@ -375,7 +378,7 @@ Page({
   },
 
   async confirmActivityAsync() {
-    const vipMemberIds = [10024, 10000];
+    const vipMemberIds = [10000];
 
     const activityId = this.data.activityId;
     const sections = this.data.formData.sections;
@@ -401,13 +404,10 @@ Page({
       })
       .filter(a => a !== undefined && a !== null);
 
-    const resCount = await ConfrimActivityAsync(activityId, confirmToBeUsers);
-    if (resCount > 0) {
-      wx.showToast({ title: `成功`, icon: 'success' });
-      wx.navigateBack({ delta: 0 });
-    } else {
-      wx.showToast({ title: '失败', icon: 'none' });
-    }
+    await ExcuteWithProcessingAsync(async () => {
+      await ConfrimActivityAsync(activityId, confirmToBeUsers);
+    });
+    await this.ReloadActivityByIdAsync(activityId);
   },
   //#endregion
 })

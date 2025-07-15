@@ -1,6 +1,5 @@
 import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { config } from "../configs/index";
-import { GetUserByUnionId as MockGetUserByUnionId } from "../configs/mocks";
 import { UserRoleArray, LevelArray, UserGenderArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { WxGetFileInfoAsync } from "@Lib/promisify";
@@ -21,10 +20,6 @@ export const RegisterNewUserAsync = async () => {
 }
 
 export const CheckUserExistsAsync = async () => {
-  if (config.useMock === true) {
-    return MockGetUserByUnionId();
-  }
-
   const unionId = await GetUnionIdAsync();
   const app = await GetCloudAsync();
   const db = app.database();

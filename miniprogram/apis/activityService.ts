@@ -1,7 +1,4 @@
-
-import { config } from "../configs/index";
 import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
-import { LoadAllActivitiesAsync as MockLoadAllActivitiesAsync } from "../configs/mocks";
 import { ToDayOfWeekString, ToNZShortDateString, ToNZTimeRangeString } from "@Lib/dateExtension";
 import { LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
@@ -9,10 +6,6 @@ import { GetCloudAsync } from "./databaseService";
 import { iActivity } from "miniprogram/models";
 
 export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boolean | undefined) => {
-  if (config.useMock === true) {
-    return MockLoadAllActivitiesAsync();
-  }
-
   let data = {
     where: { isCancelled: false, type: undefined, toPublic: onlyPublic },
     sort: { startTime: -1 },
@@ -20,7 +13,7 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
   };
   const { activities } = await CallCloudFuncAsync('activity_search', data)
   activities.forEach((activity: any) => {
-    activity.coverImageSrc = "/static/images/badmintonCover1.jpg"; //"/static" + activity.coverImageSrc;
+    activity.coverImageSrc = "/static/images/" + activity.coverImage;
     activity.date = ToNZShortDateString(activity.startTime);
     activity.dayOfWeek = ToDayOfWeekString(activity.startTime);
   });
@@ -35,6 +28,7 @@ export const LoadActivityByIdAsync = async (id: string) => {
 
   const { activity } = await CallCloudFuncAsync('activity_getById', data);
 
+  activity.coverImageSrc = "/static/images/" + activity.coverImage;
   activity.date = `${ToNZShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
   activity.time = ToNZTimeRangeString(activity.startTime, activity.during);
 

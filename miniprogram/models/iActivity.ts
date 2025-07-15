@@ -11,11 +11,12 @@ export interface iSection {
 }
 export interface iActivity {
   title: string;
+  organizerMemberId: number;
   type: number;
   address: string;
   courts: Array<number>;
   maxAttendee: number;
-  coverImageSrc: string;
+  coverImage: string;
   startTime: Date;
   updateDate: Date;
   isCancelled: boolean;
@@ -29,11 +30,12 @@ export interface iActivity {
 export const ToActivity = (raw: any): iActivity => {
   return {
     title: raw.title,
+    organizerMemberId: raw.organizerMemberId,
     type: raw.type,
     address: raw.address,
     courts: raw.courts,
     maxAttendee: raw.maxAttendee,
-    coverImageSrc: raw.coverImageSrc,
+    coverImage: raw.coverImage,
     startTime: new Date(raw.startTime),
     updateDate: new Date(raw.updateDate),
     isCancelled: raw.isCancelled,

@@ -23,11 +23,18 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "id=29dca3d568610c210413e7797002bfaf",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
           "name": "pages/user/my/my",
           "pathName": "pages/user/my/my",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/admin/userDetail/userDetail",
