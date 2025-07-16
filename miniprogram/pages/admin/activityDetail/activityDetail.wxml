@@ -156,7 +156,7 @@
         </mp-cells>
 
         <view wx:if="{{!formData.isCompleted && groupedAttendees.length > 0}}" class="bottom-btn-area">
-          <button class="weui-btn" type="primary" bindtap="confirmActivityAsync">活动完成并扣款</button>
+          <button class="weui-btn" type="primary" bindtap="ConfirmAndChargeActivityAsync">活动完成并扣款</button>
         </view>
       </scroll-view>
     </swiper-item>

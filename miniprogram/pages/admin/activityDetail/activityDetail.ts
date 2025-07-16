@@ -49,7 +49,9 @@ Page({
   async onLoad(options: Record<string, string | undefined>) {
     const activityId = options.id;
     if (activityId) {
-      await this.ReloadActivityByIdAsync(activityId);
+      await ExcuteWithLoadingAsync(async () => {
+        await this.ReloadActivityByIdAsync(activityId);
+      });
     } else {
       const activity = GetNewActivity();
       const formData = new ActivityModel(activity);
@@ -61,19 +63,17 @@ Page({
   },
 
   async ReloadActivityByIdAsync(activityId: string) {
-    await ExcuteWithLoadingAsync(async () => {
-      const activity = await LoadActivityByIdAsync(activityId);
-      const formData = new ActivityModel(activity);
+    const activity = await LoadActivityByIdAsync(activityId, false);
+    const formData = new ActivityModel(activity);
 
-      this.setData({
-        activityId: activityId,
-        formData: formData,
-        activity: activity
-      });
-
-      allActiveAttendees = activity.Attendees.filter((a: any) => !a.isCancelled);
-      this.generateGroupAttendees();
+    this.setData({
+      activityId: activityId,
+      formData: formData,
+      activity: activity
     });
+
+    allActiveAttendees = activity.Attendees;
+    this.generateGroupAttendees();
   },
 
   generateGroupAttendees() {
@@ -339,7 +339,7 @@ Page({
     }, false);
   },
 
-  async confirmActivityAsync() {
+  async ConfirmAndChargeActivityAsync() {
     // const vipMemberIds = [10000];
 
     const activityId = this.data.activityId;
@@ -368,8 +368,9 @@ Page({
 
     await ExcuteWithProcessingAsync(async () => {
       await ConfrimActivityAsync(activityId, confirmToBeUsers);
+      await this.ReloadActivityByIdAsync(activityId);
     });
-    await this.ReloadActivityByIdAsync(activityId);
+
   },
   //#endregion
 })

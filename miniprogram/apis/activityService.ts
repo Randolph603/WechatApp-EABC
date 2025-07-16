@@ -29,10 +29,10 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
   return activities;
 }
 
-export const LoadActivityByIdAsync = async (id: string) => {
+export const LoadActivityByIdAsync = async (id: string, includeCancelledAttendees: boolean = true) => {
   let data = {
     activityId: id,
-    includeCancelledAttendees: true
+    includeCancelledAttendees: includeCancelledAttendees
   };
 
   const { activity } = await CallCloudFuncAsync('activity_getById', data);
@@ -116,6 +116,6 @@ export const ConfrimActivityAsync = async (activityId: string, confirmToBeUsers:
     activityId: activityId,
     confirmToBeUsers: confirmToBeUsers,
   };
-  const { updatedCount } = await CallCloudFuncAsync('activity_confirm', data);
+  const { updatedCount } = await CallCloudFuncAsync('eabc_activity_confirm', data);
   return updatedCount;
 }

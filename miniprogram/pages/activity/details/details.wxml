@@ -85,7 +85,7 @@
               <!-- Attendee List -->
               <view class="attention-row">
                 <view class="section" wx:for="{{section.attendees}}" wx:key="key" wx:for-item="user">
-                  <text wx:if="{{section.info.index!= 0 && ((user.memberId === myMemberId && !activity.isCompleted) || isAdmin)}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
+                  <text wx:if="{{section.info.index!= 0 && (user.memberId === myMemberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
 
                   <block wx:if="{{myMemberId > 0}}">
                     <view class="head-img">
@@ -99,7 +99,7 @@
                     <text class="name">{{user.userLevelType.displayName}}</text>
                   </block>
 
-                  <text wx:if="{{(section.info.index!= allSections.length -1) && ((user.memberId === myMemberId && !activity.isCompleted) || isAdmin)}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
+                  <text wx:if="{{(section.info.index!= allSections.length -1) && (user.memberId === myMemberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
                 </view>
               </view>
               <!-- Attendee List End-->
@@ -109,7 +109,7 @@
                 <view class="header">{{_lang.backUpJoin}}</view>
                 <view class="attention-row">
                   <view class="section" wx:for="{{section.onWaitAttendees}}" wx:key="key" wx:for-item="user">
-                    <text wx:if="{{section.info.index!= 0 && ((user.memberId === myMemberId && !activity.isCompleted) || isAdmin)}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
+                    <text wx:if="{{section.info.index!= 0 && (user.memberId === myMemberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
 
                     <block wx:if="{{myMemberId > 0}}">
                       <view class="head-img">
@@ -123,7 +123,7 @@
                       <text class="name">{{user.userLevelType.displayName}}</text>
                     </block>
 
-                    <text wx:if="{{(section.info.index!= allSections.length -1) && ((user.memberId === myMemberId && !activity.isCompleted) || isAdmin)}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
+                    <text wx:if="{{(section.info.index!= allSections.length -1) && (user.memberId === myMemberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
                   </view>
                 </view>
               </block>
@@ -169,7 +169,7 @@
           <text>{{_lang.share}}</text>
         </button>
 
-        <block wx:if="{{!!!activity.isCompleted}}">
+        <block wx:if="{{!activity.isCompleted}}">
           <block wx:if="{{joinMore < 0}}">
             <button class="btn" size="mini" bindtap="joinAsync" data-join_more="{{0}}">{{_lang.join}}</button>
           </block>
