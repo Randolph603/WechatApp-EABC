@@ -1,7 +1,3 @@
-<scroll-view scroll-y style="width: 100%; height: 100%" type="custom">
-  <grid-view type="masonry" cross-axis-count="{{2}}">
-    <view class="card" wx:for="{{gridList}}" wx:key="id" index="{{item.id}}">
-      <image src="/mocks/images/{{item.id}}.jpg" mode="widthFix" />
-    </view>
-  </grid-view>
-</scroll-view>
+<view style="height: 100%; width: 100%;" class="view-column-centre">
+  <image mode="widthFix" src="/static/images/no_history.png"></image>
+</view>

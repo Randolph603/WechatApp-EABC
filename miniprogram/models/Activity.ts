@@ -14,7 +14,7 @@ export interface iSection {
 }
 
 export interface iActivity {
-  // Store into db
+  // Store in db
   address: string;
   courts: Array<number>;
   coverImage: string;
@@ -80,24 +80,4 @@ export class ActivityModel {
       }
     }
   }
-}
-
-export const ToActivity = (raw: any): iActivity => {
-  return {
-    title: raw.title,
-    organizerMemberId: raw.organizerMemberId,
-    type: raw.type,
-    address: raw.address,
-    courts: raw.courts,
-    maxAttendee: raw.maxAttendee,
-    coverImage: raw.coverImage,
-    startTime: new Date(raw.startTime),
-    updateDate: new Date(raw.updateDate),
-    isCancelled: raw.isCancelled,
-    isCompleted: raw.isCompleted,
-    toPublic: raw.toPublic,
-    sections: raw.sections,
-    viewCount: raw.viewCount,
-    shareCount: raw.shareCount
-  } as iActivity;
 }

@@ -3,6 +3,7 @@ export const LanguageMap: iLanguageMap = {
     list: [
       { text: '活动' },
       { text: '排名' },
+      { text: '商城' },
       { text: '我的' },
     ]
   },

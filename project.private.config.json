@@ -23,16 +23,16 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/user/profile/profile",
-          "pathName": "pages/user/profile/profile",
-          "query": "callbackUrl=pages%2Fuser%2Fmy%2Fmy",
+          "name": "pages/admin/userDetail/userDetail",
+          "pathName": "pages/admin/userDetail/userDetail",
+          "query": "memberId=10024",
           "scene": null,
           "launchMode": "default"
         },
         {
-          "name": "pages/admin/userDetail/userDetail",
-          "pathName": "pages/admin/userDetail/userDetail",
-          "query": "memberId=10024",
+          "name": "pages/user/profile/profile",
+          "pathName": "pages/user/profile/profile",
+          "query": "callbackUrl=pages%2Fuser%2Fmy%2Fmy",
           "launchMode": "default",
           "scene": null
         },
