@@ -41,7 +41,7 @@ export const LoadActivityByIdAsync = async (id: string, includeCancelledAttendee
   activity.Attendees.forEach((user: any) => {
     user.userLevelType = LevelArray[user.userLevel];
     user.key = `${user.memberId}+${user.joinMore}`;
-    user.userLevelImageSrc = `/static/ranks/${user.userLevel}.png`;
+    user.userLevelImageSrc = `/static/ranks/${user.userLevel + 1}.png`;
     if (user.avatarUrl.startsWith('cloud')) {
       user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
     }

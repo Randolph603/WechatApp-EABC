@@ -28,16 +28,14 @@ export const GetUnionIdAsync = async () => {
     var response = await App.callFunction({ name: 'eabc_security', data: { router: 'jscode2session', code: code } });
     console.log("jscode2session:", response.result);
     unionid = response.result.unionid;
-    wx.setStorageSync('unionid', unionid)
+    wx.setStorageSync('unionid', unionid);
   }
   return unionid;
 }
 
 export const GetCloudAsync = async () => {
-  if (App) {
-    return App;
-  } else {
+  if (!App) {
     await InitDatabaseAsync();
-    return App;
   }
+  return App;
 };

@@ -47,6 +47,13 @@
             <text>{{_lang.facility}}</text>
           </view>
 
+          <view class="divider" />
+
+          <view class="info-row">
+            <image class="icon" src="/static/icons/details/attention-white.png" />
+            <text class="small">{{attendTitle}}</text>
+          </view>
+
           <!-- For All Sections -->
           <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
             <view class="game-box">

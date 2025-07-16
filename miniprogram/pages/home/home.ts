@@ -17,13 +17,13 @@ Page({
 
   async onLoad() {
     UpdateTabBarLaguage();
-  },
 
-  async onShow(){
     try {
-      await this.fetchAllDataAsync();
+      if (this.data.activities.length === 0) {
+        await this.fetchAllDataAsync();
+      }
     } catch (error) {
-      await HandleException('onShow', error)
+      await HandleException('onLoad', error)
     }
   },
 
@@ -33,9 +33,7 @@ Page({
 
   async fetchAllDataAsync() {
     this.setData({ isLoaded: false });
-    
     const activities = await LoadAllActivitiesAsync(4, true);
-
     this.setData({
       activities: activities,
       isLoaded: true,
