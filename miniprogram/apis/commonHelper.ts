@@ -32,12 +32,14 @@ export const HandleException = async (functionName: string, error: any) => {
   const db = app.database();
   const unionId = await GetUnionIdAsync();
   const user = await CheckUserExistsAsync();
-  const userInfo = user ? `${user.memberId}-${user.displayName}` : 'not register user';
+  const memberId = user?.memberId ?? 0;
+  const userName = user?.displayName ?? 'not register user';
 
   await db.collection('Sys_Exceptions').add({
     functionName: `${currentUrl} - ${functionName}`,
-    operationUserId: unionId,
-    user: userInfo,
+    unionId: unionId,
+    memberId: memberId,
+    user: userName,
     program: programInfo,
     date: new Date(),
     exception: error,
