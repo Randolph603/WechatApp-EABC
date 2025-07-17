@@ -37,6 +37,10 @@ export interface iActivity {
   coverImageSrc: string;
 }
 
+const today = new Date();
+today.setHours(19);
+today.setMinutes(30);
+
 const newSection: iSection = {
   courts: [1, 2, 3, 4],
   during: 120,
@@ -44,8 +48,8 @@ const newSection: iSection = {
   isLocked: false,
   maxAttendee: 24,
   price: 17,
-  time: ToNZTimeString(new Date()),
-  timeRange: ToNZTimeRangeString(new Date(), 120),
+  time: ToNZTimeString(today),
+  timeRange: ToNZTimeRangeString(today, 120),
   title: '娱乐区',
 }
 
@@ -60,11 +64,11 @@ export class ActivityModel {
   public organizerMemberId = 10024;
   public sections: iSection[] = [newSection];
   public shareCount = 0;
-  public startTime = new Date();
+  public startTime = today;
   public title = '双打羽毛球';
   public toPublic = true;
   public type = ActivityType.Section.value;
-  public updateDate = new Date();
+  public updateDate = today;
   public viewCount = 0;
 
   constructor(fields?: Partial<ActivityModel>) {

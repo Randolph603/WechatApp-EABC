@@ -213,7 +213,7 @@ Page({
 
   showCancelPolicyDialog() {
     // 36e5 is the scientific notation for 60*60*1000
-    const startTime = new Date(this.data.activity.startTime);
+    const startTime = this.data.activity.startTime;
     const durationInHours = (startTime.getTime() - new Date().getTime()) / 36e5;
     const attendeesCount = this.data.allJoinedAttendeesCount;
     const maxAttendeesCount = this.data.activity.maxAttendee;

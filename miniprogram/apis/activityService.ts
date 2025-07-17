@@ -6,6 +6,8 @@ import { GetCloudAsync } from "./databaseService";
 import { ActivityModel } from "@Model/Activity";
 
 const SetupActivity = (activity: any) => {
+  activity.startTime = new Date(activity.startTime);
+  activity.updateDate = new Date(activity.updateDate);
   activity.coverImageSrc = "/static/images/" + activity.coverImage;
   activity.startTimeDate = ToNZDateString(activity.startTime);
   activity.date = `${ToNZShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;

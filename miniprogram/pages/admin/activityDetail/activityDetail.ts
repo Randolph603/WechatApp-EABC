@@ -139,8 +139,8 @@ Page({
   },
 
   formDateChange(e: IOption) {
-    const existingDate = new Date(this.data.formData.startTime);
     const newDate = new Date(e.detail.value);
+    const existingDate = this.data.formData.startTime;
     existingDate.setFullYear(newDate.getFullYear());
     existingDate.setMonth(newDate.getMonth());
     existingDate.setDate(newDate.getDate());
@@ -189,14 +189,21 @@ Page({
 
     if (['time', 'during'].includes(field)) {
       const existing = this.data.formData.sections[id];
-      const dateTime = new Date();
       const timeArray = existing.time.split(':');
+
+      const dateTime = new Date();
       dateTime.setHours(Number(timeArray[0]));
       dateTime.setMinutes(Number(timeArray[1]));
       dateTime.setSeconds(0);
 
+      const existingStartTime = this.data.formData.startTime;
+      existingStartTime.setHours(Number(timeArray[0]));
+      existingStartTime.setMinutes(Number(timeArray[1]));
+      existingStartTime.setSeconds(0);
+
       const timeRange = ToNZTimeRangeString(dateTime, existing.during);
       this.setData({
+        ['formData.startTime']: existingStartTime,
         [`formData.sections[${id}].timeRange`]: timeRange
       });
     }
