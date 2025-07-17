@@ -7,11 +7,10 @@ import {
 import { CallCloudFuncAsync } from '@API/commonHelper';
 import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
-import { SortDate } from '@Lib/dateExtension';
 import { WxShowModalAsync } from '@Lib/promisify';
 import { UserRole } from '@Lib/types';
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetCurrentUrl } from '@Lib/utils';
-import { iSection } from '@Model/index';
+import { iSection, iUser } from '@Model/index';
 
 Page({
   data: {
@@ -19,8 +18,7 @@ Page({
     _lang: GetLaguageMap().activityDetail,
     // Status:
     isLoaded: false,
-    myMemberId: 0,
-    myProfile: {} as any,
+    myProfile: null as unknown as iUser,
     // Variables
     activityId: '',
     activity: {} as any,
@@ -28,7 +26,7 @@ Page({
     allSections: [] as any[],
     allJoinedAttendeesCount: 0,
     allCancelledAttendees: [] as any[],
-    joinMore: 0,
+    joinMore: -1,
     // Dialog
     showLowCreditBalance: false,
     showCancelDialog: false,
@@ -82,40 +80,34 @@ Page({
       activityId: id
     });
 
-    await ExcuteWithLoadingAsync(async () => {
-      const loadActivityTask = this.LoadActivity();
-      const loadMeTask = this.LoadMe();
-      await Promise.all([loadActivityTask, loadMeTask]);
-      await this.PopulateMyJoin();
+    const fetchData = async () => {
+      await this.LoadMe();
+      await this.LoadActivity();
       this.setData({ isLoaded: true });
-      if ((this.data.myProfile.creditBalance ?? 0) < 0) {
-        this.setData({ showLowCreditBalance: true });
-      }
-    });
+    };
+    await ExcuteWithLoadingAsync(fetchData);
   },
 
   //#region private method
+  // LoadMe first of all
   async LoadMe() {
     const myProfile = await CheckUserExistsAsync();
     if (myProfile) {
       this.setData({
-        myMemberId: myProfile.memberId,
         myProfile: myProfile,
-        isAdmin: myProfile.userRole === UserRole.Admin.value
+        isAdmin: myProfile.userRole === UserRole.Admin.value,
+        showLowCreditBalance: myProfile.creditBalance < 0
       });
     }
   },
 
+  // Run after LoadMe fired
   async LoadActivity() {
     const id = this.data.activityId;
     if (id.length > 0) {
-      const activity = await LoadActivityByIdAsync(id);
-
-      const allAttendees = activity.Attendees.sort(
-        (a: { updateDate: any; }, b: { updateDate: any; }) => SortDate(a.updateDate, b.updateDate));
-
-      const allJoinedAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
-      const allCancelledAttendees = allAttendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
+      const activity = await LoadActivityByIdAsync(id, true);
+      const allJoinedAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
+      const allCancelledAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
 
       const allSections: Array<any> = [];
       if (activity.sections) {
@@ -130,6 +122,14 @@ Page({
       }
 
       const attendTitle = GetAttendTitle(allJoinedAttendees.length, activity.maxAttendee);
+
+      const myMemberId = this.data.myProfile?.memberId ?? 0;
+      if (myMemberId > 0) {
+        const allMyJoins = allJoinedAttendees.filter((a: any) => a.memberId === myMemberId);
+        const joinMore = allMyJoins.length - 1;
+        this.setData({ joinMore });
+      }
+
       this.setData({
         attendTitle,
         activity,
@@ -137,15 +137,7 @@ Page({
         allJoinedAttendeesCount: allJoinedAttendees.length,
         allCancelledAttendees
       });
-    }
-  },
 
-  async PopulateMyJoin() {
-    if (this.data.activity) {
-      const allMyJoins = this.data.activity.Attendees.filter(
-        (a: any) => a.memberId === this.data.myMemberId && a.isCancelled === false);
-      const joinMore = allMyJoins.length - 1;
-      this.setData({ joinMore });
       await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
     }
   },
@@ -169,13 +161,14 @@ Page({
   },
 
   async joinAsync(event: any) {
-    if (this.data.myMemberId > 0) {
+    const myMemberId = this.data.myProfile?.memberId ?? 0;
+    if (myMemberId > 0) {
       const { join_more } = event.currentTarget.dataset;
-      await ExcuteWithProcessingAsync(async () => {
-        await JoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
+      const joinActivityAndReload = async () => {
+        await JoinActivityAsync(this.data.activityId, myMemberId, join_more);
         await this.LoadActivity();
-        await this.PopulateMyJoin();
-      });
+      };
+      await ExcuteWithProcessingAsync(joinActivityAndReload);
     } else {
       const currentUrl = GetCurrentUrl();
       wx.navigateTo({
@@ -185,11 +178,16 @@ Page({
   },
 
   async cancelAsync(event: any) {
-    const { join_more } = event.currentTarget.dataset;
+    const myMemberId = this.data.myProfile?.memberId ?? 0;
+    if (myMemberId === 0) {
+      return;
+    }
+
     if (this.showCancelPolicyDialog()) {
       return;
     }
 
+    const { join_more } = event.currentTarget.dataset;
     if (this.data.myProfile.continueWeeklyJoin && this.data.myProfile.continueWeeklyJoin > 0) {
       const continueWeeklyJoin = this.data.myProfile.continueWeeklyJoin;
       const discount = continueWeeklyJoin > 3 ? 3 : continueWeeklyJoin;
@@ -204,11 +202,11 @@ Page({
       }
     }
 
-    await ExcuteWithProcessingAsync(async () => {
-      await CancelJoinActivityAsync(this.data.activityId, this.data.myMemberId, join_more);
+    const cancelActivityAndReload = async () => {
+      await CancelJoinActivityAsync(this.data.activityId, myMemberId, join_more);
       await this.LoadActivity();
-      await this.PopulateMyJoin();
-    });
+    };
+    await ExcuteWithProcessingAsync(cancelActivityAndReload);
   },
 
   showCancelPolicyDialog() {
@@ -227,10 +225,11 @@ Page({
 
   async moveAsync(event: any) {
     const { section_index, join_more, member_id } = event.currentTarget.dataset;
-    await ExcuteWithProcessingAsync(async () => {
+    const moveActivityAndReload = async () => {
       await AttendeeMoveSectionAsync(this.data.activityId, member_id, join_more, section_index);
       await this.LoadActivity();
-    });
+    };
+    await ExcuteWithProcessingAsync(moveActivityAndReload);
   }
   //#endregion
 })

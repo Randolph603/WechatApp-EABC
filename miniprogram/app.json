@@ -40,12 +40,6 @@
         "text": "排名"
       },
       {
-        "pagePath": "pages/shop/shop",
-        "iconPath": "static/icons/tabbar/shop-7A7A7A.png",
-        "selectedIconPath": "static/icons/tabbar/shop-90CAF9.png",
-        "text": "商城"
-      },
-      {
         "pagePath": "pages/user/my/my",
         "iconPath": "static/icons/tabbar/badge-7A7A7A.png",
         "selectedIconPath": "static/icons/tabbar/badge-90CAF9.png",

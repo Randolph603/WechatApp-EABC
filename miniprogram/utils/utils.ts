@@ -49,7 +49,7 @@ export const ExcuteWithProcessingAsync = async (actionAsync: Function, showToast
   } catch (error) {
     wx.hideLoading();
     wx.showToast({ title: lang.failed, icon: 'none' });
-    await HandleException('ExcuteWithProcessingAsync', error);
+    await HandleException('ExcuteWithProcessingAsync-' + actionAsync.name, error);
     console.log(error);
   }
 }
@@ -63,6 +63,6 @@ export const ExcuteWithLoadingAsync = async (actionAsync: Function) => {
   } catch (error) {
     wx.hideLoading();
     wx.showToast({ title: lang.failed, icon: 'none' });
-    await HandleException('ExcuteWithLoadingAsync', error);
+    await HandleException('ExcuteWithLoadingAsync-' + actionAsync.name, error);
   }
 }

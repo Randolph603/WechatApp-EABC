@@ -1,5 +1,5 @@
 import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
-import { ToDayOfWeekString, ToNZDateString, ToNZShortDateString } from "@Lib/dateExtension";
+import { SortDate, ToDayOfWeekString, ToNZDateString, ToNZShortDateString } from "@Lib/dateExtension";
 import { ActivityTypeArray, LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { GetCloudAsync } from "./databaseService";
@@ -31,7 +31,7 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
   return activities;
 }
 
-export const LoadActivityByIdAsync = async (id: string, includeCancelledAttendees: boolean = true) => {
+export const LoadActivityByIdAsync = async (id: string, includeCancelledAttendees: boolean) => {
   let data = {
     activityId: id,
     includeCancelledAttendees: includeCancelledAttendees
@@ -48,6 +48,8 @@ export const LoadActivityByIdAsync = async (id: string, includeCancelledAttendee
       user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
     }
   });
+
+  activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => SortDate(a.updateDate, b.updateDate));
 
   return activity;
 }

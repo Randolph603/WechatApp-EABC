@@ -11,3 +11,14 @@ This project is build for help EABC run badaminton activity and organise account
 ## Known issue
 - if Base Library above than 3.8.0 will have runtime error when have imput inside page:
 [Render layer error] Uncaught (in promise) Error: object null is not iterable (cannot read property Symbol(Symbol.iterator))
+
+
+##
+  {
+        "pagePath": "pages/shop/shop",
+        "iconPath": "static/icons/tabbar/shop-7A7A7A.png",
+        "selectedIconPath": "static/icons/tabbar/shop-90CAF9.png",
+        "text": "商城"
+      },
+
+      

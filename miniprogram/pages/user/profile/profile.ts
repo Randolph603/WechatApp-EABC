@@ -111,7 +111,7 @@ Page({
             if (!existingUser) {
               // update avatar need to know member id, register first if no member id
               const newUser = await RegisterNewUserAsync();
-              await this.Save(newUser.memberId, newUser.avatarUrl);
+              await this.Save(newUser.memberId, defaultAvatarUrl);
             } else {
               await this.Save(existingUser.memberId, existingUser.avatarUrl);
             }
@@ -134,11 +134,14 @@ Page({
   async Save(memberId: number, avatarUrl: string) {
     if (!memberId) return;
     const newAvatarUrl = this.data.avatarUrl;
-    const fileID = (newAvatarUrl !== avatarUrl && newAvatarUrl !== defaultAvatarUrl)
-      ? await UploadAvatarImageAsync(newAvatarUrl, memberId, avatarUrl)
-      : undefined;
-    const updateData = { ...new ProfileModel(this.data.formData), avatarUrl: fileID };
-    await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
+    const profile = new ProfileModel(this.data.formData);
+    if (newAvatarUrl !== avatarUrl && newAvatarUrl !== defaultAvatarUrl) {
+      const fileID = await UploadAvatarImageAsync(newAvatarUrl, memberId, avatarUrl);
+      const updateData = { ...profile, avatarUrl: fileID };
+      await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
+    } else {
+      await UpdateRecordAsync('UserProfiles', { memberId }, profile);
+    }
   },
 
   //#endregion
