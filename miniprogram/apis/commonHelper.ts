@@ -1,5 +1,6 @@
 import { GetCurrentUrl } from '@Lib/utils';
 import { GetCloudAsync, GetUnionIdAsync } from './databaseService';
+import { CheckUserExistsAsync } from './userService';
 
 export const CallCloudFuncAsync = async (funcName: string, data: object) => {
   const app = await GetCloudAsync();
@@ -25,14 +26,19 @@ export const UpdateRecordAsync = async (collection: string, where: object, data:
 
 export const HandleException = async (functionName: string, error: any) => {
   const currentUrl = GetCurrentUrl();
-
+  const program = wx.getAccountInfoSync().miniProgram;
+  const programInfo = `${program.envVersion} - V${program.version}`;
   const app = await GetCloudAsync();
   const db = app.database();
   const unionId = await GetUnionIdAsync();
+  const user = await CheckUserExistsAsync();
+  const userInfo = user ? `${user.memberId}-${user.displayName}` : 'not register user';
 
   await db.collection('Sys_Exceptions').add({
     functionName: `${currentUrl} - ${functionName}`,
     operationUserId: unionId,
+    user: userInfo,
+    program: programInfo,
     date: new Date(),
     exception: error,
   });

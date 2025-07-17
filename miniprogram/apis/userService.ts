@@ -28,10 +28,7 @@ export const CheckUserExistsAsync = async () => {
 
   if (user) {
     SetupUserTypes(user);
-  } else {
-    // if user not exists, delete union id from storage
-    wx.removeStorageSync('unionid');
-  }
+  } 
 
   return config.mockNewUser ? null : user;
 }
