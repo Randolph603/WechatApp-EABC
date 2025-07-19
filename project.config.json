@@ -47,12 +47,12 @@
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
-  "libVersion": "2.32.3",
+  "libVersion": "3.8.11",
   "packOptions": {
     "ignore": [
       {
-        "type": "folder",
-        "value": "../idea"
+        "value": "../idea",
+        "type": "folder"
       }
     ],
     "include": []
