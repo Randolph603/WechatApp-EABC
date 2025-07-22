@@ -1,11 +1,13 @@
-import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityByIdAsync } from "@API/activityService";
+import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
+import { AddMatchAsync, RemoveMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
 import { ToNZTimeRangeString } from "@Lib/dateExtension";
 import { ActivityTypeArray, ConverPageArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { ActivityModel } from "@Model/Activity";
 import { IOption, iSection } from "@Model/index";
+import { MatchModel } from "@Model/Match";
 
 const rules = [
   { name: 'title', rules: { required: true, message: '请输入名称' } },
@@ -36,6 +38,8 @@ Page({
     // Info Page
     activityId: null as unknown as string,
     formData: null as unknown as ActivityModel,
+    activity: null as unknown as any,
+    courtAttendeesMap: {} as any,
     typeArray: ActivityTypeArray,
     courtArray: [1, 2, 3, 4, 5, 6, 7, 8],
     converPageArray: ConverPageArray,
@@ -66,13 +70,21 @@ Page({
     const activity = await LoadActivityByIdAsync(activityId, false);
     const formData = new ActivityModel(activity);
 
+    const courtAttendeesMap: any = {};
+    formData.courts.forEach(court => {
+      courtAttendeesMap[court] = activity.Attendees
+        .filter((a: any) => a.court === court)
+        .sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
+    });
+
     this.setData({
       activityId: activityId,
       formData: formData,
-      activity: activity
+      activity: activity,
+      courtAttendeesMap
     });
 
-    allActiveAttendees = activity.Attendees;
+    allActiveAttendees = [...activity.Attendees];
     this.generateGroupAttendees();
   },
 
@@ -379,5 +391,127 @@ Page({
     });
 
   },
+  //#endregion
+
+  //#group and score page private method
+  async GroupForSection(e: IOption) {
+    const { section } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+    const attendeesInSection = this.data.activity.Attendees.filter((attendee: any) => attendee.sectionIndex === section.index);
+    attendeesInSection.sort((a: any, b: any) => { return a.powerOfBattle - b.powerOfBattle });
+
+    const promiseList = [] as any[];
+    section.courts.forEach((court: number, index: number) => {
+      const start = index * 6;
+      const end = start + 6;
+      attendeesInSection.slice(start, end).forEach((attendee: any) => {
+        const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle ?? attendee.powerOfBattle, court);
+        promiseList.push(promise);
+      });
+    });
+
+    await ExcuteWithProcessingAsync(async () => {
+      await Promise.all(promiseList);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
+  async DegroupForSection(e: IOption) {
+    const { section } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+
+    await ExcuteWithProcessingAsync(async () => {
+      await RemoveAttendeeCourtAsync(activityId, section.index);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
+  async ArrangeGame(e: IOption) {
+    const { section } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+    const courtMatchesMap = {} as any;
+    const generateMatch = (attendees: any[], court: number, index1: number, index2: number, index3: number, index4: number, index: number) => {
+      const leftGender = attendees[index1].gender + attendees[index2].gender;
+      const rightGender = attendees[index3].gender + attendees[index4].gender;
+      const misMatch = leftGender - rightGender;
+      const match = {
+        index: index,
+        activityId: activityId,
+        court: court,
+        player1: attendees[index1],
+        player2: attendees[index2],
+        leftScore: misMatch > 0 ? misMatch * 3 : 0,
+        player3: attendees[index3],
+        player4: attendees[index4],
+        rightScore: misMatch < 0 ? (-misMatch) * 3 : 0,
+      };
+      return match;
+    }
+
+    const promiseList = [] as any[];
+    section.courts.forEach((court: number) => {
+      const attendees = this.data.courtAttendeesMap[court];
+      if (attendees.length === 6) {
+        const match1 = generateMatch(attendees, court, 0, 2, 1, 3, 1);
+        const match2 = generateMatch(attendees, court, 2, 4, 3, 5, 2);
+        const match3 = generateMatch(attendees, court, 0, 4, 1, 5, 3);
+        const match4 = generateMatch(attendees, court, 0, 3, 1, 2, 4);
+        const match5 = generateMatch(attendees, court, 2, 5, 3, 4, 5);
+        const match6 = generateMatch(attendees, court, 0, 5, 1, 4, 6);
+        const matches = [match1, match2, match3, match4, match5, match6];
+
+        matches.forEach((match: any) => {
+          const promise = AddMatchAsync(new MatchModel(match));
+          promiseList.push(promise);
+        });
+
+        courtMatchesMap[court] = matches;
+      }
+    });
+
+    await ExcuteWithProcessingAsync(async () => {
+      await Promise.all(promiseList);
+      this.setData({ courtMatchesMap });
+    });
+  },
+
+  async CleanMatches(e: IOption) {
+    const { section } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+
+    const promiseList = [] as any[];
+    section.courts.forEach((court: number) => {
+      const promise = RemoveMatchAsync(activityId, court);
+      promiseList.push(promise);
+    });
+
+    await ExcuteWithProcessingAsync(async () => {
+      await Promise.all(promiseList);
+    });
+  },
+
+  async MoveInsideSection(e: IOption) {
+    const { court, attendee } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+
+    await ExcuteWithProcessingAsync(async () => {
+      await UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
+  async ChangeCurrentPowerOfBattle(e: IOption) {
+    const newValue = Number(e.detail.value);
+    const { attendee } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+
+    await ExcuteWithProcessingAsync(async () => {
+      await UpdateCurrentPowerOfBattleAsync(activityId, attendee.memberId, attendee.joinMore, newValue);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
+
+
   //#endregion
 })

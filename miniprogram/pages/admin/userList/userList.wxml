@@ -1,6 +1,6 @@
 <mp-navigation-bar title='All ({{allUsers.length}}) {{total}}NZD' back="{{true}}" />
 
-<mp-searchbar placeholder="Search" cancelText="Cancel" value="{{searchTerm}}" bindclear="onSearchCancel" bindinput="onSearchChange" />
+<mp-searchbar placeholder="Search" cancelText="Cancel" value="{{searchTerm}}" bindclear="onSearchCancel" bindblur="onSearchChange" />
 
 <scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loadUserListAsync" refresher-triggered="{{triggered}}">
   <mp-cells>

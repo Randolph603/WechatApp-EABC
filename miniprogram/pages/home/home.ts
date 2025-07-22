@@ -23,6 +23,7 @@ Page({
         await this.fetchAllDataAsync();
       }
     } catch (error) {
+      
       await HandleException('onLoad', error)
     }
   },

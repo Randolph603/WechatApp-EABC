@@ -38,7 +38,7 @@
         <input bindinput="FormNumberChange" type="number" value="{{formData.continueWeeklyJoin}}" data-field="continueWeeklyJoin" />
       </mp-cell>
       <mp-cell>
-        <view class="wrap-row">
+        <view class="view-row-evenly">
           <button bindtap="GoToHitoryPage" size="mini">活动记录</button>
           <button bindtap="GoToProfilePage" size="mini">个人信息</button>
           <button bindtap="ShowBalanceChangeDialog" size="mini">充值/扣费</button>

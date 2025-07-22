@@ -96,13 +96,13 @@
 
                   <block wx:if="{{myProfile}}">
                     <view class="head-img">
-                      <image-loader ext-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                      <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                     </view>
                     <text class="name">{{user.displayName}}</text>
                     <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
                   </block>
                   <block wx:else>
-                    <image class="avatar level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
+                    <image class="avatar 11level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
                     <text class="name">{{user.userLevelType.displayName}}</text>
                   </block>
 
@@ -120,13 +120,13 @@
 
                     <block wx:if="{{myProfile}}">
                       <view class="head-img">
-                        <image-loader ext-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                        <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                       </view>
                       <text class="name">{{user.displayName}}</text>
                       <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
                     </block>
                     <block wx:else>
-                      <image class="avatar level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
+                      <image class="avatar 11level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
                       <text class="name">{{user.userLevelType.displayName}}</text>
                     </block>
 
@@ -148,7 +148,7 @@
             </view>
             <view class="attention-row">
               <view class="section" wx:for="{{allCancelledAttendees}}" wx:key="key" wx:for-item="user">
-                <image-loader ext-class="avatar level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                 <text class="name">{{user.displayName}}</text>
                 <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
               </view>

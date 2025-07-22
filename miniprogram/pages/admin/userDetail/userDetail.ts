@@ -153,8 +153,11 @@ Page({
       if (e.detail.index === 1) {
         value = 0 - value;
       }
-      await CallCloudFuncAsync('user_balanceChange', { memberId, title, value });
-      await this.LoadUser(memberId);
+      const topUpAndReloadUser = async () => {
+        await CallCloudFuncAsync('user_balanceChange', { memberId, title, value });
+        await this.LoadUser(memberId);
+      };
+      await ExcuteWithProcessingAsync(topUpAndReloadUser);
     }
 
     this.setData({ showBalanceChange: false });

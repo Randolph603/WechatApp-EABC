@@ -12,14 +12,26 @@ export const CallCloudFuncAsync = async (funcName: string, data: object) => {
 };
 
 // return updated success count
-export const UpdateRecordAsync = async (collection: string, where: object, data: object, dateData: object | null = null) => {
+export const UpdateRecordAsync = async (collection: string, where: object, data: object, dateData: object | null = null, columnsToRemove: Array<string> | null = null) => {
   const response = await CallCloudFuncAsync(
     'updateRecord',
     {
       collection: collection,
       where: where,
       data: data,
-      dateData: dateData
+      dateData: dateData,
+      columnsToRemove: columnsToRemove
+    });
+  return response.updatedCount;
+};
+
+export const RemoveFieldsAsync = async (collection: string, where: object, fieldsToRemove: Array<string>) => {
+  const response = await CallCloudFuncAsync(
+    'updateRecord',
+    {
+      collection: collection,
+      where: where,
+      fieldsToRemove: fieldsToRemove
     });
   return response.updatedCount;
 };

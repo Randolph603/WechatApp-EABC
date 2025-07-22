@@ -1,4 +1,4 @@
-import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
+import { CallCloudFuncAsync, RemoveFieldsAsync, UpdateRecordAsync } from "./commonHelper";
 import { SortDate, ToDayOfWeekString, ToNZDateString, ToNZShortDateString } from "@Lib/dateExtension";
 import { ActivityTypeArray, LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
@@ -122,4 +122,39 @@ export const ConfrimActivityAsync = async (activityId: string, confirmToBeUsers:
   };
   const { updatedCount } = await CallCloudFuncAsync('eabc_activity_confirm', data);
   return updatedCount;
+}
+
+export const UpdateAttendeeCourtAsync = async (activityId: string, memberId: number, joinMore: number,
+  powerOfBattle: number, court: number) => {
+  try {
+    await UpdateRecordAsync('Attendees',
+      { activityId: activityId, memberId: memberId, joinMore: joinMore },
+      { court, currentPowerOfBattle: powerOfBattle }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const RemoveAttendeeCourtAsync = async (activityId: string, sectionIndex: number) => {
+  try {
+    await RemoveFieldsAsync('Attendees',
+      { activityId: activityId, sectionIndex: sectionIndex },
+      ['court']
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const UpdateCurrentPowerOfBattleAsync = async (activityId: string, memberId: number, joinMore: number,
+  currentPowerOfBattle: number) => {
+  try {
+    await UpdateRecordAsync('Attendees',
+      { activityId: activityId, memberId: memberId, joinMore: joinMore },
+      { currentPowerOfBattle: currentPowerOfBattle }
+    );
+  } catch (error) {
+    console.log(error);
+  }
 }

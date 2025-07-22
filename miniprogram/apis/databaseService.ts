@@ -4,6 +4,7 @@ import adapter from "@cloudbase/adapter-wx_mp";
 import { env } from "../env";
 
 let App: cloudbase.app.App;
+let Auth: cloudbase.auth.App;
 
 export const InitDatabaseAsync = async () => {
   cloudbase.useAdapters(adapter);
@@ -12,11 +13,11 @@ export const InitDatabaseAsync = async () => {
     env: 'prod-4glz11qiccc892f2',
     clientId: env.CLIENT_ID
   });
+  Auth = App.auth();
 
-  const auth = App.auth();
-  const loginState = auth.hasLoginState();
+  let loginState = Auth.hasLoginState();
   if (loginState === null) {
-    await auth.signInAnonymously();
+    await Auth.signInAnonymously();
   }
 }
 
@@ -34,8 +35,17 @@ export const GetUnionIdAsync = async () => {
 }
 
 export const GetCloudAsync = async () => {
-  if (!App) {
+  if (!App || !Auth) {
     await InitDatabaseAsync();
   }
+
+  let loginState = Auth.hasLoginState();
+  let tryTime = 0;
+  while (!loginState && tryTime < 5) {
+    loginState = await Auth.signInAnonymously();
+    tryTime = tryTime + 1;
+    console.log("tryTime", tryTime);
+  }
+
   return App;
 };

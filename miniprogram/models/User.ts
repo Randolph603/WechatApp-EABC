@@ -8,8 +8,8 @@ export interface iUser {
   displayName: string;
   gender: number;
   isDeleted: boolean;
-  levelPoint: number;
   memberId: number;
+  powerOfBattle: number;
   powerPoint: number;
   unionId: string;
   updateDate: Date;
