@@ -5,6 +5,7 @@ import {
   LoadActivityByIdAsync
 } from '@API/activityService';
 import { CallCloudFuncAsync } from '@API/commonHelper';
+import { LoadAllMatchesAsync } from '@API/matchService';
 import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { WxShowModalAsync } from '@Lib/promisify';
@@ -16,6 +17,9 @@ Page({
   data: {
     // Static
     _lang: GetLaguageMap().activityDetail,
+    // Tab
+    selectedTab: 0,
+    swiperHeight: 0,
     // Status:
     isLoaded: false,
     myProfile: null as unknown as iUser,
@@ -27,6 +31,8 @@ Page({
     allJoinedAttendeesCount: 0,
     allCancelledAttendees: [] as any[],
     joinMore: -1,
+    courtMatchesMap: {} as any,
+    isCourtMatchesMapEmpty: true,
     // Dialog
     showLowCreditBalance: false,
     showCancelDialog: false,
@@ -42,7 +48,6 @@ Page({
     const promise = new Promise((resolve, reject) => {
       CallCloudFuncAsync('eabc_activity_share', { activityId: activity._id, router: 'createActivityId' })
         .then(result => {
-          console.log(result);
           const wxActivityId = result.wxActivityId;
           wx.updateShareMenu({
             withShareTicket: true,
@@ -83,9 +88,11 @@ Page({
     const fetchData = async () => {
       await this.LoadMe();
       await this.LoadActivity();
+      await this.LoadMatches();
       this.setData({ isLoaded: true });
     };
     await ExcuteWithLoadingAsync(fetchData);
+    this.updateSwiperHeight(0);
   },
 
   //#region private method
@@ -113,10 +120,19 @@ Page({
       if (activity.sections) {
         activity.sections.forEach((s: iSection) => {
           const sectionAttendees = allJoinedAttendees.filter((a: { sectionIndex: number; }) => (a.sectionIndex ?? 0) === s.index);
+
+          const courtAttendeesMap: any = {};
+          s.courts.forEach(court => {
+            courtAttendeesMap[court] = activity.Attendees
+              .filter((a: any) => a.court === court)
+              .sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
+          });
+
           allSections.push({
             info: s,
             attendees: sectionAttendees.slice(0, s.maxAttendee),
             onWaitAttendees: sectionAttendees.slice(s.maxAttendee, sectionAttendees.length),
+            courtAttendeesMap
           });
         });
       }
@@ -141,6 +157,47 @@ Page({
       await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
     }
   },
+
+  async LoadMatches() {
+    const activityId = this.data.activityId;
+    const matches = await LoadAllMatchesAsync(activityId);
+    const courtMatchesMap = {} as any;
+    matches.forEach((match: any) => {
+      const court = match.court;
+      if (!courtMatchesMap[court]) {
+        courtMatchesMap[court] = [];
+      }
+      courtMatchesMap[court].push(match);
+    });
+    const isCourtMatchesMapEmpty = Object.keys(courtMatchesMap).length === 0;
+
+    this.setData({ courtMatchesMap, isCourtMatchesMapEmpty });
+  },
+
+  //#region top tap
+  onTapTab(e: any) {
+    const current = Number(e.currentTarget.dataset.index);
+    this.updateSwiperHeight(current);
+  },
+
+  onSwiperChange(e: any) {
+    const current = e.detail.current;
+    this.updateSwiperHeight(current);
+  },
+
+  updateSwiperHeight(index: number) {
+    this.setData({ selectedTab: index });
+    const id = `#slide${index}`;
+    const query = wx.createSelectorQuery();
+    query.select(id).boundingClientRect();
+    query.exec((res) => {
+      if (res[0]) {
+        const swiperHeight = res[0].height;
+        this.setData({ swiperHeight });
+      }
+    });
+  },
+  //#endregion
 
   navigateBack() {
     wx.navigateBack({
@@ -171,8 +228,10 @@ Page({
       await ExcuteWithProcessingAsync(joinActivityAndReload);
     } else {
       const currentUrl = GetCurrentUrl();
+      const callbackParameterKey = 'id'
+      const callbackParameterValue = this.data.activityId;
       wx.navigateTo({
-        url: '/pages/user/profile/profile?callbackUrl=' + currentUrl,
+        url: `/pages/user/profile/profile?callbackUrl=${currentUrl}&callbackParameterKey=${callbackParameterKey}&callbackParameterValue=${callbackParameterValue}`,
       });
     }
   },

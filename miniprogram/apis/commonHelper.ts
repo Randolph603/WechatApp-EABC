@@ -47,6 +47,13 @@ export const HandleException = async (functionName: string, error: any) => {
   const memberId = user?.memberId ?? 0;
   const userName = user?.displayName ?? 'not register user';
 
+  const errorString =
+    error instanceof Error
+      ? error.stack || error.message
+      : typeof error === 'string'
+        ? error
+        : JSON.stringify(error, Object.getOwnPropertyNames(error));
+
   await db.collection('Sys_Exceptions').add({
     functionName: `${currentUrl} - ${functionName}`,
     unionId: unionId,
@@ -54,6 +61,6 @@ export const HandleException = async (functionName: string, error: any) => {
     user: userName,
     program: programInfo,
     date: new Date(),
-    exception: error,
+    exception: errorString,
   });
 };

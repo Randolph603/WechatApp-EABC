@@ -1,3 +1,4 @@
+import { HandleException } from "@API/commonHelper";
 import { InitDatabaseAsync } from "@API/databaseService";
 import CheckUpdateVersion from "@API/versionService";
 
@@ -7,4 +8,8 @@ App<IAppOption>({
     CheckUpdateVersion();
     await InitDatabaseAsync();
   },
+
+  async onError(msg) {
+    await HandleException("Global error:", msg)
+  }
 })

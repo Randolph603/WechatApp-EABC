@@ -1,6 +1,6 @@
 import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
-import { AddMatchAsync, RemoveMatchAsync } from "@API/matchService";
+import { AddMatchAsync, LoadAllMatchesAsync, RemoveMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
 import { ToNZTimeRangeString } from "@Lib/dateExtension";
 import { ActivityTypeArray, ConverPageArray } from "@Lib/types";
@@ -77,11 +77,22 @@ Page({
         .sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
     });
 
+    const matches = await LoadAllMatchesAsync(activityId);
+    const courtMatchesMap = {} as any;
+    matches.forEach((match: any) => {
+      const court = match.court;
+      if (!courtMatchesMap[court]) {
+        courtMatchesMap[court] = [];
+      }
+      courtMatchesMap[court].push(match);
+    });
+
     this.setData({
       activityId: activityId,
       formData: formData,
       activity: activity,
-      courtAttendeesMap
+      courtAttendeesMap,
+      courtMatchesMap
     });
 
     allActiveAttendees = [...activity.Attendees];
@@ -429,7 +440,7 @@ Page({
   async ArrangeGame(e: IOption) {
     const { section } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
-    const courtMatchesMap = {} as any;
+    
     const generateMatch = (attendees: any[], court: number, index1: number, index2: number, index3: number, index4: number, index: number) => {
       const leftGender = attendees[index1].gender + attendees[index2].gender;
       const rightGender = attendees[index3].gender + attendees[index4].gender;
@@ -464,14 +475,12 @@ Page({
           const promise = AddMatchAsync(new MatchModel(match));
           promiseList.push(promise);
         });
-
-        courtMatchesMap[court] = matches;
       }
     });
 
     await ExcuteWithProcessingAsync(async () => {
       await Promise.all(promiseList);
-      this.setData({ courtMatchesMap });
+      await this.ReloadActivityByIdAsync(activityId);
     });
   },
 
@@ -487,6 +496,7 @@ Page({
 
     await ExcuteWithProcessingAsync(async () => {
       await Promise.all(promiseList);
+      await this.ReloadActivityByIdAsync(activityId);
     });
   },
 

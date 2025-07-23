@@ -40,6 +40,7 @@
             </view>
             <text>{{_lang.equipment}}</text>
           </view>
+
           <view class="info-row fixed">
             <view class="icon-section">
               <image class="icon" src="/static/icons/details/equipment-white.png" />
@@ -54,90 +55,181 @@
             <text class="small">{{attendTitle}}</text>
           </view>
 
-          <!-- For All Sections -->
-          <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
-            <view class="game-box">
-              <!-- Header information -->
-              <view class="header">
-                <view class="view-row">
-                  {{section.info.title}} ({{section.attendees.length}} {{_lang.member}})
-                </view>
-                <view class="divider fixed" />
-                <view class="view-row-between">
-                  <view class="view-row">
-                    <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/fee-white.png" />
-                    <text wx:if="{{(myProfile.continueWeeklyJoin || 0) > 0 && !activity.isCompleted}}"> {{_lang.fee}}：<text style="text-decoration: line-through;">{{section.info.price}}$</text> {{section.info.price - (myProfile.continueWeeklyJoin > 3 ? 3 : myProfile.continueWeeklyJoin )}}$ {{_lang.feeSuffix}}
-                    </text>
-                    <text wx:else>{{_lang.fee}}：{{section.info.price}} NZD {{_lang.feeSuffix}}</text>
-                  </view>
-                  <view class="view-row">
-                    <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/attention-white.png" />
-                    <text>{{_lang.attendeeMax}} {{section.info.maxAttendee}} {{_lang.member}}</text>
-                  </view>
-                </view>
-                <view class="divider fixed" />
-                <view class="view-row-between">
-                  <view class="view-row">
-                    <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
-                    <text>{{_lang.court}}: {{section.info.courts}} {{_lang.courtSuffix}}</text>
-                  </view>
-                  <view class="view-row">
-                    <image class="icon16 mr-10" mode="heightFix" src="/static/icons/details/time-white.png" />
-                    <text>{{section.info.timeRange}}</text>
-                  </view>
-                </view>
-              </view>
-              <!-- Header information End -->
-              <view class="divider-main" />
-              <!-- Attendee List -->
-              <view class="attention-row">
-                <view class="section" wx:for="{{section.attendees}}" wx:key="key" wx:for-item="user">
-                  <text wx:if="{{section.info.index!= 0 && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
-
-                  <block wx:if="{{myProfile}}">
-                    <view class="head-img">
-                      <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
-                    </view>
-                    <text class="name">{{user.displayName}}</text>
-                    <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
-                  </block>
-                  <block wx:else>
-                    <image class="avatar 11level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
-                    <text class="name">{{user.userLevelType.displayName}}</text>
-                  </block>
-
-                  <text wx:if="{{(section.info.index!= allSections.length -1) && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
-                </view>
-              </view>
-              <!-- Attendee List End-->
-              <!-- Waiting List -->
-              <block wx:if="{{section.onWaitAttendees.length > 0}}">
-                <view class="divider-main" />
-                <view class="header">{{_lang.backUpJoin}}</view>
-                <view class="attention-row">
-                  <view class="section" wx:for="{{section.onWaitAttendees}}" wx:key="key" wx:for-item="user">
-                    <text wx:if="{{section.info.index!= 0 && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
-
-                    <block wx:if="{{myProfile}}">
-                      <view class="head-img">
-                        <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
-                      </view>
-                      <text class="name">{{user.displayName}}</text>
-                      <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
-                    </block>
-                    <block wx:else>
-                      <image class="avatar 11level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
-                      <text class="name">{{user.userLevelType.displayName}}</text>
-                    </block>
-
-                    <text wx:if="{{(section.info.index!= allSections.length -1) && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
-                  </view>
-                </view>
-              </block>
-              <!-- Waiting List End-->
+          <!-- main section -->
+          <view class="swiper-container" style="height: {{swiperHeight + 60}}px;  width: 100%; overflow: hidden;">
+            <view class="view-row-evenly">
+              <view class="{{selectedTab === 0 ? 'tab-actived' : ''}}" data-index="0" bindtap="onTapTab">报名</view>
+              <view class="{{selectedTab === 1 ? 'tab-actived' : ''}}" data-index="1" bindtap="onTapTab">分组</view>
+              <view class="{{selectedTab === 2 ? 'tab-actived' : ''}}" data-index="2" bindtap="onTapTab">结果</view>
             </view>
-          </block>
-          <!-- For All Sections End -->
+
+            <swiper style="height: 100%;" current="{{selectedTab}}" bindchange="onSwiperChange">
+              <!-- sign up -->
+              <swiper-item>
+                <view id="slide0">
+                  <!-- For All Sections -->
+                  <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
+                    <view class="game-box">
+                      <!-- Header information -->
+                      <view class="header">
+                        <view class="view-row">
+                          {{section.info.title}} ({{section.attendees.length}} {{_lang.member}})
+                        </view>
+                        <view class="divider fixed" />
+                        <view class="view-row-between">
+                          <view class="view-row">
+                            <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/fee-white.png" />
+                            <text wx:if="{{(myProfile.continueWeeklyJoin || 0) > 0 && !activity.isCompleted}}"> {{_lang.fee}}：<text style="text-decoration: line-through;">{{section.info.price}}$</text> {{section.info.price - (myProfile.continueWeeklyJoin > 3 ? 3 : myProfile.continueWeeklyJoin )}}$ {{_lang.feeSuffix}}
+                            </text>
+                            <text wx:else>{{_lang.fee}}：{{section.info.price}} NZD {{_lang.feeSuffix}}</text>
+                          </view>
+                          <view class="view-row">
+                            <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/attention-white.png" />
+                            <text>{{_lang.attendeeMax}} {{section.info.maxAttendee}} {{_lang.member}}</text>
+                          </view>
+                        </view>
+                        <view class="divider fixed" />
+                        <view class="view-row-between">
+                          <view class="view-row">
+                            <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
+                            <text>{{_lang.court}}: {{section.info.courts}} {{_lang.courtSuffix}}</text>
+                          </view>
+                          <view class="view-row">
+                            <image class="icon16 mr-10" mode="heightFix" src="/static/icons/details/time-white.png" />
+                            <text>{{section.info.timeRange}}</text>
+                          </view>
+                        </view>
+                      </view>
+                      <!-- Header information End -->
+                      <view class="divider-main" />
+                      <!-- Attendee List -->
+                      <view class="attention-row">
+                        <view class="section" wx:for="{{section.attendees}}" wx:key="key" wx:for-item="user">
+                          <text wx:if="{{section.info.index!= 0 && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
+
+                          <block wx:if="{{myProfile}}">
+                            <view class="head-img">
+                              <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                            </view>
+                            <text class="display-name">{{user.displayName}}</text>
+                            <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
+                          </block>
+                          <block wx:else>
+                            <image class="avatar 11level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
+                            <text class="display-name">{{user.userLevelType.displayName}}</text>
+                          </block>
+
+                          <text wx:if="{{(section.info.index!= allSections.length -1) && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
+                        </view>
+                      </view>
+                      <!-- Attendee List End-->
+                      <!-- Waiting List -->
+                      <block wx:if="{{section.onWaitAttendees.length > 0}}">
+                        <view class="divider-main" />
+                        <view class="header">{{_lang.backUpJoin}}</view>
+                        <view class="attention-row">
+                          <view class="section" wx:for="{{section.onWaitAttendees}}" wx:key="key" wx:for-item="user">
+                            <text wx:if="{{section.info.index!= 0 && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
+
+                            <block wx:if="{{myProfile}}">
+                              <view class="head-img">
+                                <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                              </view>
+                              <text class="display-name">{{user.displayName}}</text>
+                              <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
+                            </block>
+                            <block wx:else>
+                              <image class="avatar 11level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
+                              <text class="display-name">{{user.userLevelType.displayName}}</text>
+                            </block>
+
+                            <text wx:if="{{(section.info.index!= allSections.length -1) && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index + 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.down}}</text>
+                          </view>
+                        </view>
+                      </block>
+                      <!-- Waiting List End-->
+                    </view>
+                  </block>
+                  <!-- For All Sections End -->
+                </view>
+              </swiper-item>
+              <!-- sign up end-->
+
+              <!-- group and match -->
+              <swiper-item>
+                <view wx:if="{{isCourtMatchesMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无分组</view>
+                <view wx:else id="slide1">
+                  <!-- For All Sections -->
+                  <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
+                    <block wx:if="{{section.courtAttendeesMap[court].length > 0}}" wx:for="{{section.info.courts}}" wx:key="index" wx:for-item="court">
+                      <view class="game-box">
+                        <view class="view-row">
+                          <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
+                          <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
+                        </view>
+                        <view class="divider-main" />
+                        <view class="attention-row">
+                          <view class="section-group" wx:for="{{section.courtAttendeesMap[court]}}" wx:key="index" wx:for-item="attendee">
+                            <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{attendee.avatarUrl}}" />
+                            <text class="display-name">{{attendee.displayName}}</text>
+                            <text wx:if="{{attendee.joinMore}}">+{{attendee.joinMore}}</text>
+                            <!-- <view class="view-row-centre">
+                              <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/battle.png" />
+                              <text>战力: {{attendee.currentPowerOfBattle}}</text>
+                            </view> -->
+                          </view>
+                        </view>
+
+                        <!-- Matches by court -->
+                        <view class="divider-main" />
+                        <block wx:for="{{courtMatchesMap[court]}}" wx:for-item="match" wx:key="index">
+                          <view class="view-row-evenly" style="align-items: flex-start;">
+                            <view class="section-match">
+                              <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player1.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                              <text class="display-name">{{match.player1.displayName}}</text>
+                              <text wx:if="{{match.player1.joinMore}}">+{{match.player1.joinMore}}</text>
+                            </view>
+                            <view class="section-match">
+                              <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player2.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                              <text class="display-name">{{match.player2.displayName}}</text>
+                              <text wx:if="{{match.player2.joinMore}}">+{{match.player2.joinMore}}</text>
+                            </view>
+                            <view class="view-column-centre" style="margin-top: 50rpx;">
+                              <text>VS</text>
+                              <!-- <text>{{match.leftScore}}:{{match.rightScore}}</text> -->
+                            </view>
+                            <view class="section-match">
+                              <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                              <text class="display-name">{{match.player3.displayName}}</text>
+                              <text wx:if="{{match.player3.joinMore}}">+{{match.player3.joinMore}}</text>
+                            </view>
+                            <view class="section-match">
+                              <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player4.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                              <text class="display-name">{{match.player4.displayName}}</text>
+                              <text wx:if="{{match.player4.joinMore}}">+{{match.player4.joinMore}}</text>
+                            </view>
+                          </view>
+                          <!-- Matches by court end-->
+                        </block>
+                      </view>
+                    </block>
+                  </block>
+                  <!-- For All Sections End -->
+                </view>
+              </swiper-item>
+              <!-- group and match end -->
+
+              <!-- result -->
+              <swiper-item>
+                <view id="slide2">
+                  <view wx:if="{{isCourtMatchesMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无结果</view>
+                </view>
+              </swiper-item>
+              <!-- result end -->
+            </swiper>
+          </view>
+          <!-- main section end -->
+
           <!-- Admin looking for cancelled attendees -->
           <block wx:if="{{isAdmin}}">
             <view class="info-row">
@@ -149,7 +241,7 @@
             <view class="attention-row">
               <view class="section" wx:for="{{allCancelledAttendees}}" wx:key="key" wx:for-item="user">
                 <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
-                <text class="name">{{user.displayName}}</text>
+                <text class="display-name">{{user.displayName}}</text>
                 <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
               </view>
             </view>

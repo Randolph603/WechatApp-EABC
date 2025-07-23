@@ -15,7 +15,7 @@ export const LanguageMap: iLanguageMap = {
     userLevel: {
       choose: "Please choose",
       d: "D - Beginner (Bronze)",
-      c: "C - Junior (Silver",
+      c: "C - Junior (Silver)",
       b: "B - Intermediate（Gold）",
       a: "A - Senior（Platinum）",
       s: "S - Glitter (Diamond)",

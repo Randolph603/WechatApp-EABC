@@ -3,7 +3,7 @@ import { config } from "../configs/index";
 import { UserRoleArray, LevelArray, UserGenderArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { WxGetFileInfoAsync } from "@Lib/promisify";
-import { CallCloudFuncAsync } from "./commonHelper";
+import { CallCloudFuncAsync, HandleException } from "./commonHelper";
 
 const SetupUserTypes = (user: any) => {
   if (user.avatarUrl.startsWith('cloud')) {
@@ -28,7 +28,7 @@ export const CheckUserExistsAsync = async () => {
 
   if (user) {
     SetupUserTypes(user);
-  } 
+  }
 
   return config.mockNewUser ? null : user;
 }
@@ -44,7 +44,7 @@ export const GetUserByMemberId = async (memberId: number) => {
   return user;
 }
 
-export const UploadAvatarImageAsync = async (filePath: string, memberId: number, avatarUrl: string) => {
+export const UploadAvatarImageAsync = async (filePath: string, memberId: number, avatarUrlToDelete: string | null) => {
   try {
     const fileRes = await WxGetFileInfoAsync({ filePath });
     if (fileRes.size > 1024 * 1024 * 2) {
@@ -57,19 +57,20 @@ export const UploadAvatarImageAsync = async (filePath: string, memberId: number,
       const fileTypeArray = filePath.match(/\.[^.]+?$/);
       const fileType = fileTypeArray ? fileTypeArray[0] : '';
       const cloudPath = 'avatar/' + memberId + '-' + random6String + '-' + fileType;
-
       const app = await GetCloudAsync();
       const { fileID } = await app.uploadFile({
         cloudPath,//云存储图片名字
         filePath,//临时路径
-        method: "post"
       });
-      await app.deleteFile({ fileList: [avatarUrl] });
+     
+      if (avatarUrlToDelete) {
+        await app.deleteFile({ fileList: [avatarUrlToDelete] });
+      }
       return fileID;
     }
     return null;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    await HandleException('UploadAvatarImageAsync', error)
     return null;
   }
 }

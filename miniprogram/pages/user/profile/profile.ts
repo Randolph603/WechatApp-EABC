@@ -31,9 +31,13 @@ Page({
   },
 
   async onLoad(options: Record<string, string | undefined>) {
-    const { memberId, callbackUrl } = options;
+    const { memberId, callbackUrl, callbackParameterKey, callbackParameterValue } = options;
     if (callbackUrl) {
-      this.setData({ callbackUrl });
+      if (callbackParameterKey) {
+        this.setData({ callbackUrl: `${callbackUrl}?${callbackParameterKey}=${callbackParameterValue}` });
+      } else {
+        this.setData({ callbackUrl });
+      }
     }
 
     let formData = {
@@ -97,7 +101,6 @@ Page({
     this.selectComponent('#form').validate(async (valid: any, errors: any) => {
       if (!valid) {
         const firstError = Object.keys(errors);
-        console.log(firstError);
         if (firstError.length) {
           wx.showToast({
             title: errors[firstError[0]].message,
@@ -111,14 +114,14 @@ Page({
             if (!existingUser) {
               // update avatar need to know member id, register first if no member id
               const newUser = await RegisterNewUserAsync();
-              await this.Save(newUser.memberId, defaultAvatarUrl);
+              await this.Save(newUser.memberId, newUser.avatarUrl);
             } else {
               await this.Save(existingUser.memberId, existingUser.avatarUrl);
             }
 
             if (this.data.callbackUrl) {
               wx.reLaunch({
-                url: '/' + this.data.callbackUrl + '?fromCallback=true',
+                url: '/' + this.data.callbackUrl,
               })
             } else {
               wx.navigateBack({ delta: 0 })
@@ -131,17 +134,18 @@ Page({
     });
   },
 
-  async Save(memberId: number, avatarUrl: string) {
+  async Save(memberId: number, oldAvatarUrl: string) {
     if (!memberId) return;
     const newAvatarUrl = this.data.avatarUrl;
     const profile = new ProfileModel(this.data.formData);
-    if (newAvatarUrl !== avatarUrl && newAvatarUrl !== defaultAvatarUrl) {
-      const fileID = await UploadAvatarImageAsync(newAvatarUrl, memberId, avatarUrl);
-      const updateData = { ...profile, avatarUrl: fileID };
-      await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
-    } else {
-      await UpdateRecordAsync('UserProfiles', { memberId }, profile);
+    if (newAvatarUrl !== oldAvatarUrl && newAvatarUrl !== defaultAvatarUrl) {
+      const avatarUrlToDelete = (oldAvatarUrl === defaultAvatarUrl) ? null : oldAvatarUrl;
+      const fileID = await UploadAvatarImageAsync(newAvatarUrl, memberId, avatarUrlToDelete);
+      if (fileID) {
+        profile.avatarUrl = fileID;
+      }
     }
+    await UpdateRecordAsync('UserProfiles', { memberId }, profile);
   },
 
   //#endregion

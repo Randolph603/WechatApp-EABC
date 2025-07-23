@@ -26,3 +26,18 @@ export const RemoveMatchAsync = async (activityId: string, court: number): Promi
     return null;
   }
 }
+
+export const LoadAllMatchesAsync = async (activityId: string): Promise<any> => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    const result = await db.collection('Matches')
+      .where({ activityId: activityId })
+      .orderBy('index', 'asc')
+      .get();
+    return result.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}

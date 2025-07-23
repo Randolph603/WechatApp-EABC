@@ -4,9 +4,9 @@
 
 <block wx:if="{{formData}}">
   <view class="tab-list">
-    <view class="tab-item {{selectedTab === 0 ? 'actived' : ''}}" data-index="0" bindtap="onTapTab">基础信息</view>
-    <view class="tab-item {{selectedTab === 1 ? 'actived' : ''}}" data-index="1" bindtap="onTapTab">参与信息</view>
-    <view class="tab-item {{selectedTab === 2 ? 'actived' : ''}}" data-index="2" bindtap="onTapTab">分组比分</view>
+    <view class="{{selectedTab === 0 ? 'actived' : ''}}" data-index="0" bindtap="onTapTab">基础信息</view>
+    <view class="{{selectedTab === 1 ? 'actived' : ''}}" data-index="1" bindtap="onTapTab">参与信息</view>
+    <view class="{{selectedTab === 2 ? 'actived' : ''}}" data-index="2" bindtap="onTapTab">分组比分</view>
   </view>
 
   <swiper style="height: calc(100vh - {{navBarHeight}}px);" current="{{selectedTab}}" bindchange="onChange">
@@ -179,7 +179,7 @@
                 <view class="view-column-centre court-group-column" wx:for="{{courtAttendeesMap[court]}}" wx:for-item="attendee" wx:key="index">
                   <image wx:if="{{courtId!=0}}" data-court="{{court-1}}" data-attendee="{{attendee}}" bindtap="MoveInsideSection" class="icon24" src="/static/icons/up.png" />
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{attendee.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="name">{{attendee.displayName}}</text>
+                  <text class="display-name">{{attendee.displayName}}</text>
                   <text>{{attendee.joinMore}}</text>
                   <input type="number" style="text-align: center;" data-attendee="{{attendee}}" bindblur="ChangeCurrentPowerOfBattle" value="{{attendee.currentPowerOfBattle}}" />
                   <text>{{attendee.memberId}}</text>
@@ -196,23 +196,23 @@
               <view class="view-row-evenly">
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player1.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="name">{{match.player1.displayName}}</text>
+                  <text class="display-name">{{match.player1.displayName}}</text>
                   <text>{{match.player1.joinMore}}</text>
                 </view>
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player2.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="name">{{match.player2.displayName}}</text>
+                  <text class="display-name">{{match.player2.displayName}}</text>
                   <text>{{match.player2.joinMore}}</text>
                 </view>
                 VS
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="name">{{match.player3.displayName}}</text>
+                  <text class="display-name">{{match.player3.displayName}}</text>
                   <text>{{match.player3.joinMore}}</text>
                 </view>
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player4.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="name">{{match.player4.displayName}}</text>
+                  <text class="display-name">{{match.player4.displayName}}</text>
                   <text>{{match.player4.joinMore}}</text>
                 </view>
               </view>
