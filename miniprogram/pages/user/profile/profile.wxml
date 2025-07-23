@@ -12,12 +12,15 @@
     </mp-cell>
 
     <mp-cell title="*{{_lang.displayName}}" show-error prop="displayName">
-      <input bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.displayNamePlaceholder}}" />
+      <input type="nickname" bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.displayNamePlaceholder}}" />
     </mp-cell>
 
     <mp-cell title="*{{_lang.gender}}" show-error prop="gender">
       <picker bindchange="genderPickerChange" range="{{genderArray}}" range-key="name" value="{{formData.gender}}">
-        <view class="picker"> {{formData.genderType.name}} </view>
+        <view class="picker view-row">
+          <image wx:if="{{formData.gender > 0}}" class="icon24" src="/static/icons/{{formData.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+          <text> - {{formData.genderType.name}}</text>
+        </view>
       </picker>
     </mp-cell>
 

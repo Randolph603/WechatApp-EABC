@@ -2,7 +2,7 @@
   "libVersion": "3.8.11",
   "projectname": "WechatApp-EABC",
   "setting": {
-    "urlCheck": false,
+    "urlCheck": true,
     "coverView": false,
     "lazyloadPlaceholderEnable": false,
     "skylineRenderEnable": true,

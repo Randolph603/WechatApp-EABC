@@ -116,7 +116,7 @@ Page({
               const newUser = await RegisterNewUserAsync();
               await this.Save(newUser.memberId, newUser.avatarUrl);
             } else {
-              await this.Save(existingUser.memberId, existingUser.avatarUrl);
+              await this.Save(existingUser.memberId, existingUser.avatarUrl, existingUser.avatarFile);
             }
 
             if (this.data.callbackUrl) {
@@ -134,18 +134,20 @@ Page({
     });
   },
 
-  async Save(memberId: number, oldAvatarUrl: string) {
+  async Save(memberId: number, oldAvatarUrl: string, oldAvatarFile: string | null = null) {
     if (!memberId) return;
     const newAvatarUrl = this.data.avatarUrl;
     const profile = new ProfileModel(this.data.formData);
+    const updateData = { ...profile } as any;
     if (newAvatarUrl !== oldAvatarUrl && newAvatarUrl !== defaultAvatarUrl) {
-      const avatarUrlToDelete = (oldAvatarUrl === defaultAvatarUrl) ? null : oldAvatarUrl;
-      const fileID = await UploadAvatarImageAsync(newAvatarUrl, memberId, avatarUrlToDelete);
-      if (fileID) {
-        profile.avatarUrl = fileID;
+      const result = await UploadAvatarImageAsync(newAvatarUrl, memberId, oldAvatarFile);
+      if (result) {
+        const { fileID, download_url } = result;
+        if (download_url) { updateData.avatarUrl = download_url; }
+        if (fileID) { updateData.avatarFile = fileID; }
       }
     }
-    await UpdateRecordAsync('UserProfiles', { memberId }, profile);
+    await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
   },
 
   //#endregion

@@ -222,7 +222,7 @@
               <!-- result -->
               <swiper-item>
                 <view id="slide2">
-                  <view wx:if="{{isCourtMatchesMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无结果</view>
+                  <view style="height: 60px;" class="view-row-centre">暂无结果</view>
                 </view>
               </swiper-item>
               <!-- result end -->

@@ -44,7 +44,7 @@ export const GetUserByMemberId = async (memberId: number) => {
   return user;
 }
 
-export const UploadAvatarImageAsync = async (filePath: string, memberId: number, avatarUrlToDelete: string | null) => {
+export const UploadAvatarImageAsync = async (filePath: string, memberId: number, avatarFileToDelete: string | null): Promise<any> => {
   try {
     const fileRes = await WxGetFileInfoAsync({ filePath });
     if (fileRes.size > 1024 * 1024 * 2) {
@@ -58,18 +58,20 @@ export const UploadAvatarImageAsync = async (filePath: string, memberId: number,
       const fileType = fileTypeArray ? fileTypeArray[0] : '';
       const cloudPath = 'avatar/' + memberId + '-' + random6String + '-' + fileType;
       const app = await GetCloudAsync();
-      const { fileID } = await app.uploadFile({
+      const result = await app.uploadFile({
         cloudPath,//云存储图片名字
         filePath,//临时路径
+        method: 'post'
       });
-     
-      if (avatarUrlToDelete) {
-        await app.deleteFile({ fileList: [avatarUrlToDelete] });
+
+      if (avatarFileToDelete) {
+        await app.deleteFile({ fileList: [avatarFileToDelete] });
       }
-      return fileID;
+      return result;
     }
     return null;
   } catch (error: any) {
+    console.log(error);
     await HandleException('UploadAvatarImageAsync', error)
     return null;
   }
