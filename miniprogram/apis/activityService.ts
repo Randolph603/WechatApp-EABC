@@ -31,13 +31,13 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
   return activities;
 }
 
-export const LoadActivityByIdAsync = async (id: string, includeCancelledAttendees: boolean) => {
+export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancelledAttendees: boolean) => {
   let data = {
     activityId: id,
     includeCancelledAttendees: includeCancelledAttendees
   };
 
-  const { activity } = await CallCloudFuncAsync('activity_getById', data);
+  const { activity, matches } = await CallCloudFuncAsync('eabc_activity_getById', data);
   SetupActivity(activity);
 
   activity.Attendees.forEach((user: any) => {
@@ -51,7 +51,7 @@ export const LoadActivityByIdAsync = async (id: string, includeCancelledAttendee
 
   activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => SortDate(a.updateDate, b.updateDate));
 
-  return activity;
+  return { activity, matches };
 }
 
 export const JoinActivityAsync = async (activityId: string, memberId: number, joinMore: number) => {

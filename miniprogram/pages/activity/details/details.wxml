@@ -291,6 +291,9 @@
         </block>
       </view>
     </block>
+    <view class="view-row-centre" style="height: 60%;" wx:else>
+      <button class="btn" size="mini" bindtap="ReloadAll">Reload</button>
+    </view>
   </view>
 </view>
 

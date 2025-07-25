@@ -1,4 +1,4 @@
-import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
+import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
 import { AddMatchAsync, LoadAllMatchesAsync, RemoveMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
@@ -67,7 +67,7 @@ Page({
   },
 
   async ReloadActivityByIdAsync(activityId: string) {
-    const activity = await LoadActivityByIdAsync(activityId, false);
+    const { activity, matches } = await LoadActivityAndMatchesByIdAsync(activityId, false);
     const formData = new ActivityModel(activity);
 
     const courtAttendeesMap: any = {};
@@ -77,7 +77,6 @@ Page({
         .sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
     });
 
-    const matches = await LoadAllMatchesAsync(activityId);
     const courtMatchesMap = {} as any;
     matches.forEach((match: any) => {
       const court = match.court;
@@ -440,7 +439,7 @@ Page({
   async ArrangeGame(e: IOption) {
     const { section } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
-    
+
     const generateMatch = (attendees: any[], court: number, index1: number, index2: number, index3: number, index4: number, index: number) => {
       const leftGender = attendees[index1].gender + attendees[index2].gender;
       const rightGender = attendees[index3].gender + attendees[index4].gender;

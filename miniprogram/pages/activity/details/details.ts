@@ -2,10 +2,9 @@ import {
   AttendeeMoveSectionAsync,
   CancelJoinActivityAsync,
   JoinActivityAsync,
-  LoadActivityByIdAsync
+  LoadActivityAndMatchesByIdAsync
 } from '@API/activityService';
 import { CallCloudFuncAsync } from '@API/commonHelper';
-import { LoadAllMatchesAsync } from '@API/matchService';
 import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { WxShowModalAsync } from '@Lib/promisify';
@@ -84,11 +83,14 @@ Page({
     this.setData({
       activityId: id
     });
+    await this.ReloadAll()
 
+  },
+
+  async ReloadAll() {
     const fetchData = async () => {
       await this.LoadMe();
-      await this.LoadActivity();
-      await this.LoadMatches();
+      await this.LoadActivityAndMatches();
       this.setData({ isLoaded: true });
     };
     await ExcuteWithLoadingAsync(fetchData);
@@ -109,10 +111,10 @@ Page({
   },
 
   // Run after LoadMe fired
-  async LoadActivity() {
+  async LoadActivityAndMatches() {
     const id = this.data.activityId;
     if (id.length > 0) {
-      const activity = await LoadActivityByIdAsync(id, true);
+      const { activity, matches } = await LoadActivityAndMatchesByIdAsync(id, true);
       const allJoinedAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
       const allCancelledAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
 
@@ -146,32 +148,30 @@ Page({
         this.setData({ joinMore });
       }
 
+      const courtMatchesMap = {} as any;
+      matches.forEach((match: any) => {
+        const court = match.court;
+        if (!courtMatchesMap[court]) {
+          courtMatchesMap[court] = [];
+        }
+        courtMatchesMap[court].push(match);
+      });
+      const isCourtMatchesMapEmpty = Object.keys(courtMatchesMap).length === 0;
+
       this.setData({
         attendTitle,
         activity,
         allSections,
         allJoinedAttendeesCount: allJoinedAttendees.length,
-        allCancelledAttendees
+        allCancelledAttendees,
+        courtMatchesMap,
+        isCourtMatchesMapEmpty
       });
-
-      await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
     }
   },
 
-  async LoadMatches() {
-    const activityId = this.data.activityId;
-    const matches = await LoadAllMatchesAsync(activityId);
-    const courtMatchesMap = {} as any;
-    matches.forEach((match: any) => {
-      const court = match.court;
-      if (!courtMatchesMap[court]) {
-        courtMatchesMap[court] = [];
-      }
-      courtMatchesMap[court].push(match);
-    });
-    const isCourtMatchesMapEmpty = Object.keys(courtMatchesMap).length === 0;
-
-    this.setData({ courtMatchesMap, isCourtMatchesMapEmpty });
+  async UpdateSharedMessage() {
+    await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
   },
 
   //#region top tap
@@ -223,7 +223,8 @@ Page({
       const { join_more } = event.currentTarget.dataset;
       const joinActivityAndReload = async () => {
         await JoinActivityAsync(this.data.activityId, myMemberId, join_more);
-        await this.LoadActivity();
+        await this.LoadActivityAndMatches();
+        await this.UpdateSharedMessage();
       };
       await ExcuteWithProcessingAsync(joinActivityAndReload);
     } else {
@@ -263,7 +264,8 @@ Page({
 
     const cancelActivityAndReload = async () => {
       await CancelJoinActivityAsync(this.data.activityId, myMemberId, join_more);
-      await this.LoadActivity();
+      await this.LoadActivityAndMatches();
+      await this.UpdateSharedMessage();
     };
     await ExcuteWithProcessingAsync(cancelActivityAndReload);
   },
@@ -286,7 +288,7 @@ Page({
     const { section_index, join_more, member_id } = event.currentTarget.dataset;
     const moveActivityAndReload = async () => {
       await AttendeeMoveSectionAsync(this.data.activityId, member_id, join_more, section_index);
-      await this.LoadActivity();
+      await this.LoadActivityAndMatches();
     };
     await ExcuteWithProcessingAsync(moveActivityAndReload);
   }
