@@ -61,8 +61,18 @@ export const ExcuteWithLoadingAsync = async (actionAsync: Function) => {
     await actionAsync();
     wx.hideLoading();
   } catch (error) {
-    wx.hideLoading();
-    wx.showToast({ title: lang.failed, icon: 'none' });
-    await HandleException('ExcuteWithLoadingAsync-' + actionAsync.name, error);
+    await HandleException('ExcuteWithLoadingAsync-FirstTimeTry-' + actionAsync.name, error);
+    
+    // retry once
+    try {
+      await actionAsync();
+      wx.hideLoading();
+    } catch (error) {
+      wx.hideLoading();
+      wx.showToast({ title: lang.failed, icon: 'none' });
+      await HandleException('ExcuteWithLoadingAsync-SecondTimeTry-' + actionAsync.name, error);
+      throw error;
+    }
+    throw error;  
   }
 }

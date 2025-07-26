@@ -369,7 +369,8 @@ Page({
   },
 
   async ConfirmAndChargeActivityAsync() {
-    // const vipMemberIds = [10000];
+    // Kevin : 10067
+    const vipMemberIds = [10067];
 
     const activityId = this.data.activityId;
     const sections = this.data.formData.sections;
@@ -380,15 +381,15 @@ Page({
         a.sectionIndexs.forEach((sectionIndex: number) => {
           const section = sections[sectionIndex];
           let price = section.price - discount;
-          // if (vipMemberIds.includes(a.memberId)) {
-          //   price = 14;
-          // }
+          if (vipMemberIds.includes(a.memberId)) {
+            price = 0;
+          }
           charge = charge + price;
         });
 
         return {
           memberId: a.memberId,
-          count: a.joinMore,
+          count: a.totalJoinMore ?? 0,
           discount: discount,
           charge: charge,
         };

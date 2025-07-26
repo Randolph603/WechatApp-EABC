@@ -2,7 +2,7 @@ import { CallCloudFuncAsync, RemoveFieldsAsync, UpdateRecordAsync } from "./comm
 import { SortDate, ToDayOfWeekString, ToNZDateString, ToNZShortDateString } from "@Lib/dateExtension";
 import { ActivityTypeArray, LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
-import { GetCloudAsync } from "./databaseService";
+import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { ActivityModel } from "@Model/Activity";
 
 const SetupActivity = (activity: any) => {
@@ -32,7 +32,9 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
 }
 
 export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancelledAttendees: boolean) => {
+  const unionId = await GetUnionIdAsync();
   let data = {
+    unionId: unionId,
     activityId: id,
     includeCancelledAttendees: includeCancelledAttendees
   };

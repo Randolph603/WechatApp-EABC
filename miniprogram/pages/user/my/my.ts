@@ -41,7 +41,15 @@ Page({
     try {
       await this.LoadUser();
     } catch (error) {
-      await HandleException('onLoad', error)
+      await HandleException('onLoad-1', error);
+      // try second time
+      try {
+        await this.LoadUser();
+      } catch (error) {
+        await HandleException('onLoad-2', error);
+        throw error;
+      }
+      throw error;
     }
   },
 

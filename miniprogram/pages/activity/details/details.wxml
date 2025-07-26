@@ -291,7 +291,7 @@
         </block>
       </view>
     </block>
-    <view class="view-row-centre" style="height: 60%;" wx:else>
+    <view wx:if="{{!isLoading && !activity}}" class="view-row-centre" style="height: 75vh;">
       <button class="btn" size="mini" bindtap="ReloadAll">Reload</button>
     </view>
   </view>

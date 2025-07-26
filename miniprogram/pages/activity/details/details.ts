@@ -21,10 +21,11 @@ Page({
     swiperHeight: 0,
     // Status:
     isLoaded: false,
+    isLoading: false,
     myProfile: null as unknown as iUser,
     // Variables
     activityId: '',
-    activity: {} as any,
+    activity: null as any,
     attendTitle: '',
     allSections: [] as any[],
     allJoinedAttendeesCount: 0,
@@ -88,13 +89,18 @@ Page({
   },
 
   async ReloadAll() {
-    const fetchData = async () => {
-      await this.LoadMe();
-      await this.LoadActivityAndMatches();
-      this.setData({ isLoaded: true });
-    };
-    await ExcuteWithLoadingAsync(fetchData);
-    this.updateSwiperHeight(0);
+    try {
+      this.setData({ isLoading: true });
+      const fetchData = async () => {
+        await this.LoadMe();
+        await this.LoadActivityAndMatches();
+        this.setData({ isLoaded: true, isLoading: false });
+      };
+      await ExcuteWithLoadingAsync(fetchData);
+      this.updateSwiperHeight(0);
+    } finally {
+      this.setData({ isLoading: false });
+    }
   },
 
   //#region private method
