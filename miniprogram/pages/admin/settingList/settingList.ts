@@ -1,10 +1,13 @@
+import { CallCloudFuncAsync } from "@API/commonHelper";
+import { ExcuteWithProcessingAsync } from "@Lib/utils"
+
 Page({
-  data: {
-  },
+  data: {},
+  onLoad() { },
 
-  onLoad() {
-  },
-
-  onShow() {
-  },
+  async updateContinueWeeklyJoin() {
+    await ExcuteWithProcessingAsync(async () => {
+      await CallCloudFuncAsync('eabc_update_weekly', {});
+    });
+  }
 })
