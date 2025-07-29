@@ -12,7 +12,8 @@
     "pages/admin/activityDetail/activityDetail",
     "pages/admin/activityList/activityList",
     "pages/admin/userList/userList",
-    "pages/admin/userDetail/userDetail"
+    "pages/admin/userDetail/userDetail",
+    "pages/admin/eventList/eventList"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -27,6 +27,7 @@ export const RemoveMatchAsync = async (activityId: string, court: number): Promi
   }
 }
 
+// merge into activity load could function together, should not be used for now
 export const LoadAllMatchesAsync = async (activityId: string): Promise<any> => {
   try {
     const app = await GetCloudAsync();

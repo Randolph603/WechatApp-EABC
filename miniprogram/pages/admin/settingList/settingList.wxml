@@ -21,3 +21,10 @@
     <image slot="title" class="mp-cell-icon" src="/static/icons/update.png" />
   </mp-cell>
 </mp-cells>
+
+<mp-cells title="查看">
+  <mp-cell link hover url='/pages/admin/eventList/eventList'>
+    <view>事件列表</view>
+    <image slot="title" class="mp-cell-icon" src="/static/icons/adventure.png" />
+  </mp-cell>
+</mp-cells>
