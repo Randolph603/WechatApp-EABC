@@ -51,7 +51,7 @@
     <view class="grid-item" wx:for="{{activities}}" wx:key="index">
       <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
       <view class="card">
-        <navigator url="/pages/activity/details/details?id={{item._id}}">
+        <navigator url="/pages/activity/{{item.type}}/details?id={{item._id}}">
           <image lazy-load="true" style="width:100%" mode="widthFix" src="{{item.coverImageSrc}}">
           </image>
           <view class="boxTxt">

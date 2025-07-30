@@ -2,7 +2,8 @@
   "pages": [
     "pages/home/home",
     "pages/activity/list/list",
-    "pages/activity/details/details",
+    "pages/activity/section/details",
+    "pages/activity/rank/details",
     "pages/rank/rank",
     "pages/shop/shop",
     "pages/user/my/my",

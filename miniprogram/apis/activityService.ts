@@ -1,6 +1,6 @@
 import { CallCloudFuncAsync, RemoveFieldsAsync, UpdateRecordAsync } from "./commonHelper";
 import { SortDate, ToDayOfWeekString, ToNZDateString, ToNZShortDateString } from "@Lib/dateExtension";
-import { ActivityTypeArray, LevelArray } from "@Lib/types";
+import { LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { ActivityModel } from "@Model/Activity";
@@ -11,7 +11,6 @@ const SetupActivity = (activity: any) => {
   activity.coverImageSrc = "/static/images/" + activity.coverImage;
   activity.startTimeDate = ToNZDateString(activity.startTime);
   activity.date = `${ToNZShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
-  activity.typeValue = ActivityTypeArray[activity.type];
 }
 
 export const GetNewActivity = () => {
@@ -31,10 +30,11 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
   return activities;
 }
 
-export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancelledAttendees: boolean) => {
+export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancelledAttendees: boolean, recordEvent: boolean) => {
   const unionId = await GetUnionIdAsync();
   let data = {
     unionId: unionId,
+    recordEvent: recordEvent,
     activityId: id,
     includeCancelledAttendees: includeCancelledAttendees
   };

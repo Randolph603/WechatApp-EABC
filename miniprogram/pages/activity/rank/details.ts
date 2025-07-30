@@ -93,7 +93,7 @@ Page({
       this.setData({ isLoading: true });
       const fetchData = async () => {
         await this.LoadMe();
-        await this.LoadActivityAndMatches();
+        await this.LoadActivityAndMatches(true);
         this.setData({ isLoaded: true, isLoading: false });
       };
       await ExcuteWithLoadingAsync(fetchData);
@@ -117,10 +117,10 @@ Page({
   },
 
   // Run after LoadMe fired
-  async LoadActivityAndMatches() {
+  async LoadActivityAndMatches(recordEvent: boolean) {
     const id = this.data.activityId;
     if (id.length > 0) {
-      const { activity, matches } = await LoadActivityAndMatchesByIdAsync(id, true);
+      const { activity, matches } = await LoadActivityAndMatchesByIdAsync(id, true, recordEvent);
       const allJoinedAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
       const allCancelledAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
 
@@ -229,7 +229,7 @@ Page({
       const { join_more } = event.currentTarget.dataset;
       const joinActivityAndReload = async () => {
         await JoinActivityAsync(this.data.activityId, myMemberId, join_more);
-        await this.LoadActivityAndMatches();
+        await this.LoadActivityAndMatches(false);
         await this.UpdateSharedMessage();
       };
       await ExcuteWithProcessingAsync(joinActivityAndReload);
@@ -270,7 +270,7 @@ Page({
 
     const cancelActivityAndReload = async () => {
       await CancelJoinActivityAsync(this.data.activityId, myMemberId, join_more);
-      await this.LoadActivityAndMatches();
+      await this.LoadActivityAndMatches(false);
       await this.UpdateSharedMessage();
     };
     await ExcuteWithProcessingAsync(cancelActivityAndReload);
@@ -294,7 +294,7 @@ Page({
     const { section_index, join_more, member_id } = event.currentTarget.dataset;
     const moveActivityAndReload = async () => {
       await AttendeeMoveSectionAsync(this.data.activityId, member_id, join_more, section_index);
-      await this.LoadActivityAndMatches();
+      await this.LoadActivityAndMatches(false);
     };
     await ExcuteWithProcessingAsync(moveActivityAndReload);
   }

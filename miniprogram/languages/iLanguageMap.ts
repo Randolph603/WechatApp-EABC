@@ -2,7 +2,16 @@ interface iLanguageMap {
   tabbar: {
     list: { text: string }[]
   },
-  type: any,
+  type: {
+    gender: any,
+    userLevel: any,
+    userLevelDisplay: any,
+    activityType: {
+      section: string,
+      rank: string,
+      tournament: string
+    },
+  },
   utils: {
     processing: string,
     loading: string,

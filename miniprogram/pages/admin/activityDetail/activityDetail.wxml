@@ -19,8 +19,8 @@
               <input bindinput="formTextChange" data-field="title" value="{{formData.title}}" />
             </mp-cell>
             <mp-cell title="类别" show-error prop="type">
-              <picker bindchange="typePickerChange" range="{{typeArray}}" range-key="name" value="{{formData.type}}">
-                <view>{{activity.typeValue.name}}</view>
+              <picker bindchange="typePickerChange" range="{{typeArray}}" range-key="name" value="{{typeMap[formData.type].index}}">
+                <view>{{typeMap[formData.type].name}}</view>
               </picker>
             </mp-cell>
             <mp-cell title="地点" show-error prop="address">
@@ -55,6 +55,10 @@
             <mp-cell title="公开活动">
               <switch checked="{{formData.toPublic}}" bindchange="formTextChange" data-field="toPublic" />
               <text>{{formData.toPublic === true ? '是' : '否'}}</text>
+            </mp-cell>
+            <mp-cell title="计算积分">
+              <switch checked="{{formData.calculatePowerPoint}}" bindchange="formTextChange" data-field="calculatePowerPoint" />
+              <text>{{formData.calculatePowerPoint === true ? '是' : '否'}}</text>
             </mp-cell>
           </mp-cells>
 
@@ -97,6 +101,10 @@
               <mp-cell title="区域锁定">
                 <switch checked="{{section.isLocked}}" bindchange="handleSectionChange" data-id="{{id}}" data-field="isLocked" />
                 <text>{{section.isLocked === true ? '是' : '否'}}</text>
+              </mp-cell>
+              <mp-cell title="使用折扣">
+                <switch checked="{{section.useDiscount}}" bindchange="handleSectionChange" data-id="{{id}}" data-field="useDiscount" />
+                <text>{{section.useDiscount === true ? '是' : '否'}}</text>
               </mp-cell>
             </mp-cells>
           </block>

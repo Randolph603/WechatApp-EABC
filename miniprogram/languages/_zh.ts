@@ -31,6 +31,11 @@ export const LanguageMap: iLanguageMap = {
       s: "永恒钻石",
       sr: "至尊星耀",
       ssr: "荣耀王者",
+    },
+    activityType:{
+      section:"娱乐",
+      rank: "排位",
+      tournament:"比赛"
     }
   },
   utils: {

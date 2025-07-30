@@ -31,6 +31,11 @@ export const LanguageMap: iLanguageMap = {
       s: "Diamond",
       sr: "Master",
       ssr: "Challenger",
+    },
+    activityType: {
+      section: "Section",
+      rank: "Rank",
+      tournament: "Tournament"
     }
   },
   utils: {

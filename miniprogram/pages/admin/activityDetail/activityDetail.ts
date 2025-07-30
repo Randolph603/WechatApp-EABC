@@ -1,9 +1,9 @@
 import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
-import { AddMatchAsync, LoadAllMatchesAsync, RemoveMatchAsync } from "@API/matchService";
+import { AddMatchAsync, RemoveMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
 import { ToNZTimeRangeString } from "@Lib/dateExtension";
-import { ActivityTypeArray, ConverPageArray } from "@Lib/types";
+import { ActivityTypeArray, ActivityTypeMap, ConverPageArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { ActivityModel } from "@Model/Activity";
 import { IOption, iSection } from "@Model/index";
@@ -21,6 +21,7 @@ const rules = [
   { name: 'sections', rules: { required: true, minlength: 1, message: 'Section不能为空' }, },
   { name: 'isCancelled', rules: { required: true } },
   { name: 'isCompleted', rules: { required: true } },
+  { name: 'calculatePowerPoint', rules: { required: true } },
   { name: 'toPublic', rules: { required: true } },
   { name: 'updateDate', rules: { required: false } },
   { name: 'viewCount', rules: { required: false } },
@@ -41,6 +42,7 @@ Page({
     activity: null as unknown as any,
     courtAttendeesMap: {} as any,
     typeArray: ActivityTypeArray,
+    typeMap: ActivityTypeMap,
     courtArray: [1, 2, 3, 4, 5, 6, 7, 8],
     converPageArray: ConverPageArray,
     rules: rules,
@@ -67,7 +69,7 @@ Page({
   },
 
   async ReloadActivityByIdAsync(activityId: string) {
-    const { activity, matches } = await LoadActivityAndMatchesByIdAsync(activityId, false);
+    const { activity, matches } = await LoadActivityAndMatchesByIdAsync(activityId, false, false);
     const formData = new ActivityModel(activity);
 
     const courtAttendeesMap: any = {};
@@ -148,7 +150,6 @@ Page({
     const typeArrayIndex = Number(e.detail.value);
     const selectedType = this.data.typeArray[typeArrayIndex];
     this.setData({
-      [`activity.typeValue`]: selectedType,
       [`formData.type`]: selectedType.value
     });
   },

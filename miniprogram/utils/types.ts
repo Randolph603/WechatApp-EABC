@@ -3,11 +3,17 @@ import { GetLaguageMap } from "@Language/languageUtils";
 const lang = GetLaguageMap().type;
 
 const activityType = {
-  Section: { value: 0, name: '分组场', title: 'group' },
-  Rank: { value: 1, name: '排位场', title: 'rank' },
+  Section: { index: 0, value: 'section', name: lang.activityType.section },
+  Rank: { index: 1, value: 'rank', name: lang.activityType.rank },
+  Tournament: { index: 2, value: 'tournament', name: lang.activityType.tournament },
 };
 export const ActivityType = activityType;
-export const ActivityTypeArray = [activityType.Section, activityType.Rank];
+export const ActivityTypeArray = [activityType.Section, activityType.Rank, activityType.Tournament];
+export const ActivityTypeMap = {
+  [`${activityType.Section.value}`]: activityType.Section,
+  [`${activityType.Rank.value}`]: activityType.Rank,
+  [`${activityType.Tournament.value}`]: activityType.Tournament,
+}
 
 export const ConverPageArray = [
   'badmintonCover1.jpg',
