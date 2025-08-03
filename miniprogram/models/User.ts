@@ -27,12 +27,11 @@ export interface iUser {
 export class ProfileModel {
   public displayName = '';
   public gender = 0;
-  public userLevel = 0;
   public selfRatingLevel = 0;
 
   constructor(fields?: Partial<ProfileModel>) {
     if (fields) {
-      const allowedKeys = ['displayName', 'gender', 'userLevel', 'selfRatingLevel'];
+      const allowedKeys = ['displayName', 'gender', 'selfRatingLevel'];
       for (const key of allowedKeys) {
         if (key in fields) {
           (this as any)[key] = (fields as any)[key];

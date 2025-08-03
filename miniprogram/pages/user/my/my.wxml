@@ -46,7 +46,7 @@
         <text>{{_lang.points}}</text>
       </view>
       <view class="view-column" style="align-items: center;">
-        <text>{{myProfile.userLevelType.displayName}}</text>
+        <text>Lv.{{myProfile.selfRatingLevel}}</text>
         <text>{{_lang.userLevel}}</text>
       </view>
     </view>
