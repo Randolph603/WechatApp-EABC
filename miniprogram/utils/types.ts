@@ -41,6 +41,12 @@ const userLevel = {
 export const UserLevel = userLevel;
 export const LevelArray = [userLevel.Unknown, userLevel.D, userLevel.C, userLevel.B, userLevel.A, userLevel.S];
 
+export const userSelfRatingLevelMap = lang.selfRatingLevels.reduce((map, item) => {
+  map[item.level] = item;
+  return map;
+}, {} as Record<number, typeof lang.selfRatingLevels[number]>);
+export const userSelfRatingLevelArray = lang.selfRatingLevels;
+
 const userGender = {
   Unknown: { value: 0, name: lang.gender.choose },
   Male: { value: 1, name: lang.gender.male },

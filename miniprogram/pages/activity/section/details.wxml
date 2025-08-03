@@ -67,7 +67,7 @@
                 <view class="view-row-between">
                   <view class="view-row">
                     <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/fee-white.png" />
-                    <text wx:if="{{(myProfile.continueWeeklyJoin || 0) > 0 && !activity.isCompleted && section.info.useDiscount}}"> {{_lang.fee}}：<text style="text-decoration: line-through;">{{section.info.price}}$</text> {{section.info.price - (myProfile.continueWeeklyJoin > 3 ? 3 : myProfile.continueWeeklyJoin )}}$ {{_lang.feeSuffix}}
+                    <text wx:if="{{(myProfile.continueWeeklyJoin || 0) > 0 && !activity.isCompleted && section.info.useDiscount}}"> {{_lang.fee}}：<text style="text-decoration: line-through;">{{section.info.price}}$</text> {{section.info.price - myProfile.discount}}$ {{_lang.feeSuffix}}
                     </text>
                     <text wx:else>{{_lang.fee}}：{{section.info.price}} NZD {{_lang.feeSuffix}}</text>
                   </view>

@@ -377,11 +377,11 @@ Page({
     const sections = this.data.formData.sections;
     const confirmToBeUsers = this.data.groupedAttendees
       .map(a => {
-        const discount = (a.continueWeeklyJoin || 0) > 3 ? 3 : (a.continueWeeklyJoin || 0);
+        const discount = a.discount;
         let charge = 0;
         a.sectionIndexs.forEach((sectionIndex: number) => {
           const section = sections[sectionIndex];
-          let price = section.price - discount;
+          let price = section.useDiscount === true ? section.price - discount : section.price;
           if (vipMemberIds.includes(a.memberId)) {
             price = 0;
           }

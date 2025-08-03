@@ -3,7 +3,7 @@ import { GetCloudAsync } from "./databaseService";
 export const LoadAllEventsAsync = async (): Promise<any> => {
   try {
     const now = new Date();
-    const daysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+    const daysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
 
     const app = await GetCloudAsync();
     const db = app.database();

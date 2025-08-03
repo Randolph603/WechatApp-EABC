@@ -5,7 +5,8 @@
     "mp-cell": "weui-miniprogram/cell/cell",
     "mp-cells": "weui-miniprogram/cells/cells",
     "mp-badge": "weui-miniprogram/badge/badge",
-    "image-loader": "/components/image-loader/image-loader"
+    "image-loader": "/components/image-loader/image-loader",
+    "mp-half-screen-dialog": "weui-miniprogram/half-screen-dialog/half-screen-dialog"
   },
   "disableScroll": true,
   "renderer": "webview"

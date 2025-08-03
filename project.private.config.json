@@ -1,5 +1,5 @@
 {
-  "libVersion": "3.8.11",
+  "libVersion": "3.8.12",
   "projectname": "WechatApp-EABC",
   "setting": {
     "urlCheck": true,
@@ -19,5 +19,17 @@
     "checkInvalidKey": true,
     "ignoreDevUnusedFiles": true
   },
-  "condition": {}
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/user/profile/profile",
+          "pathName": "pages/user/profile/profile",
+          "query": "memberId=10024",
+          "scene": null,
+          "launchMode": "default"
+        }
+      ]
+    }
+  }
 }

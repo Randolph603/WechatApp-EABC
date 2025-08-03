@@ -4,6 +4,7 @@ interface iLanguageMap {
   },
   type: {
     gender: any,
+    selfRatingLevels: { level: number; title: string, content: string }[];
     userLevel: any,
     userLevelDisplay: any,
     activityType: {
@@ -23,7 +24,21 @@ interface iLanguageMap {
     // "title": string,
     // "register": string,
   };
-  userProfile: any,
+  userProfile: {
+    title: string;
+    memberId: string;
+    noMemberId: string;
+    avatar: string;
+    setAvatar: string;
+    displayName: string;
+    displayNamePlaceholder: string;
+    gender: string;
+    level: string;
+    required: string;
+    save: string;
+    register: string;
+    selfRatingLevelTitle: string;
+  },
   creditHistory: any,
   hotRank: any,
   activityList: any,

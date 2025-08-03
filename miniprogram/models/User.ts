@@ -11,6 +11,7 @@ export interface iUser {
   memberId: number;
   powerOfBattle: number;
   powerPoint: number;
+  selfRatingLevel: number;
   unionId: string;
   updateDate: Date;
   userLevel: number;
@@ -20,16 +21,18 @@ export interface iUser {
   userRoleType: object;
   userLevelType: object;
   genderType: object;
+  discount: number;
 }
 
 export class ProfileModel {
   public displayName = '';
   public gender = 0;
   public userLevel = 0;
+  public selfRatingLevel = 0;
 
   constructor(fields?: Partial<ProfileModel>) {
     if (fields) {
-      const allowedKeys = ['displayName', 'gender', 'userLevel'];
+      const allowedKeys = ['displayName', 'gender', 'userLevel', 'selfRatingLevel'];
       for (const key of allowedKeys) {
         if (key in fields) {
           (this as any)[key] = (fields as any)[key];

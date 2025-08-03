@@ -48,7 +48,7 @@ const newSection: iSection = {
   index: 0,
   isLocked: false,
   maxAttendee: 24,
-  price: 17,
+  price: 16,
   time: ToNZTimeString(today),
   timeRange: ToNZTimeRangeString(today, 120),
   title: '娱乐区',

@@ -1,7 +1,7 @@
 import { UpdateRecordAsync } from "@API/commonHelper";
 import { GetUserByMemberId, RegisterNewUserAsync, UploadAvatarImageAsync } from "@API/userService";
 import { GetLaguageMap } from "@Language/languageUtils";
-import { LevelArray, UserGender, UserGenderArray, UserLevel } from "@Lib/types";
+import { LevelArray, UserGender, UserGenderArray, userSelfRatingLevelArray, userSelfRatingLevelMap } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { ProfileModel } from "@Model/User";
 
@@ -23,11 +23,14 @@ Page({
       { name: 'displayName', rules: { required: true, maxlength: 20, message: 'name is required with max 20 characters' } },
       { name: 'gender', rules: { required: true, min: 1, message: 'Gender is required' } },
       { name: 'genderType', rules: { required: false } },
-      { name: 'userLevel', rules: { required: true } },
-      { name: 'userLevelType', rules: { required: false } },
+      { name: 'selfRatingLevel', rules: { required: true } },
     ],
     levelArray: LevelArray,
     genderArray: UserGenderArray,
+    showSelfRatingLevel: false,
+    selfRatingLevelIndex: 0,
+    userSelfRatingLevelMap: userSelfRatingLevelMap,
+    userSelfRatingLevelArray: userSelfRatingLevelArray,
   },
 
   async onLoad(options: Record<string, string | undefined>) {
@@ -44,8 +47,7 @@ Page({
       displayName: '',
       gender: UserGender.Unknown.value,
       genderType: UserGender.Unknown,
-      userLevel: UserLevel.Unknown.value,
-      userLevelType: UserLevel.Unknown,
+      selfRatingLevel: 0,
     };
 
     await ExcuteWithLoadingAsync(async () => {
@@ -57,10 +59,10 @@ Page({
             displayName: user.displayName,
             gender: user.gender,
             genderType: user.genderType,
-            userLevel: user.userLevel,
-            userLevelType: user.userLevelType,
+            selfRatingLevel: user.selfRatingLevel ?? 0
           }
-          this.setData({ avatarUrl: user.avatarUrl });
+          var selfRatingLevelIndex = user.selfRatingLevel ?? 0 > 1 ? user.selfRatingLevel - 1 : 0
+          this.setData({ avatarUrl: user.avatarUrl, selfRatingLevelIndex: selfRatingLevelIndex });
         }
         this.setData({ user });
       }
@@ -89,11 +91,19 @@ Page({
     });
   },
 
-  levelPickerChange(e: any) {
-    const index = Number(e.detail.value);
+  selfRatingLevel() {
+    this.setData({ showSelfRatingLevel: true });
+  },
+
+  onSwiperChange(e: any) {
+    const current = e.detail.current;
+    this.setData({ selfRatingLevelIndex: current });
+  },
+
+  chooseSelfLevel() {
     this.setData({
-      [`formData.userLevel`]: index,
-      [`formData.userLevelType`]: LevelArray[index]
+      showSelfRatingLevel: false,
+      [`formData.selfRatingLevel`]: this.data.selfRatingLevelIndex + 1
     });
   },
 
