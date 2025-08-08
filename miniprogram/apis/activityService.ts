@@ -49,6 +49,7 @@ export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancell
     if (user.avatarUrl.startsWith('cloud')) {
       user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
     }
+    user.discount = user.continueWeeklyJoin ?? 0 > 2 ? 2 : user.continueWeeklyJoin ?? 0;
   });
 
   activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => SortDate(a.updateDate, b.updateDate));
