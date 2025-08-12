@@ -23,11 +23,25 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/user/myAccount/myAccount",
+          "pathName": "pages/user/myAccount/myAccount",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
+          "name": "pages/user/my/my",
+          "pathName": "pages/user/my/my",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/user/profile/profile",
           "pathName": "pages/user/profile/profile",
           "query": "memberId=10024",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

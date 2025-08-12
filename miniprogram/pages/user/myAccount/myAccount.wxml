@@ -1,0 +1,41 @@
+<mp-navigation-bar title="子账户" ext-class="nav-bar" back="{{true}}" />
+
+<mp-cell>
+  <view slot="title" class="view-row">
+    <image class="icon24" src="/static/icons/search-user.png" mode="heightFix" />
+    <input style="margin-left: 20rpx;" placeholder="输入姓名" type="text" confirm-type="search" value="{{searchTerm}}" bindinput="onSearchInputChange" bindconfirm="searchUser" />
+  </view>
+  <image wx:if="{{searchTerm}}" bindtap="onSearchCancel" class="icon24" slot="footer" src="/static/icons/close.png" mode="heightFix" />
+</mp-cell>
+
+<view>
+  <view class="card">Card 1</view>
+  <view class="card">Card 2</view>
+</view>
+
+<mp-half-screen-dialog extClass="self-level-container" maskClosable="{{true}}" closabled="{{false}}" show="{{true}}">
+  <view slot="title" style="font-size: medium;" class="view-row-centre">新球员</view>
+
+  <mp-form slot="desc" id="form" rules="{{rules}}" models="{{formData}}">
+    <mp-cell title="姓名">
+      <input type="nickname" bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="姓名" />
+    </mp-cell>
+    <mp-cell title="姓名">
+      <input type="nickname" bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="姓名" />
+    </mp-cell>
+    <mp-cell title="姓名">
+      <input type="nickname" bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="姓名" />
+    </mp-cell>
+    <mp-cell title="姓名">
+      <input type="nickname" bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="姓名" />
+    </mp-cell>
+    <mp-cell title="姓名">
+      <input type="nickname" bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="姓名" />
+    </mp-cell>
+  </mp-form>
+
+  <view class="view-row-evenly" slot="footer">
+    <button class="weui-btn" type="warn">删除</button>
+    <button class="weui-btn" type="primary">添加</button>
+  </view>
+</mp-half-screen-dialog>

@@ -7,6 +7,7 @@
     "pages/rank/rank",
     "pages/shop/shop",
     "pages/user/my/my",
+    "pages/user/myAccount/myAccount",
     "pages/user/profile/profile",
     "pages/user/creditHistory/creditHistory",
     "pages/admin/settingList/settingList",
