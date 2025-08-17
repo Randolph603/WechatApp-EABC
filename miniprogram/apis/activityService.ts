@@ -4,6 +4,7 @@ import { LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { ActivityModel } from "@Model/Activity";
+import { SetupUserTypes } from "./userService";
 
 const SetupActivity = (activity: any) => {
   activity.startTime = new Date(activity.startTime);
@@ -43,13 +44,9 @@ export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancell
   SetupActivity(activity);
 
   activity.Attendees.forEach((user: any) => {
-    user.userLevelType = LevelArray[user.userLevel];
-    user.key = `${user.memberId}+${user.joinMore}`;
+    SetupUserTypes(user);
     user.userLevelImageSrc = `/static/ranks/${user.userLevel + 1}.png`;
-    if (user.avatarUrl.startsWith('cloud')) {
-      user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
-    }
-    user.discount = user.continueWeeklyJoin ?? 0 > 2 ? 2 : user.continueWeeklyJoin ?? 0;
+    user.key = `${user.memberId}+${user.joinMore}`;
   });
 
   activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => SortDate(a.updateDate, b.updateDate));

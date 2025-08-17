@@ -73,7 +73,7 @@
                       <!-- Header information -->
                       <view class="header">
                         <view class="view-row">
-                          {{section.info.title}} ({{section.attendees.length}} {{_lang.member}})
+                          {{section.info.title}} ({{section.attendees.length + section.onWaitAttendees.length}} {{_lang.member}})
                         </view>
                         <view class="divider fixed" />
                         <view class="view-row-between">

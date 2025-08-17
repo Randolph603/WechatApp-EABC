@@ -5,14 +5,16 @@ import { ConvertFileIdToHttps } from "@Lib/utils";
 import { WxGetFileInfoAsync } from "@Lib/promisify";
 import { CallCloudFuncAsync, HandleException } from "./commonHelper";
 
-const SetupUserTypes = (user: any) => {
+export const SetupUserTypes = (user: any) => {
   if (user.avatarUrl.startsWith('cloud')) {
     user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
   }
   user.userRoleType = UserRoleArray[user.userRole];
   user.userLevelType = LevelArray[user.userLevel];
   user.genderType = UserGenderArray[user.gender];
-  user.discount = user.continueWeeklyJoin ?? 0 > 2 ? 2 : user.continueWeeklyJoin ?? 0;
+  user.discount = (user.continueWeeklyJoin ?? 0) > 2
+    ? 2
+    : user.continueWeeklyJoin;
 }
 
 export const RegisterNewUserAsync = async () => {
@@ -30,7 +32,6 @@ export const CheckUserExistsAsync = async () => {
   if (user) {
     SetupUserTypes(user);
   }
-
   return config.mockNewUser ? null : user;
 }
 

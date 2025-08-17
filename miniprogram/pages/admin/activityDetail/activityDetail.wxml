@@ -175,13 +175,19 @@
           <mp-cell title="{{section.title}}">
             <view slot="footer" class="view-row-centre">
               <button class="mr-10" type="primary" size="mini" data-section="{{section}}" bindtap="GroupForSection">分组</button>
-              <button class="mr-10" type="warn" size="mini" data-section="{{section}}" bindtap="DegroupForSection">去分组</button>
-              <button class="mr-10" type="primary" size="mini" data-section="{{section}}" bindtap="ArrangeGame">排场</button>
-              <button type="warn" size="mini" data-section="{{section}}" bindtap="CleanMatches">去排场</button>
+              <button class="mr-10" type="warn" size="mini" data-section="{{section}}" bindtap="DegroupForSection">分组</button>
+              <button class="mr-10" type="primary" size="mini" data-section="{{section}}" bindtap="CreateMatchesForSection">排场</button>
+              <button type="warn" size="mini" data-section="{{section}}" bindtap="RemoveMatchesForSection">排场</button>
             </view>
           </mp-cell>
           <mp-cells wx:for="{{section.courts}}" wx:key="index" wx:for-index="courtId" wx:for-item="court" title="Court {{court}}">
             <!-- Group by court -->
+            <mp-cell wx:if="{{courtAttendeesMap[court].length > 0}}" title="操作">
+              <view slot="footer">
+                <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourt">创建排场</button>
+                <button type="warn" size="mini" data-court="{{court}}" bindtap="RemoveMatchesForCourt">取消排场</button>
+              </view>
+            </mp-cell>
             <mp-cell>
               <view class="view-row-evenly flex-wrap">
                 <view class="view-column-centre court-group-column" wx:for="{{courtAttendeesMap[court]}}" wx:for-item="attendee" wx:key="index">

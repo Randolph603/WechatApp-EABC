@@ -11,7 +11,7 @@
             <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" mode="aspectFill" />
             <view class="info">
               <view class="{{user.isDeleted ? 'deleted' : ''}}">
-                <text>{{user.displayName}}</text>
+                <text>{{user.displayName}} (Lv.{{user.selfRatingLevel || 0}})</text>
               </view>
               <text class="member-id"> #{{user.memberId}} / {{user.userRoleType.name}}</text>
               <text class="member-id"> Continue: {{user.continueWeeklyJoin}}</text>
