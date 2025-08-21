@@ -104,15 +104,19 @@
                       <view class="divider-main" />
                       <!-- Attendee List -->
                       <view class="attention-row">
-                        <view class="section" wx:for="{{section.attendees}}" wx:key="key" wx:for-item="user">
+                        <view class="section" wx:for="{{section.attendees}}" wx:key="attendeeId" wx:for-item="user">
                           <text wx:if="{{section.info.index!= 0 && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
 
                           <block wx:if="{{myProfile}}">
                             <view class="head-img">
                               <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                             </view>
-                            <text class="display-name">{{user.displayName}}</text>
-                            <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
+                            <view class="view-row-centre full-width">
+                              <image wx:if="{{user.attendeeGender > 0}}" class="icon16" src="/static/icons/{{user.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                              <image wx:if="{{!user.attendeeGender && user.gender > 0}}" class="icon16" src="/static/icons/{{user.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                              <text class="display-name">{{user.attendeeName || user.displayName}}</text>
+                            </view>
+                            <text wx:if="{{user.joinMore && !user.attendeeName}}">+{{user.joinMore}}</text>
                           </block>
                           <block wx:else>
                             <image class="avatar 11level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
@@ -128,15 +132,19 @@
                         <view class="divider-main" />
                         <view class="header">{{_lang.backUpJoin}}</view>
                         <view class="attention-row">
-                          <view class="section" wx:for="{{section.onWaitAttendees}}" wx:key="key" wx:for-item="user">
+                          <view class="section" wx:for="{{section.onWaitAttendees}}" wx:key="attendeeId" wx:for-item="user">
                             <text wx:if="{{section.info.index!= 0 && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
 
                             <block wx:if="{{myProfile}}">
                               <view class="head-img">
                                 <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                               </view>
-                              <text class="display-name">{{user.displayName}}</text>
-                              <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
+                              <view class="view-row-centre full-width">
+                                <image wx:if="{{user.attendeeGender > 0}}" class="icon16" src="/static/icons/{{user.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <image wx:if="{{!user.attendeeGender && user.gender > 0}}" class="icon16" src="/static/icons/{{user.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <text class="display-name">{{user.attendeeName || user.displayName}}</text>
+                              </view>
+                              <text wx:if="{{user.joinMore && !user.attendeeName}}">+{{user.joinMore}}</text>
                             </block>
                             <block wx:else>
                               <image class="avatar 11level-{{user.userLevel}}" mode="aspectFill" src="{{user.userLevelImageSrc}}" />
@@ -157,7 +165,7 @@
 
               <!-- group and match -->
               <swiper-item>
-                <view wx:if="{{isCourtMatchesMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无分组</view>
+                <view wx:if="{{isCourtMatchesMapEmpty}}" id="slide1" style="height: 60px;" class="view-row-centre">暂无分组</view>
                 <view wx:else id="slide1">
                   <!-- For All Sections -->
                   <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
@@ -170,9 +178,14 @@
                         <view class="divider-main" />
                         <view class="attention-row">
                           <view class="section-group" wx:for="{{section.courtAttendeesMap[court]}}" wx:key="index" wx:for-item="attendee">
-                            <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{attendee.avatarUrl}}" />
-                            <text class="display-name">{{attendee.displayName}}</text>
-                            <text wx:if="{{attendee.joinMore}}">+{{attendee.joinMore}}</text>
+                            <image-loader ext-class="avatar 11level-{{attendee.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{attendee.avatarUrl}}" />
+                            <!-- <text class="display-name">{{attendee.displayName}}</text>
+                            <text wx:if="{{attendee.joinMore}}">+{{attendee.joinMore}}</text> -->
+                            <view class="view-row-centre full-width">
+                              <image wx:if="{{attendee.attendeeGender > 0}}" class="icon16" src="/static/icons/{{attendee.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                              <image wx:if="{{!attendee.attendeeGender && attendee.gender > 0}}" class="icon16" src="/static/icons/{{attendee.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                              <text class="display-name">{{attendee.attendeeName || attendee.displayName}}</text>
+                            </view>
                             <!-- <view class="view-row-centre">
                               <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/battle.png" />
                               <text>战力: {{attendee.currentPowerOfBattle}}</text>
@@ -186,13 +199,19 @@
                           <view class="view-row-evenly" style="align-items: flex-start;">
                             <view class="section-match">
                               <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player1.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                              <text class="display-name">{{match.player1.displayName}}</text>
-                              <text wx:if="{{match.player1.joinMore}}">+{{match.player1.joinMore}}</text>
+                              <view class="view-row-centre full-width">
+                                <image wx:if="{{match.player1.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player1.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <image wx:if="{{!match.player1.attendeeGender && match.player1.gender > 0}}" class="icon16" src="/static/icons/{{match.player1.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <text class="display-name">{{match.player1.attendeeName || match.player1.displayName}}</text>
+                              </view>
                             </view>
                             <view class="section-match">
                               <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player2.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                              <text class="display-name">{{match.player2.displayName}}</text>
-                              <text wx:if="{{match.player2.joinMore}}">+{{match.player2.joinMore}}</text>
+                              <view class="view-row-centre full-width">
+                                <image wx:if="{{match.player2.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player2.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <image wx:if="{{!match.player2.attendeeGender && match.player2.gender > 0}}" class="icon16" src="/static/icons/{{match.player2.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <text class="display-name">{{match.player2.attendeeName || match.player2.displayName}}</text>
+                              </view>
                             </view>
                             <view class="view-column-centre" style="margin-top: 50rpx;">
                               <text>VS</text>
@@ -200,13 +219,19 @@
                             </view>
                             <view class="section-match">
                               <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                              <text class="display-name">{{match.player3.displayName}}</text>
-                              <text wx:if="{{match.player3.joinMore}}">+{{match.player3.joinMore}}</text>
+                              <view class="view-row-centre full-width">
+                                <image wx:if="{{match.player3.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player3.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <image wx:if="{{!match.player3.attendeeGender && match.player3.gender > 0}}" class="icon16" src="/static/icons/{{match.player3.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <text class="display-name">{{match.player3.attendeeName || match.player3.displayName}}</text>
+                              </view>
                             </view>
                             <view class="section-match">
                               <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player4.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                              <text class="display-name">{{match.player4.displayName}}</text>
-                              <text wx:if="{{match.player4.joinMore}}">+{{match.player4.joinMore}}</text>
+                              <view class="view-row-centre full-width">
+                                <image wx:if="{{match.player4.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player4.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <image wx:if="{{!match.player4.attendeeGender && match.player4.gender > 0}}" class="icon16" src="/static/icons/{{match.player4.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <text class="display-name">{{match.player4.attendeeName || match.player4.displayName}}</text>
+                              </view>
                             </view>
                           </view>
                           <!-- Matches by court end-->
@@ -239,7 +264,7 @@
               <text class="small">Cancelled</text>
             </view>
             <view class="attention-row">
-              <view class="section" wx:for="{{allCancelledAttendees}}" wx:key="key" wx:for-item="user">
+              <view class="section" wx:for="{{allCancelledAttendees}}" wx:key="attendeeId" wx:for-item="user">
                 <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                 <text class="display-name">{{user.displayName}}</text>
                 <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>

@@ -127,7 +127,7 @@
             <image wx:if="{{searchTerm}}" bindtap="onSearchCancel" class="icon24" slot="footer" src="/static/icons/close.png" mode="heightFix" />
           </mp-cell>
 
-          <mp-cell wx:for="{{matchedUsers}}" wx:key="key" wx:for-item="user">
+          <mp-cell wx:for="{{matchedUsers}}" wx:key="attendeeId" wx:for-item="user">
             <view slot="title" class="view-row">
               <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
               <text style="margin-left: 20rpx;">{{user.displayName}}</text>
@@ -144,22 +144,33 @@
 
         <mp-cells wx:if="{{groupedAttendees.length > 0}}" class="scroll" title="参与者 (报名时间排序):" footer="* 左滑删除缺席者">
           <block wx:for="{{groupedAttendees}}" wx:key="memberId" wx:for-item="user">
-            <mp-slideview buttons="{{[{type: 'warn',text: '移除'}]}}" data-user="{{user}}" data-more="{{0}}" bindbuttontap="removeAttendeeAsync" disable="{{activity.isCompleted}}">
-              <mp-cell style="font-size: 0.85rem;">
-                <view slot="title" class="view-row">
-                  <image-loader bindtap="goToUserDetails" data-user="{{user}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <view class="column-section">
+            <mp-cell>
+              <view slot="title" class="view-row">
+                <image-loader bindtap="goToUserDetails" data-user="{{user}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                <view class="column-section">
+                  <view class="view-row">
+                    <image wx:if="{{user.gender > 0}}" class="icon16" src="/static/icons/{{user.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                     <text>{{user.displayName}} ({{user.creditBalance}} NZD)</text>
-                    <text>{{user.continueWeeklyJoin || 0}} Weeks</text>
                   </view>
+                  <text>{{user.continueWeeklyJoin || 0}} Weeks</text>
                 </view>
-                <view slot="footer" class="view-row">
-                  <image wx:if="{{!formData.isCompleted}}" data-user="{{user}}" data-more="{{user.totalJoinMore}}" bindtap="removeAttendeeAsync" class="footer-icon" src="/static/icons/minus.png" />
-                  <text>+{{user.totalJoinMore||0}}</text>
-                  <image wx:if="{{!formData.isCompleted}}" data-user="{{user}}" data-more="{{user.totalJoinMore + 1}}" bindtap="addAttendeeAsync" class="footer-icon" src="/static/icons/add.png" />
+              </view>
+              <view slot="footer" class="view-row">
+                <image wx:if="{{!formData.isCompleted}}" data-user="{{user}}" bindtap="removeAttendeeAsync" class="footer-icon" src="/static/icons/minus.png" />
+                <text>+{{user.attendeeList.length-1}}</text>
+                <image wx:if="{{!formData.isCompleted}}" data-user="{{user}}" bindtap="addAttendeeAsync" class="footer-icon" src="/static/icons/add.png" />
+              </view>
+            </mp-cell>
+            <mp-cell wx:if="{{user.attendeeList.length > 1 && attendee.joinMore !== 0}}" wx:for="{{user.attendeeList}}" wx:key="attendeeId" wx:for-item="attendee">
+              <view class="view-row full-width">
+                <text>{{user.displayName}}+{{attendee.joinMore}} :</text>
+                <view class="view-row">
+                  <image wx:if="{{attendee.attendeeGender > 0}}" class="icon16" src="/static/icons/{{attendee.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                  <text>{{attendee.attendeeName}}</text>
                 </view>
-              </mp-cell>
-            </mp-slideview>
+              </view>
+              <button slot="footer" type="default" size="mini" data-user="{{user}}" data-attendee="{{attendee}}" bindtap="showSelectedAttendee">修改</button>
+            </mp-cell>
           </block>
         </mp-cells>
 
@@ -244,3 +255,29 @@
     </swiper-item>
   </swiper>
 </block>
+
+<!-- Dialogs -->
+<mp-half-screen-dialog maskClosable="{{true}}" closabled="{{false}}" show="{{showAttendeeDialog}}">
+  <view slot="title" style="font-size: medium;" class="view-row-centre">{{selectedAttendee.accountName}} +{{selectedAttendee.attendeeJoinMore}}</view>
+
+  <view slot="desc">
+    <mp-cell title="姓名">
+      <input class="ml-60" bindinput="changeSelectedAttendeeName" value="{{selectedAttendee.attendeeName}}" />
+    </mp-cell>
+    <mp-cell title="性别">
+      <view class="view-row ml-60">
+        <view class="view-row  mr-10 gender-box {{selectedAttendee.attendeeGender ===1 ? 'selected': ''}}" data-value="{{1}}" bindtap="changeSelectedAttendeeGender">
+          <image class="icon24" src="/static/icons/male.png" mode="aspectFit" />
+          <text class="ml-10">{{genderArray[1].name}}</text>
+        </view>
+
+        <view class="view-row mr-10 gender-box ml-10 {{selectedAttendee.attendeeGender ===2 ? 'selected': ''}}" data-value="{{2}}" bindtap="changeSelectedAttendeeGender">
+          <image class="icon24" src="/static/icons/female.png" mode="aspectFit" />
+          <text class="ml-10">{{genderArray[2].name}}</text>
+        </view>
+      </view>
+    </mp-cell>
+  </view>
+
+  <button slot="footer" class="weui-btn" type="primary" bindtap="updateSelectedAttendee">更新</button>
+</mp-half-screen-dialog>

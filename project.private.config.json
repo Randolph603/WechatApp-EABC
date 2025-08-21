@@ -23,11 +23,25 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/activity/rank/details",
+          "pathName": "pages/activity/rank/details",
+          "query": "id=2ccbb81568a26133024c2bd205e7ddd6",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "id=2ccbb81568a26133024c2bd205e7ddd6",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/user/myAccount/myAccount",
           "pathName": "pages/user/myAccount/myAccount",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/user/my/my",

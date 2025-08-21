@@ -1,9 +1,9 @@
-import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
+import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
 import { AddMatchAsync, generateMatch, RemoveMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
 import { ToNZTimeRangeString } from "@Lib/dateExtension";
-import { ActivityTypeArray, ActivityTypeMap, ConverPageArray } from "@Lib/types";
+import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { ActivityModel } from "@Model/Activity";
 import { IOption, iSection } from "@Model/index";
@@ -34,6 +34,7 @@ Page({
   data: {
     // Static
     navBarHeight: GetNavBarHeight() + 10,
+    genderArray: UserGenderArray,
     // Tab
     selectedTab: 0,
     // Info Page
@@ -47,10 +48,13 @@ Page({
     courtArray: [1, 2, 3, 4, 5, 6, 7, 8],
     converPageArray: ConverPageArray,
     rules: rules,
-    //Attendees page
+    // Attendees page
     searchTerm: '',
     matchedUsers: [] as any[],
-    groupedAttendees: [] as any[]
+    groupedAttendees: [] as any[],
+    // Dialog
+    showAttendeeDialog: false,
+    selectedAttendee: null as unknown as any
   },
 
   async onLoad(options: Record<string, string | undefined>) {
@@ -114,10 +118,27 @@ Page({
       }, {});
 
     Object.values(activeAttendeesGroup).forEach((atts: any) => {
-      const first = atts[0];
-      first.totalJoinMore = atts.length - 1;
-      first.sectionIndexs = atts.map((a: any) => a.sectionIndex);
-      groupedAttendees.push(first);
+      const mainAttendee = atts.find((a: any) => a.joinMore === 0);
+      const aggregateAttendee = {
+        avatarUrl: mainAttendee.avatarUrl,
+        continueWeeklyJoin: mainAttendee.continueWeeklyJoin,
+        creditBalance: mainAttendee.creditBalance,
+        discount: mainAttendee.discount,
+        displayName: mainAttendee.displayName,
+        gender: mainAttendee.gender,
+        memberId: mainAttendee.memberId,
+        attendeeList: atts.map((a: any) => {
+          return {
+            attendeeId: a.attendeeId,
+            joinMore: a.joinMore,
+            sectionIndex: a.sectionIndex,
+            attendeeName: a.attendeeName,
+            attendeeGender: a.attendeeGender,
+          }
+        })
+      };
+
+      groupedAttendees.push(aggregateAttendee);
     });
 
     this.setData({
@@ -308,24 +329,27 @@ Page({
   },
 
   async addAttendeeAsync(e: IOption) {
-    const { user, more } = e.currentTarget.dataset;
+    const { user } = e.currentTarget.dataset;
     if (!user) return;
 
-    await ExcuteWithProcessingAsync(async () => {
-      const activityId = this.data.activityId;
-      if (activityId) {
-        await JoinActivityAsync(activityId, user.memberId, more);
+    const more = user.attendeeList?.length ?? 0;
+    const memberId = user.memberId;
+    const activityId = this.data.activityId;
+    if (activityId) {
+      await ExcuteWithProcessingAsync(async () => {
+        await JoinActivityAsync(activityId, memberId, more);
         user.joinMore = more;
         allActiveAttendees.push(user);
         this.generateGroupAttendees();
-      };
-    }, false);
+      }, false);
+    }
   },
 
   async removeAttendeeAsync(e: IOption) {
-    const { user, more } = e.currentTarget.dataset;
+    const { user } = e.currentTarget.dataset;
     if (!user) return;
 
+    const more = user.attendeeList.length - 1;
     const memberId = user.memberId;
     const activityId = this.data.activityId;
 
@@ -353,6 +377,41 @@ Page({
     });
   },
 
+  showSelectedAttendee(e: IOption) {
+    const { user, attendee } = e.currentTarget.dataset;
+    const selectedAttendee = {
+      attendeeId: attendee.attendeeId,
+      attendeeJoinMore: attendee.joinMore,
+      accountName: user.displayName,
+      accountMemberId: user.memberId,
+      attendeeName: attendee.attendeeName,
+      attendeeGender: attendee.attendeeGender
+    };
+    this.setData({
+      showAttendeeDialog: true,
+      selectedAttendee: selectedAttendee
+    })
+  },
+
+  changeSelectedAttendeeName(e: IOption) {
+    this.setData({ [`selectedAttendee.attendeeName`]: e.detail.value });
+  },
+
+  changeSelectedAttendeeGender(e: IOption) {
+    const { value } = e.currentTarget.dataset;
+    this.setData({ [`selectedAttendee.attendeeGender`]: value });
+  },
+
+  async updateSelectedAttendee() {
+    const activityId = this.data.activityId;
+    await ExcuteWithProcessingAsync(async () => {
+      const selectedAttendee = this.data.selectedAttendee;
+      await UpdateAttendeeMoreAsync(selectedAttendee.attendeeId, selectedAttendee.attendeeName, selectedAttendee.attendeeGender);
+      await this.ReloadActivityByIdAsync(activityId);
+      this.setData({ showAttendeeDialog: false });
+    }, false);
+  },
+
   async autoAddAttendeesAsync() {
     await ExcuteWithProcessingAsync(async () => {
       const activityId = this.data.activityId;
@@ -377,21 +436,22 @@ Page({
     const activityId = this.data.activityId;
     const sections = this.data.formData.sections;
     const confirmToBeUsers = this.data.groupedAttendees
-      .map(a => {
-        const discount = a.discount;
+      .map(groupedAttendee => {
+        const { discount, memberId, attendeeList } = groupedAttendee;
+
         let charge = 0;
-        a.sectionIndexs.forEach((sectionIndex: number) => {
-          const section = sections[sectionIndex];
+        attendeeList.forEach((a: any) => {
+          const section = sections[a.sectionIndex];
           let price = section.useDiscount === true ? section.price - discount : section.price;
-          if (vipMemberIds.includes(a.memberId)) {
+          if (vipMemberIds.includes(memberId)) {
             price = 0;
           }
           charge = charge + price;
         });
 
         return {
-          memberId: a.memberId,
-          count: a.totalJoinMore ?? 0,
+          memberId: memberId,
+          count: attendeeList.length - 1,
           discount: discount,
           charge: charge,
         };

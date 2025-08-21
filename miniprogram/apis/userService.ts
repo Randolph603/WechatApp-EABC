@@ -11,7 +11,6 @@ export const SetupUserTypes = (user: any) => {
   }
   user.userRoleType = UserRoleArray[user.userRole];
   user.userLevelType = LevelArray[user.userLevel];
-  user.genderType = UserGenderArray[user.gender];
   user.discount = (user.continueWeeklyJoin ?? 0) > 2
     ? 2
     : user.continueWeeklyJoin;

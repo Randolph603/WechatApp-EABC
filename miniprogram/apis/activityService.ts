@@ -1,10 +1,10 @@
 import { CallCloudFuncAsync, RemoveFieldsAsync, UpdateRecordAsync } from "./commonHelper";
 import { SortDate, ToDayOfWeekString, ToNZDateString, ToNZShortDateString } from "@Lib/dateExtension";
-import { LevelArray } from "@Lib/types";
-import { ConvertFileIdToHttps } from "@Lib/utils";
 import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { ActivityModel } from "@Model/Activity";
 import { SetupUserTypes } from "./userService";
+
+//#region Activity
 
 const SetupActivity = (activity: any) => {
   activity.startTime = new Date(activity.startTime);
@@ -46,13 +46,28 @@ export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancell
   activity.Attendees.forEach((user: any) => {
     SetupUserTypes(user);
     user.userLevelImageSrc = `/static/ranks/${user.userLevel + 1}.png`;
-    user.key = `${user.memberId}+${user.joinMore}`;
   });
 
   activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => SortDate(a.updateDate, b.updateDate));
 
   return { activity, matches };
 }
+
+export const AddActivityAsync = async (activityToAdd: ActivityModel): Promise<any> => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    const result = await db.collection('Activities').add(activityToAdd);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+//#endregion
+
+//#region Attendee
 
 export const JoinActivityAsync = async (activityId: string, memberId: number, joinMore: number) => {
   try {
@@ -103,17 +118,21 @@ export const AttendeeMoveSectionAsync = async (activityId: string, memberId: num
   }
 }
 
-export const AddActivityAsync = async (activityToAdd: ActivityModel): Promise<any> => {
+export const UpdateAttendeeMoreAsync = async (attendeeId: string, attendeeName: string, attendeeGender: number) => {
   try {
-    const app = await GetCloudAsync();
-    const db = app.database();
-    const result = await db.collection('Activities').add(activityToAdd);
-    return result;
+    await UpdateRecordAsync('Attendees',
+      { _id: attendeeId },
+      {
+        attendeeName: attendeeName,
+        attendeeGender: attendeeGender
+      },
+    );
   } catch (error) {
     console.log(error);
-    return null;
   }
 }
+
+//#endregion
 
 export const ConfrimActivityAsync = async (activityId: string, confirmToBeUsers: any[]) => {
   const data = {

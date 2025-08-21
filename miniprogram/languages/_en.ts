@@ -208,7 +208,7 @@ export const LanguageMap: iLanguageMap = {
     displayName: "Nick Name",
     displayNamePlaceholder: "Type in...",
     gender: "Gender",
-    level: "Self-rating Level",
+    level: "Level",
     required: "* is a required option",
     save: "Save",
     register: "Register",

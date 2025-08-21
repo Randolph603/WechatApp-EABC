@@ -92,7 +92,7 @@
               <view class="divider-main" />
               <!-- Attendee List -->
               <view class="attention-row">
-                <view class="section" wx:for="{{section.attendees}}" wx:key="key" wx:for-item="user">
+                <view class="section" wx:for="{{section.attendees}}" wx:key="attendeeId" wx:for-item="user">
                   <text wx:if="{{section.info.index!= 0 && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
 
                   <block wx:if="{{myProfile}}">
@@ -116,7 +116,7 @@
                 <view class="divider-main" />
                 <view class="header">{{_lang.backUpJoin}}</view>
                 <view class="attention-row">
-                  <view class="section" wx:for="{{section.onWaitAttendees}}" wx:key="key" wx:for-item="user">
+                  <view class="section" wx:for="{{section.onWaitAttendees}}" wx:key="attendeeId" wx:for-item="user">
                     <text wx:if="{{section.info.index!= 0 && (user.memberId === myProfile.memberId || isAdmin) && !activity.isCompleted}}" class="button" bindtap="moveAsync" data-section_index="{{section.info.index - 1}}" data-join_more="{{user.joinMore}}" data-member_id="{{user.memberId}}">{{_lang.up}}</text>
 
                     <block wx:if="{{myProfile}}">
@@ -149,7 +149,7 @@
               <text class="small">Cancelled</text>
             </view>
             <view class="attention-row">
-              <view class="section" wx:for="{{allCancelledAttendees}}" wx:key="key" wx:for-item="user">
+              <view class="section" wx:for="{{allCancelledAttendees}}" wx:key="attendeeId" wx:for-item="user">
                 <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
                 <text class="display-name">{{user.displayName}}</text>
                 <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>

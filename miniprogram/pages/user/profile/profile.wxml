@@ -16,12 +16,17 @@
     </mp-cell>
 
     <mp-cell title="*{{_lang.gender}}" show-error prop="gender">
-      <picker bindchange="genderPickerChange" range="{{genderArray}}" range-key="name" value="{{formData.gender}}">
-        <view class="picker view-row">
-          <image wx:if="{{formData.gender > 0}}" class="icon24" src="/static/icons/{{formData.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-          <text> - {{formData.genderType.name}}</text>
+      <view class="view-row">
+        <view class="view-row  mr-10 gender-box {{formData.gender ===1 ? 'selected': ''}}" data-value="{{1}}" bindtap="changeGender">
+          <image class="icon24" src="/static/icons/male.png" mode="aspectFit" />
+          <text class="ml-10">{{genderArray[1].name}}</text>
         </view>
-      </picker>
+
+        <view class="view-row mr-10 gender-box ml-10 {{formData.gender ===2 ? 'selected': ''}}" data-value="{{2}}" bindtap="changeGender">
+          <image class="icon24" src="/static/icons/female.png" mode="aspectFit" />
+          <text class="ml-10">{{genderArray[2].name}}</text>
+        </view>
+      </view>
     </mp-cell>
 
     <mp-cell title="*{{_lang.level}}" show-error prop="selfRatingLevel">

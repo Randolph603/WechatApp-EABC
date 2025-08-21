@@ -3,6 +3,7 @@ import { GetUserByMemberId, RegisterNewUserAsync, UploadAvatarImageAsync } from 
 import { GetLaguageMap } from "@Language/languageUtils";
 import { LevelArray, UserGender, UserGenderArray, userSelfRatingLevelArray, userSelfRatingLevelMap } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
+import { IOption } from "@Model/iOption";
 import { ProfileModel } from "@Model/User";
 
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
@@ -22,7 +23,6 @@ Page({
     rules: [
       { name: 'displayName', rules: { required: true, maxlength: 20, message: 'name is required with max 20 characters' } },
       { name: 'gender', rules: { required: true, min: 1, message: 'Gender is required' } },
-      { name: 'genderType', rules: { required: false } },
       { name: 'selfRatingLevel', rules: { required: true } },
     ],
     levelArray: LevelArray,
@@ -46,7 +46,6 @@ Page({
     let formData = {
       displayName: '',
       gender: UserGender.Unknown.value,
-      genderType: UserGender.Unknown,
       selfRatingLevel: 0,
     };
 
@@ -58,7 +57,6 @@ Page({
           formData = {
             displayName: user.displayName,
             gender: user.gender,
-            genderType: user.genderType,
             selfRatingLevel: user.selfRatingLevel ?? 0
           }
           var selfRatingLevelIndex = user.selfRatingLevel ?? 0 > 1 ? user.selfRatingLevel - 1 : 0
@@ -83,12 +81,9 @@ Page({
     });
   },
 
-  genderPickerChange(e: any) {
-    const index = Number(e.detail.value);
-    this.setData({
-      [`formData.gender`]: index,
-      [`formData.genderType`]: UserGenderArray[index],
-    });
+  changeGender(e: IOption) {
+    const { value } = e.currentTarget.dataset;
+    this.setData({ [`formData.gender`]: value });
   },
 
   selfRatingLevel() {
