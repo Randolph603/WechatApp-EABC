@@ -1,6 +1,6 @@
 import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
-import { AddMatchAsync, generateMatch, RemoveMatchAsync } from "@API/matchService";
+import { AddMatchAsync, generateMatch, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
 import { ToNZTimeRangeString } from "@Lib/dateExtension";
 import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
@@ -601,7 +601,26 @@ Page({
     });
   },
 
+  async ChangeLeftScore(e: IOption) {
+    const newValue = Number(e.detail.value);
+    const { match } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
 
+    await ExcuteWithProcessingAsync(async () => {
+      await UpdateMatchAsync(activityId, match.court, match.index, newValue, match.rightScore);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
 
+  async ChangeRightScore(e: IOption) {
+    const newValue = Number(e.detail.value);
+    const { match } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+
+    await ExcuteWithProcessingAsync(async () => {
+      await UpdateMatchAsync(activityId, match.court, match.index, match.leftScore, newValue);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  }
   //#endregion
 })

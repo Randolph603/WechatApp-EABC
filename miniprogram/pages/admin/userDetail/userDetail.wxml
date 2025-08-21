@@ -18,15 +18,11 @@
           <view class="picker"> {{user.userRoleType.name}} </view>
         </picker>
       </mp-cell>
-      <mp-cell title="性别" show-error prop="gender">
-        <picker bindchange="GenderPickerChange" range="{{genderArray}}" range-key="name" value="{{formData.gender}}">
-          <view class="picker"> {{user.genderType.name}} </view>
-        </picker>
+      <mp-cell title="性别">
+        <text>{{genderArray[formData.gender].name}}</text>
       </mp-cell>
-      <mp-cell title="级别" show-error prop="userLevel">
-        <picker bindchange="LevelPickerChange" range="{{levelArray}}" range-key="name" value="{{formData.userLevel}}">
-          <view class="picker"> {{user.userLevelType.name}} </view>
-        </picker>
+      <mp-cell title="级别">
+        <text>Lv.{{user.selfRatingLevel || 0}}</text>
       </mp-cell>
       <mp-cell title="余额(NZD)" show-error prop="creditBalance">
         <input bindinput="FormNumberChange" type="number" placeholder="e.g. 100" value="{{formData.creditBalance}}" data-field="creditBalance" />
@@ -36,6 +32,9 @@
       </mp-cell>
       <mp-cell title="连续周次" show-error prop="continueWeeklyJoin">
         <input bindinput="FormNumberChange" type="number" value="{{formData.continueWeeklyJoin}}" data-field="continueWeeklyJoin" />
+      </mp-cell>
+      <mp-cell title="战斗力">
+        <input bindinput="FormNumberChange" type="number" value="{{formData.powerOfBattle}}" data-field="powerOfBattle" />
       </mp-cell>
       <mp-cell>
         <view class="view-row-evenly">

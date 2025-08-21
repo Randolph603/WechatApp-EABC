@@ -23,9 +23,9 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/activity/rank/details",
-          "pathName": "pages/activity/rank/details",
-          "query": "id=2ccbb81568a26133024c2bd205e7ddd6",
+          "name": "pages/admin/userDetail/userDetail",
+          "pathName": "pages/admin/userDetail/userDetail",
+          "query": "memberId=10024",
           "scene": null,
           "launchMode": "default"
         },

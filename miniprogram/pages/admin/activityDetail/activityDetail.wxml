@@ -204,10 +204,12 @@
                 <view class="view-column-centre court-group-column" wx:for="{{courtAttendeesMap[court]}}" wx:for-item="attendee" wx:key="index">
                   <image wx:if="{{courtId!=0}}" data-court="{{court-1}}" data-attendee="{{attendee}}" bindtap="MoveInsideSection" class="icon24" src="/static/icons/up.png" />
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{attendee.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="display-name">{{attendee.displayName}}</text>
-                  <text>{{attendee.joinMore}}</text>
+                  <view class="view-row-centre">
+                    <image wx:if="{{attendee.attendeeGender > 0}}" class="icon16" src="/static/icons/{{attendee.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                    <image wx:if="{{!attendee.attendeeGender && attendee.gender > 0}}" class="icon16" src="/static/icons/{{attendee.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                  </view>
+                  <text class="display-name full-width">{{attendee.attendeeName || attendee.displayName}}</text>
                   <input type="number" style="text-align: center;" data-attendee="{{attendee}}" bindblur="ChangeCurrentPowerOfBattle" value="{{attendee.currentPowerOfBattle}}" />
-                  <text>{{attendee.memberId}}</text>
                   <image wx:if="{{courtId!=section.courts.length-1}}" data-court="{{court+1}}" data-attendee="{{attendee}}" bindtap="MoveInsideSection" class="icon24" src="/static/icons/down.png" />
                 </view>
               </view>
@@ -215,34 +217,46 @@
             <!-- Group by court end-->
             <!-- Matches by court -->
             <mp-cell wx:for="{{courtMatchesMap[court]}}" wx:for-item="match" wx:key="index">
-              <view slot="title" style="width: 50px;">
-                <input type="number" value="{{match.leftScore}}" />
+              <view slot="title" style="width: 40px;">
+                <input type="number" data-match="{{match}}" bindblur="ChangeLeftScore" value="{{match.leftScore}}" />
               </view>
               <view class="view-row-evenly">
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player1.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="display-name">{{match.player1.displayName}}</text>
-                  <text>{{match.player1.joinMore}}</text>
+                  <view class="view-row-centre">
+                    <image wx:if="{{match.player1.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player1.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                    <image wx:if="{{!match.player1.attendeeGender && match.player1.gender > 0}}" class="icon16" src="/static/icons/{{match.player1.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                  </view>
+                  <text class="display-name full-width">{{match.player1.attendeeName || match.player1.displayName}}</text>
                 </view>
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player2.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="display-name">{{match.player2.displayName}}</text>
-                  <text>{{match.player2.joinMore}}</text>
+                  <view class="view-row-centre">
+                    <image wx:if="{{match.player2.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player2.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                    <image wx:if="{{!match.player2.attendeeGender && match.player2.gender > 0}}" class="icon16" src="/static/icons/{{match.player2.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                  </view>
+                  <text class="display-name full-width">{{match.player2.attendeeName || match.player2.displayName}}</text>
                 </view>
                 VS
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="display-name">{{match.player3.displayName}}</text>
-                  <text>{{match.player3.joinMore}}</text>
+                  <view class="view-row-centre">
+                    <image wx:if="{{match.player3.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player3.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                    <image wx:if="{{!match.player3.attendeeGender && match.player3.gender > 0}}" class="icon16" src="/static/icons/{{match.player3.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                  </view>
+                  <text class="display-name full-width">{{match.player3.attendeeName || match.player3.displayName}}</text>
                 </view>
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player4.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                  <text class="display-name">{{match.player4.displayName}}</text>
-                  <text>{{match.player4.joinMore}}</text>
+                  <view class="view-row-centre">
+                    <image wx:if="{{match.player4.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player4.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                    <image wx:if="{{!match.player4.attendeeGender && match.player4.gender > 0}}" class="icon16" src="/static/icons/{{match.player4.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                  </view>
+                  <text class="display-name full-width">{{match.player4.attendeeName || match.player4.displayName}}</text>
                 </view>
               </view>
-              <view slot="footer" style="width: 50px;">
-                <input type="number" value="{{match.rightScore}}" />
+              <view slot="footer" style="width: 40px;">
+                <input type="number" data-match="{{match}}" bindblur="ChangeRightScore" value="{{match.rightScore}}" />
               </view>
             </mp-cell>
             <!-- Matches by court end-->

@@ -50,11 +50,12 @@ export class UserModel {
   public creditBalance = 0;
   public powerPoint = 0;
   public continueWeeklyJoin = 0;
+  public powerOfBattle = 0;
 
   constructor(fields?: Partial<ProfileModel>) {
     if (fields) {
       const allowedKeys = ['displayName', 'bankName', 'userRole', 'gender', 'userLevel',
-        'creditBalance', 'powerPoint', 'continueWeeklyJoin'];
+        'creditBalance', 'powerPoint', 'continueWeeklyJoin', 'powerOfBattle'];
       for (const key of allowedKeys) {
         if (key in fields) {
           (this as any)[key] = (fields as any)[key];

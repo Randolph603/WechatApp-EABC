@@ -1,4 +1,5 @@
 import { MatchModel } from "@Model/Match";
+import { UpdateRecordAsync } from "./commonHelper";
 import { GetCloudAsync } from "./databaseService";
 
 export const AddMatchAsync = async (matchToAdd: MatchModel) => {
@@ -24,6 +25,17 @@ export const RemoveMatchAsync = async (activityId: string, court: number) => {
   }
 }
 
+export const UpdateMatchAsync = async (activityId: string, court: number, index: number, leftScore: number, rightScore: number) => {
+  try {
+    await UpdateRecordAsync('Matches',
+      { activityId: activityId, court: court, index: index },
+      { leftScore: leftScore, rightScore: rightScore }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // merge into activity load could function together, should not be used for now
 export const LoadAllMatchesAsync = async (activityId: string): Promise<any> => {
   try {
@@ -41,18 +53,31 @@ export const LoadAllMatchesAsync = async (activityId: string): Promise<any> => {
 }
 
 export const generateMatch = (activityId: string, attendees: any[], court: number, index1: number, index2: number, index3: number, index4: number, index: number) => {
-  const leftGender = attendees[index1].gender + attendees[index2].gender;
-  const rightGender = attendees[index3].gender + attendees[index4].gender;
+  const playerList = attendees.map(a => {
+    return {
+      attendeeId: a.attendeeId,
+      memberId: a.memberId,
+      avatarUrl: a.avatarUrl,
+      displayName: a.displayName,
+      gender: a.gender,
+      joinMore: a.joinMore,
+      currentPowerOfBattle: a.currentPowerOfBattle,
+      attendeeName: a.attendeeName,
+      attendeeGender: a.attendeeGender,
+    }
+  });
+  const leftGender = (playerList[index1].attendeeGender || playerList[index1].gender) + (playerList[index2].attendeeGender || playerList[index2].gender);
+  const rightGender = (playerList[index3].attendeeGender || playerList[index3].gender) + (playerList[index4].attendeeGender || playerList[index4].gender);
   const misMatch = leftGender - rightGender;
   const match = {
     index: index,
     activityId: activityId,
     court: court,
-    player1: attendees[index1],
-    player2: attendees[index2],
+    player1: playerList[index1],
+    player2: playerList[index2],
     leftScore: misMatch > 0 ? misMatch * 3 : 0,
-    player3: attendees[index3],
-    player4: attendees[index4],
+    player3: playerList[index3],
+    player4: playerList[index4],
     rightScore: misMatch < 0 ? (-misMatch) * 3 : 0,
   };
   return match;

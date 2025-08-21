@@ -1,6 +1,6 @@
 import { CallCloudFuncAsync, UpdateRecordAsync } from "@API/commonHelper";
 import { GetUserByMemberId } from "@API/userService";
-import { LevelArray, UserGenderArray, UserRoleArray } from "@Lib/types";
+import { UserGenderArray, UserRoleArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { IOption } from "@Model/index";
 import { iUser, UserModel } from "@Model/User";
@@ -15,7 +15,6 @@ Page({
     formData: null as unknown as UserModel,
     user: null as unknown as iUser,
     userRoleArray: UserRoleArray,
-    levelArray: LevelArray,
     genderArray: UserGenderArray,
     // Dialog
     showBalanceChange: false,
@@ -65,22 +64,6 @@ Page({
     this.setData({
       [`formData.userRole`]: index,
       [`user.userRoleType`]: UserRoleArray[index],
-    });
-  },
-
-  GenderPickerChange(e: IOption) {
-    const index = Number(e.detail.value);
-    this.setData({
-      [`formData.gender`]: index,
-      [`user.genderType`]: UserGenderArray[index],
-    });
-  },
-
-  LevelPickerChange(e: IOption) {
-    const index = Number(e.detail.value);
-    this.setData({
-      [`formData.userLevel`]: index,
-      [`user.userLevelType`]: LevelArray[index]
     });
   },
 
