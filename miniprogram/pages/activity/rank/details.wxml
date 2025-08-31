@@ -165,81 +165,83 @@
 
               <!-- group and match -->
               <swiper-item>
-                <view wx:if="{{isCourtMatchesMapEmpty}}" id="slide1" style="height: 60px;" class="view-row-centre">暂无分组</view>
-                <view wx:else id="slide1">
-                  <!-- For All Sections -->
-                  <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
-                    <block wx:if="{{section.courtAttendeesMap[court].length > 0}}" wx:for="{{section.info.courts}}" wx:key="index" wx:for-item="court">
-                      <view class="game-box">
-                        <view class="view-row">
-                          <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
-                          <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
-                        </view>
-                        <view class="divider-main" />
-                        <view class="attention-row">
-                          <view class="section-group" wx:for="{{section.courtAttendeesMap[court]}}" wx:key="index" wx:for-item="attendee">
-                            <image-loader ext-class="avatar 11level-{{attendee.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{attendee.avatarUrl}}" />
-                            <!-- <text class="display-name">{{attendee.displayName}}</text>
+                <view id="slide1">
+                  <view wx:if="{{isCourtMatchesMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无分组</view>
+                  <view wx:else>
+                    <!-- For All Sections -->
+                    <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
+                      <block wx:if="{{section.courtAttendeesMap[court].length > 0}}" wx:for="{{section.info.courts}}" wx:key="index" wx:for-item="court">
+                        <view class="game-box">
+                          <view class="view-row">
+                            <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
+                            <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
+                          </view>
+                          <view class="divider-main" />
+                          <view class="attention-row">
+                            <view class="section-group" wx:for="{{section.courtAttendeesMap[court]}}" wx:key="index" wx:for-item="attendee">
+                              <image-loader ext-class="avatar 11level-{{attendee.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{attendee.avatarUrl}}" />
+                              <!-- <text class="display-name">{{attendee.displayName}}</text>
                             <text wx:if="{{attendee.joinMore}}">+{{attendee.joinMore}}</text> -->
-                            <view class="view-row-centre full-width">
-                              <image wx:if="{{attendee.attendeeGender > 0}}" class="icon16" src="/static/icons/{{attendee.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                              <image wx:if="{{!attendee.attendeeGender && attendee.gender > 0}}" class="icon16" src="/static/icons/{{attendee.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                              <text class="display-name">{{attendee.attendeeName || attendee.displayName}}</text>
-                            </view>
-                            <!-- <view class="view-row-centre">
+                              <view class="view-row-centre full-width">
+                                <image wx:if="{{attendee.attendeeGender > 0}}" class="icon16" src="/static/icons/{{attendee.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <image wx:if="{{!attendee.attendeeGender && attendee.gender > 0}}" class="icon16" src="/static/icons/{{attendee.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <text class="display-name">{{attendee.attendeeName || attendee.displayName}}</text>
+                              </view>
+                              <!-- <view class="view-row-centre">
                               <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/battle.png" />
                               <text>战力: {{attendee.currentPowerOfBattle}}</text>
                             </view> -->
+                            </view>
                           </view>
-                        </view>
 
-                        <!-- Matches by court -->
-                        <view class="divider-main" />
-                        <block wx:for="{{courtMatchesMap[court]}}" wx:for-item="match" wx:key="index">
-                          <view class="view-row-evenly" style="align-items: flex-start;">
-                            <view class="section-match">
-                              <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player1.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                              <view class="view-row-centre full-width">
-                                <image wx:if="{{match.player1.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player1.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <image wx:if="{{!match.player1.attendeeGender && match.player1.gender > 0}}" class="icon16" src="/static/icons/{{match.player1.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <text class="display-name">{{match.player1.attendeeName || match.player1.displayName}}</text>
+                          <!-- Matches by court -->
+                          <view class="divider-main" />
+                          <block wx:for="{{courtMatchesMap[court]}}" wx:for-item="match" wx:key="index">
+                            <view class="view-row-evenly" style="align-items: flex-start;">
+                              <view class="section-match">
+                                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player1.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                                <view class="view-row-centre full-width">
+                                  <image wx:if="{{match.player1.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player1.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!match.player1.attendeeGender && match.player1.gender > 0}}" class="icon16" src="/static/icons/{{match.player1.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{match.player1.attendeeName || match.player1.displayName}}</text>
+                                </view>
+                              </view>
+                              <view class="section-match">
+                                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player2.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                                <view class="view-row-centre full-width">
+                                  <image wx:if="{{match.player2.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player2.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!match.player2.attendeeGender && match.player2.gender > 0}}" class="icon16" src="/static/icons/{{match.player2.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{match.player2.attendeeName || match.player2.displayName}}</text>
+                                </view>
+                              </view>
+                              <view class="view-column-centre" style="margin-top: 50rpx;">
+                                <text>VS</text>
+                                <!-- <text>{{match.leftScore}}:{{match.rightScore}}</text> -->
+                              </view>
+                              <view class="section-match">
+                                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                                <view class="view-row-centre full-width">
+                                  <image wx:if="{{match.player3.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player3.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!match.player3.attendeeGender && match.player3.gender > 0}}" class="icon16" src="/static/icons/{{match.player3.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{match.player3.attendeeName || match.player3.displayName}}</text>
+                                </view>
+                              </view>
+                              <view class="section-match">
+                                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player4.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                                <view class="view-row-centre full-width">
+                                  <image wx:if="{{match.player4.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player4.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!match.player4.attendeeGender && match.player4.gender > 0}}" class="icon16" src="/static/icons/{{match.player4.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{match.player4.attendeeName || match.player4.displayName}}</text>
+                                </view>
                               </view>
                             </view>
-                            <view class="section-match">
-                              <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player2.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                              <view class="view-row-centre full-width">
-                                <image wx:if="{{match.player2.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player2.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <image wx:if="{{!match.player2.attendeeGender && match.player2.gender > 0}}" class="icon16" src="/static/icons/{{match.player2.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <text class="display-name">{{match.player2.attendeeName || match.player2.displayName}}</text>
-                              </view>
-                            </view>
-                            <view class="view-column-centre" style="margin-top: 50rpx;">
-                              <text>VS</text>
-                              <!-- <text>{{match.leftScore}}:{{match.rightScore}}</text> -->
-                            </view>
-                            <view class="section-match">
-                              <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                              <view class="view-row-centre full-width">
-                                <image wx:if="{{match.player3.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player3.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <image wx:if="{{!match.player3.attendeeGender && match.player3.gender > 0}}" class="icon16" src="/static/icons/{{match.player3.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <text class="display-name">{{match.player3.attendeeName || match.player3.displayName}}</text>
-                              </view>
-                            </view>
-                            <view class="section-match">
-                              <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player4.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                              <view class="view-row-centre full-width">
-                                <image wx:if="{{match.player4.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player4.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <image wx:if="{{!match.player4.attendeeGender && match.player4.gender > 0}}" class="icon16" src="/static/icons/{{match.player4.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <text class="display-name">{{match.player4.attendeeName || match.player4.displayName}}</text>
-                              </view>
-                            </view>
-                          </view>
-                          <!-- Matches by court end-->
-                        </block>
-                      </view>
+                            <!-- Matches by court end-->
+                          </block>
+                        </view>
+                      </block>
                     </block>
-                  </block>
-                  <!-- For All Sections End -->
+                    <!-- For All Sections End -->
+                  </view>
                 </view>
               </swiper-item>
               <!-- group and match end -->
@@ -247,7 +249,40 @@
               <!-- result -->
               <swiper-item>
                 <view id="slide2">
-                  <view style="height: 60px;" class="view-row-centre">暂无结果</view>
+                  <view wx:if="{{isMatchResultMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无结果</view>
+                  <view wx:else>
+                    <!-- For All Sections -->
+                    <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
+                      <block wx:if="{{matchResultMap[court].length > 0}}" wx:for="{{section.info.courts}}" wx:key="index" wx:for-item="court">
+                        <view class="game-box">
+                          <view class="view-row">
+                            <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
+                            <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
+                          </view>
+                          <view class="view-row">
+                            <view class="column-result-name">选手姓名</view>                            
+                            <view class="column-result">胜负场</view>                            
+                            <view class="column-result">净胜分</view>
+                            <view class="column-result">战力</view>
+                          </view>
+                          <view class="divider-main" />
+                          <view class="view-column">
+                            <view class="section-result" wx:for="{{matchResultMap[court]}}" wx:key="index" wx:for-item="result">                             
+                              <view class="view-row column-result-name">
+                                <image wx:if="{{result.player.attendeeGender > 0}}" class="icon16" src="/static/icons/{{result.player.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <image wx:if="{{!result.player.attendeeGender && result.player.gender > 0}}" class="icon16" src="/static/icons/{{result.player.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <text class="display-name">{{result.player.attendeeName || result.player.displayName}}</text>
+                              </view>
+                              <view class="column-result">{{result.wins}} / {{result.lost}} </view>
+                              <view class="column-result">{{result.pointDifference}}</view>
+                              <view class="column-result">+{{result.powerOfBattleChange}}</view>
+                            </view>
+                          </view>
+                        </view>
+                      </block>
+                    </block>
+                    <!-- For All Sections End -->
+                  </view>
                 </view>
               </swiper-item>
               <!-- result end -->

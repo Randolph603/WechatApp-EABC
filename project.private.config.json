@@ -23,23 +23,16 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/admin/userDetail/userDetail",
-          "pathName": "pages/admin/userDetail/userDetail",
-          "query": "memberId=10024",
+          "name": "pages/activity/rank/details",
+          "pathName": "pages/activity/rank/details",
+          "query": "id=29dca3d568742dc4053886ea2b8ee251",
           "scene": null,
           "launchMode": "default"
         },
         {
           "name": "pages/admin/activityDetail/activityDetail",
           "pathName": "pages/admin/activityDetail/activityDetail",
-          "query": "id=2ccbb81568a26133024c2bd205e7ddd6",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/user/myAccount/myAccount",
-          "pathName": "pages/user/myAccount/myAccount",
-          "query": "",
+          "query": "id=29dca3d568742dc4053886ea2b8ee251",
           "launchMode": "default",
           "scene": null
         },

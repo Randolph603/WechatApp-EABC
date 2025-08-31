@@ -14,12 +14,13 @@ Page({
     triggered: false,
     // Variables   
     tabs: [
-      { type: 'all', display: GetLaguageMap().activityList.tabs.all },
-      { type: ActivityType.Section.value, display: GetLaguageMap().activityList.tabs.section },
-      { type: ActivityType.Rank.value, display: GetLaguageMap().activityList.tabs.rank },
-      { type: 'my', display: GetLaguageMap().activityList.tabs.my },
+      { type: undefined, display: GetLaguageMap().activityList.tabs.all },
+      { type: ActivityType.Section.value, display: ActivityType.Section.name },
+      { type: ActivityType.Rank.value, display: ActivityType.Rank.name },
+      { type: ActivityType.Tournament.value, display: ActivityType.Tournament.name },
+      // { type: 'my', display: GetLaguageMap().activityList.tabs.my },
     ],
-    selectedTabType: 'all',
+    selectedTabType: undefined,
     allActivities: [],
     filterActivities: [],
     loadMore: 8,
@@ -51,8 +52,8 @@ Page({
 
   async fetchAllDataAsync() {
     this.setData({ isLoaded: false });
-
-    const activities = await LoadAllActivitiesAsync(20, true);
+    const type = this.data.selectedTabType;
+    const activities = await LoadAllActivitiesAsync(20, type, true);
 
     this.setData({
       allActivities: activities,

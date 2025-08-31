@@ -5,6 +5,7 @@ import {
   LoadActivityAndMatchesByIdAsync
 } from '@API/activityService';
 import { CallCloudFuncAsync } from '@API/commonHelper';
+import { GetMatchResult } from '@API/matchService';
 import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { WxShowModalAsync } from '@Lib/promisify';
@@ -33,6 +34,7 @@ Page({
     joinMore: -1,
     courtMatchesMap: {} as any,
     isCourtMatchesMapEmpty: true,
+    matchResultMap: {} as any,
     // Dialog
     showLowCreditBalance: false,
     showCancelDialog: false,
@@ -120,7 +122,7 @@ Page({
   async LoadActivityAndMatches(recordEvent: boolean) {
     const id = this.data.activityId;
     if (id.length > 0) {
-      const { activity, matches } = await LoadActivityAndMatchesByIdAsync(id, true, recordEvent);
+      const { activity, courtMatchesMap, matchResultMap } = await LoadActivityAndMatchesByIdAsync(id, true, recordEvent);
       const allJoinedAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
       const allCancelledAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
 
@@ -154,16 +156,6 @@ Page({
         this.setData({ joinMore });
       }
 
-      const courtMatchesMap = {} as any;
-      matches.forEach((match: any) => {
-        const court = match.court;
-        if (!courtMatchesMap[court]) {
-          courtMatchesMap[court] = [];
-        }
-        courtMatchesMap[court].push(match);
-      });
-      const isCourtMatchesMapEmpty = Object.keys(courtMatchesMap).length === 0;
-
       this.setData({
         attendTitle,
         activity,
@@ -171,7 +163,9 @@ Page({
         allJoinedAttendeesCount: allJoinedAttendees.length,
         allCancelledAttendees,
         courtMatchesMap,
-        isCourtMatchesMapEmpty
+        isCourtMatchesMapEmpty: Object.keys(courtMatchesMap).length === 0,
+        matchResultMap,
+        isMatchResultMapEmpty: Object.keys(matchResultMap).length === 0,
       });
     }
   },

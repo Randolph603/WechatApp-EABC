@@ -20,9 +20,9 @@ export const GetNewActivity = () => {
   return activity;
 }
 
-export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boolean | undefined) => {
+export const LoadAllActivitiesAsync = async (limit: number = 20, type: string | undefined, onlyPublic: boolean | undefined) => {
   let data = {
-    where: { isCancelled: false, type: undefined, toPublic: onlyPublic },
+    where: { isCancelled: false, type: type, toPublic: onlyPublic },
     sort: { startTime: -1 },
     limit: limit,
   };
@@ -40,7 +40,7 @@ export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancell
     includeCancelledAttendees: includeCancelledAttendees
   };
 
-  const { activity, matches } = await CallCloudFuncAsync('eabc_activity_getById', data);
+  const { activity, matches, matchResults } = await CallCloudFuncAsync('eabc_activity_getById', data);
   SetupActivity(activity);
 
   activity.Attendees.forEach((user: any) => {
@@ -50,7 +50,27 @@ export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancell
 
   activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => SortDate(a.updateDate, b.updateDate));
 
-  return { activity, matches };
+  // group and match
+  const courtMatchesMap = {} as any;
+  for (const match of matches) {
+    const court = match.court;
+    if (!courtMatchesMap[court]) {
+      courtMatchesMap[court] = [];
+    }
+    courtMatchesMap[court].push(match);
+  }
+
+  // match result
+  const matchResultMap = {} as any;
+  for (const result of matchResults) {
+    const court = result.court;
+    if (!matchResultMap[court]) {
+      matchResultMap[court] = [];
+    }
+    matchResultMap[court].push(result);
+  }
+
+  return { activity, courtMatchesMap, matchResultMap };
 }
 
 export const AddActivityAsync = async (activityToAdd: ActivityModel): Promise<any> => {

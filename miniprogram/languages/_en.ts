@@ -150,7 +150,7 @@ export const LanguageMap: iLanguageMap = {
       ssr: "Challenger",
     },
     activityType: {
-      section: "Section",
+      section: "Happy",
       rank: "Rank",
       tournament: "Tournament"
     }

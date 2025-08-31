@@ -36,23 +36,7 @@ export const UpdateMatchAsync = async (activityId: string, court: number, index:
   }
 }
 
-// merge into activity load could function together, should not be used for now
-export const LoadAllMatchesAsync = async (activityId: string): Promise<any> => {
-  try {
-    const app = await GetCloudAsync();
-    const db = app.database();
-    const result = await db.collection('Matches')
-      .where({ activityId: activityId })
-      .orderBy('index', 'asc')
-      .get();
-    return result.data;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-}
-
-export const generateMatch = (activityId: string, attendees: any[], court: number, index1: number, index2: number, index3: number, index4: number, index: number) => {
+export const GenerateMatch = (activityId: string, attendees: any[], court: number, index1: number, index2: number, index3: number, index4: number, index: number) => {
   const playerList = attendees.map(a => {
     return {
       attendeeId: a.attendeeId,
@@ -81,4 +65,95 @@ export const generateMatch = (activityId: string, attendees: any[], court: numbe
     rightScore: misMatch < 0 ? (-misMatch) * 3 : 0,
   };
   return match;
+}
+
+export const GetMatchResult = (matches: any[], activityId: string, court: number,) => {
+  const matchResults: any[] = [];
+  for (const match of matches) {
+    // skip draw
+    if (match.leftScore === match.rightScore) continue;
+    const setupCourtMatchesMap = (player: any) => {
+      const found = matchResults.find((r: any) => r.player.attendeeId === player.attendeeId);
+      if (!found) {
+        const result = {
+          activityId: activityId,
+          court: court,
+          player: player,
+          wins: 0,
+          lost: 0,
+          pointDifference: 0,
+          powerOfBattleChange: 0
+        };
+        matchResults.push(result);
+      }
+    }
+    setupCourtMatchesMap(match.player1);
+    setupCourtMatchesMap(match.player2);
+    setupCourtMatchesMap(match.player3);
+    setupCourtMatchesMap(match.player4);
+
+    const setWinnerResult = (player: any, pointDifference: number) => {
+      const foundPlayer = matchResults.find((r: any) => r.player.attendeeId === player.attendeeId);
+      if (foundPlayer) {
+        foundPlayer.wins = foundPlayer.wins + 1;
+        foundPlayer.pointDifference = foundPlayer.pointDifference + pointDifference;
+      }
+    }
+
+    const setLoserResult = (player: any) => {
+      const foundPlayer = matchResults.find((r: any) => r.player.attendeeId === player.attendeeId);
+      if (foundPlayer) {
+        foundPlayer.lost = foundPlayer.lost + 1;
+      }
+    }
+
+    if (match.leftScore > match.rightScore) {
+      const pointDifference = match.leftScore - match.rightScore;
+      setWinnerResult(match.player1, pointDifference);
+      setWinnerResult(match.player2, pointDifference);
+      setLoserResult(match.player3);
+      setLoserResult(match.player4);
+    }
+
+    if (match.rightScore > match.leftScore) {
+      const pointDifference = match.rightScore - match.leftScore;
+      setLoserResult(match.player1);
+      setLoserResult(match.player2);
+      setWinnerResult(match.player3, pointDifference);
+      setWinnerResult(match.player4, pointDifference);
+    }
+  }
+
+  matchResults.sort((a: any, b: any) => {
+    if (b.wins === a.wins) return b.pointDifference - a.pointDifference;
+    return b.wins - a.wins
+  });
+
+  matchResults.forEach((v: any, i: number) => {
+    v.powerOfBattleChange = (6 - i) * 5;
+  });
+  return matchResults;
+}
+
+export const AddMatchResultsAsync = async (matchResultToAdd: any) => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    await RemoveResultsAsync(matchResultToAdd.activityId, matchResultToAdd.court);
+    await db.collection('MatchResults').add(matchResultToAdd);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const RemoveResultsAsync = async (activityId: string, court: number) => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    await db.collection('MatchResults')
+      .where({ activityId: activityId, court: court })
+      .remove();
+  } catch (error) {
+    console.log(error);
+  }
 }

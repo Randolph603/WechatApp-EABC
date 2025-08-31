@@ -34,7 +34,7 @@ Page({
 
   async fetchAllDataAsync() {
     this.setData({ isLoaded: false });
-    const activities = await LoadAllActivitiesAsync(4, true);
+    const activities = await LoadAllActivitiesAsync(4, undefined, true);
     this.setData({
       activities: activities,
       isLoaded: true,

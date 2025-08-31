@@ -1,6 +1,6 @@
 import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
-import { AddMatchAsync, generateMatch, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
+import { AddMatchAsync, AddMatchResultsAsync, GenerateMatch, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
 import { ToNZTimeRangeString } from "@Lib/dateExtension";
 import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
@@ -43,6 +43,7 @@ Page({
     activity: null as unknown as any,
     courtAttendeesMap: {} as any,
     courtMatchesMap: {} as any,
+    matchResultMap: null as unknown as any,
     typeArray: ActivityTypeArray,
     typeMap: ActivityTypeMap,
     courtArray: [1, 2, 3, 4, 5, 6, 7, 8],
@@ -74,7 +75,7 @@ Page({
   },
 
   async ReloadActivityByIdAsync(activityId: string) {
-    const { activity, matches } = await LoadActivityAndMatchesByIdAsync(activityId, false, false);
+    const { activity, courtMatchesMap, matchResultMap } = await LoadActivityAndMatchesByIdAsync(activityId, false, false);
     const formData = new ActivityModel(activity);
 
     const courtAttendeesMap: any = {};
@@ -84,21 +85,13 @@ Page({
         .sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
     });
 
-    const courtMatchesMap = {} as any;
-    matches.forEach((match: any) => {
-      const court = match.court;
-      if (!courtMatchesMap[court]) {
-        courtMatchesMap[court] = [];
-      }
-      courtMatchesMap[court].push(match);
-    });
-
     this.setData({
       activityId: activityId,
       formData: formData,
       activity: activity,
       courtAttendeesMap,
-      courtMatchesMap
+      courtMatchesMap,
+      matchResultMap
     });
 
     allActiveAttendees = [...activity.Attendees];
@@ -466,7 +459,7 @@ Page({
   },
   //#endregion
 
-  //#group and score page private method
+  //#region group and match page private method
   async GroupForSection(e: IOption) {
     const { section } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
@@ -507,12 +500,12 @@ Page({
     section.courts.forEach((court: number) => {
       const attendees = this.data.courtAttendeesMap[court];
       if (attendees.length === 6) {
-        const match1 = generateMatch(activityId, attendees, court, 0, 2, 1, 3, 1);
-        const match2 = generateMatch(activityId, attendees, court, 2, 4, 3, 5, 2);
-        const match3 = generateMatch(activityId, attendees, court, 0, 4, 1, 5, 3);
-        const match4 = generateMatch(activityId, attendees, court, 0, 3, 1, 2, 4);
-        const match5 = generateMatch(activityId, attendees, court, 2, 5, 3, 4, 5);
-        const match6 = generateMatch(activityId, attendees, court, 0, 5, 1, 4, 6);
+        const match1 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 1);
+        const match2 = GenerateMatch(activityId, attendees, court, 2, 4, 3, 5, 2);
+        const match3 = GenerateMatch(activityId, attendees, court, 0, 4, 1, 5, 3);
+        const match4 = GenerateMatch(activityId, attendees, court, 0, 3, 1, 2, 4);
+        const match5 = GenerateMatch(activityId, attendees, court, 2, 5, 3, 4, 5);
+        const match6 = GenerateMatch(activityId, attendees, court, 0, 5, 1, 4, 6);
         const matches = [match1, match2, match3, match4, match5, match6];
 
         matches.forEach((match: any) => {
@@ -550,12 +543,12 @@ Page({
     const promiseList = [] as any[];
     const attendees = this.data.courtAttendeesMap[court];
     if (attendees.length === 6) {
-      const match1 = generateMatch(activityId, attendees, court, 0, 2, 1, 3, 1);
-      const match2 = generateMatch(activityId, attendees, court, 2, 4, 3, 5, 2);
-      const match3 = generateMatch(activityId, attendees, court, 0, 4, 1, 5, 3);
-      const match4 = generateMatch(activityId, attendees, court, 0, 3, 1, 2, 4);
-      const match5 = generateMatch(activityId, attendees, court, 2, 5, 3, 4, 5);
-      const match6 = generateMatch(activityId, attendees, court, 0, 5, 1, 4, 6);
+      const match1 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 1);
+      const match2 = GenerateMatch(activityId, attendees, court, 2, 4, 3, 5, 2);
+      const match3 = GenerateMatch(activityId, attendees, court, 0, 4, 1, 5, 3);
+      const match4 = GenerateMatch(activityId, attendees, court, 0, 3, 1, 2, 4);
+      const match5 = GenerateMatch(activityId, attendees, court, 2, 5, 3, 4, 5);
+      const match6 = GenerateMatch(activityId, attendees, court, 0, 5, 1, 4, 6);
       const matches = [match1, match2, match3, match4, match5, match6];
 
       matches.forEach((match: any) => {
@@ -575,6 +568,7 @@ Page({
     const activityId = this.data.activityId;
 
     await ExcuteWithProcessingAsync(async () => {
+      console.log(activityId, court);
       await RemoveMatchAsync(activityId, court);
       await this.ReloadActivityByIdAsync(activityId);
     });
@@ -621,6 +615,34 @@ Page({
       await UpdateMatchAsync(activityId, match.court, match.index, match.leftScore, newValue);
       await this.ReloadActivityByIdAsync(activityId);
     });
+  },
+
+  GenerateMatchResults() {
+    // match result
+    const matchResultMap = {} as any;
+    for (const court in this.data.courtMatchesMap) {
+      const matches = this.data.courtMatchesMap[court];
+      matchResultMap[court] = GetMatchResult(matches, this.data.activityId, Number(court));
+    }
+    this.setData({ matchResultMap, selectedTab: 3 });
+  },
+  //#endregion
+
+  //#region result private method
+  async SaveMatchResults() {
+    const promiseList = [] as any[];
+    for (const resultByCourt of Object.values(this.data.matchResultMap as any[][])) {
+      for (const result of resultByCourt) {
+        const promise = AddMatchResultsAsync(result);
+        promiseList.push(promise);
+      }
+    }
+
+    await ExcuteWithProcessingAsync(async () => {
+      await Promise.all(promiseList);
+      await this.ReloadActivityByIdAsync(this.data.activityId);
+    });
   }
   //#endregion
+
 })
