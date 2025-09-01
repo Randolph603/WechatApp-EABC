@@ -43,7 +43,7 @@
 }
 
 .tab-item {
-  padding: 5px 23px;
+  padding: 5px 14px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -86,7 +86,7 @@
   }
 
   .box {
-    height: 100rpx;
+    height: 150rpx;
     margin: 30rpx 20rpx;
     background: #eeeeee;
     color: #AAB0BC;
@@ -100,6 +100,17 @@
     justify-content: flex-start;
     align-items: center;
 
+    .rank-number-double {
+      margin-left: 20rpx;
+      text-align: center;
+      /* margin-right: -15rpx ; */
+      font-size: 45rpx;
+      color: black;
+      background-color: rgba(52, 111, 194, 0.445);
+      border-radius: 50%;
+      width: 66rpx;
+    }
+
     .rank-number {
       margin-left: 20rpx;
       text-align: center;
@@ -112,20 +123,22 @@
     }
 
     .avatar {
-      width: 80rpx;
-      height: 80rpx;
+      width: 120rpx;
+      height: 120rpx;
       border-radius: 50%;
-      border: 3rpx solid white;
+      border: 4rpx solid white;
     }
 
-    .name {
-      width: 35%;
-      margin-left: 20rpx;
+    .play-name {
       color: black;
-      flex-grow: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 30rpx;
+      width: 100%;
+      white-space: pre-wrap;
+    }
+
+    .play-nation {
+      color: black;
+      font-size: 26rpx;
     }
 
     .badge {
@@ -134,10 +147,17 @@
       margin-left: 25rpx;
     }
 
-    .power {
+    .points {
+      color:grey;
       margin-right: 20rpx;
+      align-self: flex-end;
     }
 
+    .tournaments{
+      margin-right: 20rpx;
+      align-self: flex-end;
+      font-size: 24rpx;
+    }
   }
 
 }
