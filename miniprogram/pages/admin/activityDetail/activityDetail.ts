@@ -568,7 +568,6 @@ Page({
     const activityId = this.data.activityId;
 
     await ExcuteWithProcessingAsync(async () => {
-      console.log(activityId, court);
       await RemoveMatchAsync(activityId, court);
       await this.ReloadActivityByIdAsync(activityId);
     });

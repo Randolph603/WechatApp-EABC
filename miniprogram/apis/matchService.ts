@@ -130,7 +130,11 @@ export const GetMatchResult = (matches: any[], activityId: string, court: number
   });
 
   matchResults.forEach((v: any, i: number) => {
-    v.powerOfBattleChange = (6 - i) * 5;
+    if (v.wins === 0) {
+      v.powerOfBattleChange = 0;
+    } else {
+      v.powerOfBattleChange = (6 - i) * 5;
+    }
   });
   return matchResults;
 }

@@ -116,7 +116,7 @@ Page({
   async LoadActivityAndMatches(recordEvent: boolean) {
     const id = this.data.activityId;
     if (id.length > 0) {
-      const { activity, matches } = await LoadActivityAndMatchesByIdAsync(id, true, recordEvent);
+      const { activity } = await LoadActivityAndMatchesByIdAsync(id, true, recordEvent);
       const allJoinedAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
       const allCancelledAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
 
@@ -150,24 +150,12 @@ Page({
         this.setData({ joinMore });
       }
 
-      const courtMatchesMap = {} as any;
-      matches.forEach((match: any) => {
-        const court = match.court;
-        if (!courtMatchesMap[court]) {
-          courtMatchesMap[court] = [];
-        }
-        courtMatchesMap[court].push(match);
-      });
-      const isCourtMatchesMapEmpty = Object.keys(courtMatchesMap).length === 0;
-
       this.setData({
         attendTitle,
         activity,
         allSections,
         allJoinedAttendeesCount: allJoinedAttendees.length,
-        allCancelledAttendees,
-        courtMatchesMap,
-        isCourtMatchesMapEmpty
+        allCancelledAttendees
       });
     }
   },
