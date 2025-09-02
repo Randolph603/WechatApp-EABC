@@ -11,151 +11,213 @@
 </view>
 
 <swiper class="swiper" current="{{selectedTab}}" bindchange="onChange">
-  <swiper-item class="item">
-    <view class="rank-list">
-      <scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
-        <block wx:for="{{worldMS}}" wx:key="_id" wx:for-item="user">
-          <view class="box">
-            <text class="rank-number">{{user.rank}}</text>
-            <view class="view-row-between full-width">
-              <view class="view-row mr-10">
-                <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+  <swiper-item>
+    <view wx:if="{{worldMS.length === 0 && worldMS}}" class="view-column-centre">
+      <image mode="widthFix" src="/static/images/no_history.png"></image>
+      <text>No records</text>
+    </view>
+    <scroll-view wx:else class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
+      <block wx:for="{{worldMS}}" wx:key="_id" wx:for-item="user">
+        <view class="box view-row">
+          <view class="view-row ml-20 mr-10">
+            <view class="rank-number view-row-centre"> {{user.rank}} </view>
+            <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" mode="aspectFit" />
+            <view class="rank-change view-row-centre">
+              <view wx:if="{{user.rank_change > 0}}" class="view-row">
+                <span class="arrow-up"></span>
+                <text class="count-up">{{user.rank_change}}</text>
+              </view>
+              <view wx:if="{{user.rank_change < 0}}" class="view-row">
+                <span class="arrow-down"></span>
+                <text class="count-down">{{0-user.rank_change}}</text>
+              </view>
+              <view wx:if="{{user.rank_change === 0}}" class="view-row">
+                <text>-</text>
+              </view>
+            </view>
+          </view>
+          <view class="view-column flex-grow ml-10">
+            <text class="play-name">{{user.displayName}}</text>
+            <text class="play-nation">{{user.nation}}</text>
+          </view>
+          <view class="view-column ml-10 mr-20">
+            <text class="points">{{user.points}}</text>
+            <text class="tournaments">T: {{user.tournaments}}</text>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </swiper-item>
+  <swiper-item>
+    <view wx:if="{{worldWS.length === 0}}" class="view-column-centre">
+      <image mode="widthFix" src="/static/images/no_history.png"></image>
+      <text>No records</text>
+    </view>
+    <scroll-view wx:else class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
+      <block wx:for="{{worldWS}}" wx:key="_id" wx:for-item="user">
+        <view class="box view-row">
+          <view class="view-row ml-20 mr-10">
+            <view class="rank-number view-row-centre"> {{user.rank}} </view>
+            <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" mode="aspectFit" />
+            <view class="rank-change view-row-centre">
+              <view wx:if="{{user.rank_change > 0}}" class="view-row">
+                <span class="arrow-up"></span>
+                <text class="count-up">{{user.rank_change}}</text>
+              </view>
+              <view wx:if="{{user.rank_change < 0}}" class="view-row">
+                <span class="arrow-down"></span>
+                <text class="count-down">{{0-user.rank_change}}</text>
+              </view>
+              <view wx:if="{{user.rank_change === 0}}" class="view-row">
+                <text>-</text>
+              </view>
+            </view>
+          </view>
+          <view class="view-column flex-grow ml-10">
+            <text class="play-name">{{user.displayName}}</text>
+            <text class="play-nation">{{user.nation}}</text>
+          </view>
+          <view class="view-column ml-10 mr-20">
+            <text class="points">{{user.points}}</text>
+            <text class="tournaments">T: {{user.tournaments}}</text>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </swiper-item>
+  <swiper-item>
+    <view wx:if="{{worldMD.length === 0}}" class="view-column-centre">
+      <image mode="widthFix" src="/static/images/no_history.png"></image>
+      <text>No records</text>
+    </view>
+    <scroll-view wx:else class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
+      <block wx:for="{{worldMD}}" wx:key="_id" wx:for-item="user">
+        <view class="box view-row" style="height: 270rpx;">
+          <view class="rank-number-double view-column-centre ml-20">
+            <text>{{user.rank}}</text>
+            <view wx:if="{{user.rank_change > 0}}" class="view-row mt-10 mb-10">
+              <span class="arrow-up"></span>
+              <text class="count-up">{{user.rank_change}}</text>
+            </view>
+            <view wx:if="{{user.rank_change < 0}}" class="view-row mt-10 mb-10">
+              <span class="arrow-down"></span>
+              <text class="count-down">{{0-user.rank_change}}</text>
+            </view>
+          </view>
+          <view class="view-row-between flex-grow ml-10">
+            <view class="view-column mr-10">
+              <view class="view-row">
+                <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player1_avatarUrl}}" />
                 <view class="view-column ml-10">
-                  <text class="play-name">{{user.displayName}}</text>
-                  <text class="play-nation">{{user.nation}}</text>
+                  <text class="play-name">{{user.player1_displayName}}</text>
+                  <text class="play-nation">{{user.player1_nation}}</text>
                 </view>
               </view>
-              <view class="view-column">
-                <text class="points">{{user.points}}</text>
-                <text class="tournaments">T: {{user.tournaments}}</text>
-              </view>
-            </view>
-          </view>
-        </block>
-      </scroll-view>
-    </view>
-  </swiper-item>
-  <swiper-item class="item">
-    <view class="rank-list">
-      <scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
-        <block wx:for="{{worldWS}}" wx:key="_id" wx:for-item="user">
-          <view class="box">
-            <text class="rank-number">{{user.rank}}</text>
-            <view class="view-row-between full-width">
-              <view class="view-row mr-10">
-                <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+              <view class="view-row" style="margin-top: 10rpx;">
+                <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player2_avatarUrl}}" />
                 <view class="view-column ml-10">
-                  <text class="play-name">{{user.displayName}}</text>
-                  <text class="play-nation">{{user.nation}}</text>
+                  <text class="play-name">{{user.player2_displayName}}</text>
+                  <text class="play-nation">{{user.player2_nation}}</text>
                 </view>
-              </view>
-              <view class="view-column">
-                <text class="points">{{user.points}}</text>
-                <text class="tournaments">T: {{user.tournaments}}</text>
               </view>
             </view>
           </view>
-        </block>
-      </scroll-view>
-    </view>
+          <view class="view-column ml-10 mr-20">
+            <text class="points">{{user.points}}</text>
+            <text class="tournaments">T: {{user.tournaments}}</text>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
   </swiper-item>
-  <swiper-item class="item">
-    <view class="rank-list">
-      <scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
-        <block wx:for="{{worldMD}}" wx:key="_id" wx:for-item="user">
-          <view class="box" style="height: 270rpx;">
-            <text class="rank-number-double">{{user.rank}}</text>
-            <view class="view-row-between full-width">
-              <view class="view-column mr-10">
-                <view class="view-row">
-                  <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player1_avatarUrl}}" />
-                  <view class="view-column ml-10">
-                    <text class="play-name">{{user.player1_displayName}}</text>
-                    <text class="play-nation">{{user.player1_nation}}</text>
-                  </view>
-                </view>
-                <view class="view-row" style="margin-top: 10rpx;">
-                  <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player2_avatarUrl}}" />
-                  <view class="view-column ml-10">
-                    <text class="play-name">{{user.player2_displayName}}</text>
-                    <text class="play-nation">{{user.player2_nation}}</text>
-                  </view>
+  <swiper-item>
+    <view wx:if="{{worldWD.length === 0}}" class="view-column-centre">
+      <image mode="widthFix" src="/static/images/no_history.png"></image>
+      <text>No records</text>
+    </view>
+    <scroll-view wx:else class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
+      <block wx:for="{{worldWD}}" wx:key="_id" wx:for-item="user">
+        <view class="box view-row" style="height: 270rpx;">
+          <view class="rank-number-double view-column-centre ml-20">
+            <text>{{user.rank}}</text>
+            <view wx:if="{{user.rank_change > 0}}" class="view-row mt-10 mb-10">
+              <span class="arrow-up"></span>
+              <text class="count-up">{{user.rank_change}}</text>
+            </view>
+            <view wx:if="{{user.rank_change < 0}}" class="view-row mt-10 mb-10">
+              <span class="arrow-down"></span>
+              <text class="count-down">{{0-user.rank_change}}</text>
+            </view>
+          </view>
+          <view class="view-row-between flex-grow ml-10">
+            <view class="view-column mr-10">
+              <view class="view-row">
+                <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player1_avatarUrl}}" />
+                <view class="view-column ml-10">
+                  <text class="play-name">{{user.player1_displayName}}</text>
+                  <text class="play-nation">{{user.player1_nation}}</text>
                 </view>
               </view>
-              <view class="view-column">
-                <text class="points">{{user.points}}</text>
-                <text class="tournaments">T: {{user.tournaments}}</text>
+              <view class="view-row" style="margin-top: 10rpx;">
+                <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player2_avatarUrl}}" />
+                <view class="view-column ml-10">
+                  <text class="play-name">{{user.player2_displayName}}</text>
+                  <text class="play-nation">{{user.player2_nation}}</text>
+                </view>
               </view>
             </view>
           </view>
-        </block>
-      </scroll-view>
-    </view>
+          <view class="view-column ml-10 mr-20">
+            <text class="points">{{user.points}}</text>
+            <text class="tournaments">T: {{user.tournaments}}</text>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
   </swiper-item>
-  <swiper-item class="item">
-    <view class="rank-list">
-      <scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
-        <block wx:for="{{worldWD}}" wx:key="_id" wx:for-item="user">
-          <view class="box" style="height: 270rpx;">
-            <text class="rank-number-double">{{user.rank}}</text>
-            <view class="view-row-between full-width">
-              <view class="view-column mr-10">
-                <view class="view-row">
-                  <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player1_avatarUrl}}" />
-                  <view class="view-column ml-10">
-                    <text class="play-name">{{user.player1_displayName}}</text>
-                    <text class="play-nation">{{user.player1_nation}}</text>
-                  </view>
-                </view>
-                <view class="view-row" style="margin-top: 10rpx;">
-                  <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player2_avatarUrl}}" />
-                  <view class="view-column ml-10">
-                    <text class="play-name">{{user.player2_displayName}}</text>
-                    <text class="play-nation">{{user.player2_nation}}</text>
-                  </view>
+  <swiper-item>
+    <view wx:if="{{worldXD.length === 0}}" class="view-column-centre">
+      <image mode="widthFix" src="/static/images/no_history.png"></image>
+      <text>No records</text>
+    </view>
+    <scroll-view wx:else class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
+      <block wx:for="{{worldXD}}" wx:key="_id" wx:for-item="user">
+        <view class="box view-row" style="height: 270rpx;">
+          <view class="rank-number-double view-column-centre ml-20">
+            <text>{{user.rank}}</text>
+            <view wx:if="{{user.rank_change > 0}}" class="view-row mt-10 mb-10">
+              <span class="arrow-up"></span>
+              <text class="count-up">{{user.rank_change}}</text>
+            </view>
+            <view wx:if="{{user.rank_change < 0}}" class="view-row mt-10 mb-10">
+              <span class="arrow-down"></span>
+              <text class="count-down">{{0-user.rank_change}}</text>
+            </view>
+          </view>
+          <view class="view-row-between flex-grow ml-10">
+            <view class="view-column mr-10">
+              <view class="view-row">
+                <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player1_avatarUrl}}" />
+                <view class="view-column ml-10">
+                  <text class="play-name">{{user.player1_displayName}}</text>
+                  <text class="play-nation">{{user.player1_nation}}</text>
                 </view>
               </view>
-              <view class="view-column">
-                <text class="points">{{user.points}}</text>
-                <text class="tournaments">T: {{user.tournaments}}</text>
+              <view class="view-row" style="margin-top: 10rpx;">
+                <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player2_avatarUrl}}" />
+                <view class="view-column ml-10">
+                  <text class="play-name">{{user.player2_displayName}}</text>
+                  <text class="play-nation">{{user.player2_nation}}</text>
+                </view>
               </view>
             </view>
           </view>
-        </block>
-      </scroll-view>
-    </view>
-  </swiper-item>
-  <swiper-item class="item">
-    <view class="rank-list">
-      <scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
-        <block wx:for="{{worldXD}}" wx:key="_id" wx:for-item="user">
-          <view class="box" style="height: 270rpx;">
-            <text class="rank-number-double">{{user.rank}}</text>
-            <view class="view-row-between full-width">
-              <view class="view-column mr-10">
-                <view class="view-row">
-                  <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player1_avatarUrl}}" />
-                  <view class="view-column ml-10">
-                    <text class="play-name">{{user.player1_displayName}}</text>
-                    <text class="play-nation">{{user.player1_nation}}</text>
-                  </view>
-                </view>
-                <view class="view-row" style="margin-top: 10rpx;">
-                  <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.player2_avatarUrl}}" />
-                  <view class="view-column ml-10">
-                    <text class="play-name">{{user.player2_displayName}}</text>
-                    <text class="play-nation">{{user.player2_nation}}</text>
-                  </view>
-                </view>
-              </view>
-              <view class="view-column">
-                <text class="points">{{user.points}}</text>
-                <text class="tournaments">T: {{user.tournaments}}</text>
-              </view>
-            </view>
+          <view class="view-column ml-10 mr-20">
+            <text class="points">{{user.points}}</text>
+            <text class="tournaments">T: {{user.tournaments}}</text>
           </view>
-        </block>
-      </scroll-view>
-    </view>
+        </view>
+      </block>
+    </scroll-view>
   </swiper-item>
 </swiper>

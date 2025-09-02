@@ -43,7 +43,7 @@
 }
 
 .tab-item {
-  padding: 5px 14px;
+  margin: 5px 14px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -71,97 +71,108 @@
   }
 }
 
-
-.rank-list {
-  background: #FFF;
+.scroll {
+  height: calc(100vh - 420rpx);
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-
-  .scroll {
-    height: calc(100vh - 420rpx);
-    padding-bottom: 30rpx;
-  }
-
-  .box {
-    height: 150rpx;
-    margin: 30rpx 20rpx;
-    background: #eeeeee;
-    color: #AAB0BC;
-    border-radius: 18rpx;
-    /*for Android*/
-    box-shadow: 2rpx 3rpx 6rpx 1rpx #b4b4b496;
-    /*for IOS*/
-    -webkit-box-shadow: 2px 3px 6px 1px #b4b4b496;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-
-    .rank-number-double {
-      margin-left: 20rpx;
-      text-align: center;
-      /* margin-right: -15rpx ; */
-      font-size: 45rpx;
-      color: black;
-      background-color: rgba(52, 111, 194, 0.445);
-      border-radius: 50%;
-      width: 66rpx;
-    }
-
-    .rank-number {
-      margin-left: 20rpx;
-      text-align: center;
-      margin-right: -15rpx;
-      font-size: 45rpx;
-      color: black;
-      background-color: rgba(166, 160, 169, 0.6);
-      border-radius: 30rpx 0 0 30rpx;
-      width: 110rpx;
-    }
-
-    .avatar {
-      width: 120rpx;
-      height: 120rpx;
-      border-radius: 50%;
-      border: 4rpx solid white;
-    }
-
-    .play-name {
-      color: black;
-      font-size: 30rpx;
-      width: 100%;
-      white-space: pre-wrap;
-    }
-
-    .play-nation {
-      color: black;
-      font-size: 26rpx;
-    }
-
-    .badge {
-      width: 50rpx;
-      height: 50rpx;
-      margin-left: 25rpx;
-    }
-
-    .points {
-      color:grey;
-      margin-right: 20rpx;
-      align-self: flex-end;
-    }
-
-    .tournaments{
-      margin-right: 20rpx;
-      align-self: flex-end;
-      font-size: 24rpx;
-    }
-  }
-
+  box-sizing: border-box;
+  background: #FFF;
 }
 
+.box {
+  height: 150rpx;
+  margin: 30rpx 20rpx;
+  background: #eeeeee;
+  color: black;
+  border-radius: 18rpx;
+  box-shadow: 2rpx 3rpx 6rpx 1rpx #b4b4b496;
+
+  .rank-number-double {
+    text-align: center;
+    background-color: rgba(166, 160, 169, 0.6);
+    border-radius: 30rpx;
+    width: 60rpx;
+    font-size: 24rpx;
+    padding: 12rpx 0rpx;
+  }
+
+  .rank-number {
+    margin-right: -15rpx;
+    background-color: rgba(166, 160, 169, 0.6);
+    border-radius: 30rpx 0 0 30rpx;
+    width: 80rpx;
+    height: 60rpx;
+  }
+
+  .rank-change {
+    margin-left: -15rpx;
+    background-color: rgba(166, 160, 169, 0.6);
+    border-radius: 0 30rpx 30rpx 0;
+    width: 80rpx;
+    height: 60rpx;
+    z-index: -1;
+    font-size: 24rpx;
+  }
+
+  .arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 9px solid #24c046;
+  }
+
+  .count-up {
+    line-height: 9px;
+    color: #24c046;
+  }
+
+  .arrow-down {
+    border-top: 9px solid #df2027;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 0;
+  }
+
+  .count-down {
+    line-height: 9px;
+    color: #df2027;
+  }
+
+  .avatar {
+    width: 120rpx;
+    height: 120rpx;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border: 4rpx solid white;
+  }
+
+  .play-name {
+    font-size: 30rpx;
+    width: 300rpx;
+    white-space: pre-wrap;
+  }
+
+  .play-nation {
+    font-size: 26rpx;
+  }
+
+  .badge {
+    width: 50rpx;
+    height: 50rpx;
+    margin-left: 25rpx;
+  }
+
+  .points {
+    color: grey;
+    align-self: flex-end;
+  }
+
+  .tournaments {
+    color: #AAB0BC;
+    align-self: flex-end;
+    font-size: 24rpx;
+  }
+}
 
 .my-rank {
   position: absolute;

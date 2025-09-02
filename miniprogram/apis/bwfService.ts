@@ -45,6 +45,8 @@ const imageMap: { [key: number]: string } = {
   70500: "https://img.bwfbadminton.com/image/upload/t_96_player_profile/v1697771565/assets/players/thumbnail/70500.png",
   68633: "https://img.bwfbadminton.com/image/upload/t_96_player_profile/v1604896458/assets/players/thumbnail/68633.png",
   79658: "https://img.bwfbadminton.com/image/upload/t_96_player_profile/v1647993849/assets/players/thumbnail/79658.png",
+  93130: "https://img.bwfbadminton.com/image/upload/t_96_player_profile/v1690181900/assets/players/thumbnail/93130.png",
+  71223: "https://img.bwfbadminton.com/image/upload/t_96_player_profile/v1690181939/assets/players/thumbnail/71223.png",
   // WD
   81599: "https://img.bwfbadminton.com/image/upload/t_96_player_profile/v1667177004/assets/players/thumbnail/81599.png",
   59880: "https://img.bwfbadminton.com/image/upload/t_96_player_profile/v1690355943/assets/players/thumbnail/59880.png",
@@ -92,12 +94,12 @@ const imageMap: { [key: number]: string } = {
 export const LoadMSRankAsync = async (): Promise<any> => {
   const data = {
     "catId": 6,
-    "rankId": 2,
     "drawCount": 1,
+    "rankId": 2,
     "publicationId": 0,
     "doubles": false,
     "searchKey": "",
-    "pageKey": "10",
+    "pageKey": "20",
     "page": 1,
   };
   const { results } = await LoadRankAsync(data);
@@ -118,12 +120,12 @@ export const LoadMSRankAsync = async (): Promise<any> => {
 export const LoadWSRankAsync = async (): Promise<any> => {
   const data = {
     "catId": 7,
+    "drawCount": 2,
     "rankId": 2,
-    "drawCount": 5,
     "publicationId": 0,
     "doubles": false,
     "searchKey": "",
-    "pageKey": "10",
+    "pageKey": "20",
     "page": 1,
   };
   const { results } = await LoadRankAsync(data);
@@ -144,12 +146,12 @@ export const LoadWSRankAsync = async (): Promise<any> => {
 export const LoadMDRankAsync = async (): Promise<any> => {
   const data = {
     "catId": 8,
-    "rankId": 2,
     "drawCount": 3,
+    "rankId": 2,
     "publicationId": 0,
     "doubles": true,
     "searchKey": "",
-    "pageKey": "10",
+    "pageKey": "20",
     "page": 1,
   };
   const { results } = await LoadRankAsync(data);
@@ -175,12 +177,12 @@ export const LoadMDRankAsync = async (): Promise<any> => {
 export const LoadWDRankAsync = async (): Promise<any> => {
   const data = {
     "catId": 9,
-    "rankId": 2,
     "drawCount": 4,
+    "rankId": 2,
     "publicationId": 0,
     "doubles": true,
     "searchKey": "",
-    "pageKey": "10",
+    "pageKey": "20",
     "page": 1,
   };
   const { results } = await LoadRankAsync(data);
@@ -206,12 +208,12 @@ export const LoadWDRankAsync = async (): Promise<any> => {
 export const LoadXDRankAsync = async (): Promise<any> => {
   const data = {
     "catId": 10,
-    "rankId": 2,
     "drawCount": 5,
+    "rankId": 2,
     "publicationId": 0,
     "doubles": true,
     "searchKey": "",
-    "pageKey": "10",
+    "pageKey": "20",
     "page": 1,
   };
   const { results } = await LoadRankAsync(data);

@@ -21,8 +21,7 @@ Page({
       id: 'XD',
       name: '混双',
     }],
-    users: [],
-    worldMS: []
+    users: []
   },
 
   async onLoad() {
