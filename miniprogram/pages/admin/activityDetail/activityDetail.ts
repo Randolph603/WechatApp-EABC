@@ -433,19 +433,22 @@ Page({
         const { discount, memberId, attendeeList } = groupedAttendee;
 
         let charge = 0;
+        let useDiscount = true;
         attendeeList.forEach((a: any) => {
           const section = sections[a.sectionIndex];
-          let price = section.useDiscount === true ? section.price - discount : section.price;
+          let actualDiscount = section.useDiscount === true ? discount : 0;
+          let price = section.price - actualDiscount;
           if (vipMemberIds.includes(memberId)) {
             price = 0;
           }
           charge = charge + price;
+          useDiscount = useDiscount && section.useDiscount
         });
 
         return {
           memberId: memberId,
           count: attendeeList.length - 1,
-          discount: discount,
+          discount: useDiscount === true ? discount : 0,
           charge: charge,
         };
       })
