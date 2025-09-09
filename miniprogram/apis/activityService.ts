@@ -88,6 +88,23 @@ export const AddActivityAsync = async (activityToAdd: ActivityModel): Promise<an
 //#endregion
 
 //#region Attendee
+export const AutoJoinActivityAsync = async (activityId: string, memberId: number, sectionIndex: number) => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    await db.collection('Attendees').add({
+      activityId: activityId,
+      memberId: memberId,
+      isCancelled: false,
+      createDate: new Date(),
+      updateDate: new Date(),
+      joinMore: 0,
+      sectionIndex: sectionIndex
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 export const JoinActivityAsync = async (activityId: string, memberId: number, joinMore: number) => {
   try {

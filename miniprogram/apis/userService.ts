@@ -1,6 +1,6 @@
 import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { config } from "../configs/index";
-import { UserRoleArray, LevelArray, UserGenderArray } from "@Lib/types";
+import { UserRoleArray, LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { WxGetFileInfoAsync } from "@Lib/promisify";
 import { CallCloudFuncAsync, HandleException } from "./commonHelper";
@@ -102,7 +102,8 @@ export const SearchUsersSortByContinuelyWeeksAsync = async () => {
   const _ = db.command;
   const { users } = await CallCloudFuncAsync('user_search', {
     where: { continueWeeklyJoin: _.gt(0) },
-    limit: 30
+    limit: 100,
+    sort: { continueWeeklyJoin: -1 }
   });
   users.forEach((u: any) => SetupUserTypes(u));
   return users;

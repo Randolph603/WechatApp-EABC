@@ -1,8 +1,8 @@
-import { AddActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
+import { AddActivityAsync, AutoJoinActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, LoadAllActivitiesAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
 import { AddMatchAsync, AddMatchResultsAsync, GenerateMatch, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
-import { ToNZTimeRangeString } from "@Lib/dateExtension";
+import { ToNZDateString, ToNZTimeRangeString } from "@Lib/dateExtension";
 import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { ActivityModel } from "@Model/Activity";
@@ -407,18 +407,39 @@ Page({
 
   async autoAddAttendeesAsync() {
     await ExcuteWithProcessingAsync(async () => {
-      const activityId = this.data.activityId;
-      const users = await SearchUsersSortByContinuelyWeeksAsync() as any[];
-      const promiseList = [] as any[];
-      users.forEach(user => {
-        const promise = JoinActivityAsync(activityId, user.memberId, 0);
-        promiseList.push(promise);
-        user.sectionIndex = 0;
-      });
-      await Promise.all(promiseList);
-
-      allActiveAttendees = users;
-      this.generateGroupAttendees();
+      const activity = this.data.activity;
+      let sevenDaysAgo = new Date(activity.startTime);
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const loadedActivities = await LoadAllActivitiesAsync(4, activity.type, true);
+      const lastSevenDaysActivity = loadedActivities.find((a: any) => ToNZDateString(a.startTimeDate) === ToNZDateString(sevenDaysAgo));
+      if (lastSevenDaysActivity) {
+        // reload activity to include cancelled attendees
+        const { activity: activityLastTime } = await LoadActivityAndMatchesByIdAsync(lastSevenDaysActivity._id, true, false);
+        
+        const attendeesLastTime = activityLastTime.Attendees;
+        const attendeesLastTimeMap: Map<number, any> = new Map(attendeesLastTime.map((item: any) => [item.memberId, item]));
+        const allUsersWithContinuely = await SearchUsersSortByContinuelyWeeksAsync() as any[];
+        const users = [];
+        for (const user of allUsersWithContinuely) {
+          const attendee = attendeesLastTimeMap.get(user.memberId);
+          if (attendee) {
+            users.push({
+              ...user,
+              sectionIndex: attendee.sectionIndex,
+            });
+          }
+        }
+        const targetUsers = users.slice(0, (activityLastTime.maxAttendee * 2 / 3));
+       
+        const promiseList = [] as any[];
+        const activityId = this.data.activityId;
+        targetUsers.forEach(user => {
+          const promise = AutoJoinActivityAsync(activityId, user.memberId, user.sectionIndex);
+          promiseList.push(promise);
+        });
+        await Promise.all(promiseList);
+        await this.ReloadActivityByIdAsync(activityId);
+      }
     }, false);
   },
 
