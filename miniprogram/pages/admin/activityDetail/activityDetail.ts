@@ -55,7 +55,8 @@ Page({
     groupedAttendees: [] as any[],
     // Dialog
     showAttendeeDialog: false,
-    selectedAttendee: null as unknown as any
+    selectedAttendee: null as unknown as any,
+    matchedUsersByAttendeeName: [] as any[]
   },
 
   async onLoad(options: Record<string, string | undefined>) {
@@ -127,6 +128,7 @@ Page({
             sectionIndex: a.sectionIndex,
             attendeeName: a.attendeeName,
             attendeeGender: a.attendeeGender,
+            attendeeMemberId: a.attendeeMemberId
           }
         })
       };
@@ -312,7 +314,7 @@ Page({
   async searchUser(e: IOption) {
     await ExcuteWithProcessingAsync(async () => {
       const searchText = e.detail.value;
-      const users = await SearchUsersByKeyAsync(searchText);
+      const users = await SearchUsersByKeyAsync(searchText, 10);
 
       this.setData({
         searchTerm: searchText,
@@ -378,7 +380,8 @@ Page({
       accountName: user.displayName,
       accountMemberId: user.memberId,
       attendeeName: attendee.attendeeName,
-      attendeeGender: attendee.attendeeGender
+      attendeeGender: attendee.attendeeGender,
+      attendeeMemberId: attendee.attendeeMemberId
     };
     this.setData({
       showAttendeeDialog: true,
@@ -390,6 +393,36 @@ Page({
     this.setData({ [`selectedAttendee.attendeeName`]: e.detail.value });
   },
 
+  clearAttendeeMemberId() {
+    this.setData({[`selectedAttendee.attendeeMemberId`]: null });
+  },
+
+  async onSearchAttendeeName() {
+    await ExcuteWithProcessingAsync(async () => {
+      const searchText = this.data.selectedAttendee.attendeeName;
+      const users = await SearchUsersByKeyAsync(searchText, 4);
+      this.setData({
+        matchedUsersByAttendeeName: users
+      });
+    }, false);
+  },
+
+  onCancelAttendeeNameSearch() {
+    this.setData({matchedUsersByAttendeeName: []});
+  },
+
+  onSearchAttendeeSelected(e: IOption) {
+    const { user } = e.currentTarget.dataset;
+    if (!user) return;
+
+    this.setData({
+      [`selectedAttendee.attendeeMemberId`]: user.memberId,
+      [`selectedAttendee.attendeeName`]: user.displayName,
+      [`selectedAttendee.attendeeGender`]: user.gender,
+      matchedUsersByAttendeeName: []
+    });
+  },
+
   changeSelectedAttendeeGender(e: IOption) {
     const { value } = e.currentTarget.dataset;
     this.setData({ [`selectedAttendee.attendeeGender`]: value });
@@ -399,7 +432,11 @@ Page({
     const activityId = this.data.activityId;
     await ExcuteWithProcessingAsync(async () => {
       const selectedAttendee = this.data.selectedAttendee;
-      await UpdateAttendeeMoreAsync(selectedAttendee.attendeeId, selectedAttendee.attendeeName, selectedAttendee.attendeeGender);
+      await UpdateAttendeeMoreAsync(
+        selectedAttendee.attendeeId,
+        selectedAttendee.attendeeName,
+        selectedAttendee.attendeeGender,
+        selectedAttendee.attendeeMemberId);
       await this.ReloadActivityByIdAsync(activityId);
       this.setData({ showAttendeeDialog: false });
     }, false);
@@ -415,7 +452,7 @@ Page({
       if (lastSevenDaysActivity) {
         // reload activity to include cancelled attendees
         const { activity: activityLastTime } = await LoadActivityAndMatchesByIdAsync(lastSevenDaysActivity._id, true, false);
-        
+
         const attendeesLastTime = activityLastTime.Attendees;
         const attendeesLastTimeMap: Map<number, any> = new Map(attendeesLastTime.map((item: any) => [item.memberId, item]));
         const allUsersWithContinuely = await SearchUsersSortByContinuelyWeeksAsync() as any[];
@@ -430,7 +467,7 @@ Page({
           }
         }
         const targetUsers = users.slice(0, (activityLastTime.maxAttendee * 2 / 3));
-       
+
         const promiseList = [] as any[];
         const activityId = this.data.activityId;
         targetUsers.forEach(user => {

@@ -143,7 +143,7 @@
           <button class="weui-btn" type="primary" bindtap="autoAddAttendeesAsync">自动添加</button>
         </view>
 
-        <mp-cells wx:if="{{groupedAttendees.length > 0}}" class="scroll" title="参与者 (报名时间排序):" footer="* 左滑删除缺席者">
+        <mp-cells wx:if="{{groupedAttendees.length > 0}}" class="scroll" title="参与者 (报名时间排序):" footer="* 减号删除缺席者">
           <block wx:for="{{groupedAttendees}}" wx:key="memberId" wx:for-item="user">
             <mp-cell>
               <view slot="title" class="view-row">
@@ -325,8 +325,31 @@
   <view slot="title" style="font-size: medium;" class="view-row-centre">{{selectedAttendee.accountName}} +{{selectedAttendee.attendeeJoinMore}}</view>
 
   <view slot="desc">
+    <mp-cell title="会员号">
+      <text class="ml-30">#{{selectedAttendee.attendeeMemberId || ''}}</text>
+      <view wx:if="{{selectedAttendee.attendeeMemberId}}" slot="footer" bindtap="clearAttendeeMemberId">
+        <image class="icon24" src="/static/icons/close.png" mode="heightFix" />
+      </view>
+    </mp-cell>
     <mp-cell title="姓名">
       <input class="ml-60" bindinput="changeSelectedAttendeeName" value="{{selectedAttendee.attendeeName}}" />
+      <view wx:if="{{matchedUsersByAttendeeName.length === 0}}" slot="footer" bindtap="onSearchAttendeeName">
+        <image class="icon24" src="/static/icons/search-user.png" mode="heightFix" />
+      </view>
+      <view wx:else slot="footer" bindtap="onCancelAttendeeNameSearch">
+        <image class="icon24" src="/static/icons/close.png" mode="heightFix" />
+      </view>
+
+    </mp-cell>
+    <!-- Search matched users -->
+    <mp-cell wx:for="{{matchedUsersByAttendeeName}}" wx:key="attendeeId" wx:for-item="user">
+      <view slot="title" class="view-row">
+        <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+        <text style="margin-left: 20rpx;">{{user.displayName}}</text>
+      </view>
+      <view slot="footer">
+        <button type="default" size="mini" data-user="{{user}}" bindtap="onSearchAttendeeSelected">选择</button>
+      </view>
     </mp-cell>
     <mp-cell title="性别">
       <view class="view-row ml-60">

@@ -87,10 +87,10 @@ export const SearchUsersForRankAsync = async () => {
   return users;
 }
 
-export const SearchUsersByKeyAsync = async (searchText: string) => {
+export const SearchUsersByKeyAsync = async (searchText: string, limit: number) => {
   const { users } = await CallCloudFuncAsync('user_search', {
     searchText: searchText,
-    limit: 5
+    limit: limit
   });
   users.forEach((u: any) => SetupUserTypes(u));
   return users;

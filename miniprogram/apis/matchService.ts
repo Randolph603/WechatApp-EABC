@@ -1,4 +1,5 @@
 import { MatchModel } from "@Model/Match";
+import { config } from "../configs/index";
 import { UpdateRecordAsync } from "./commonHelper";
 import { GetCloudAsync } from "./databaseService";
 
@@ -48,6 +49,7 @@ export const GenerateMatch = (activityId: string, attendees: any[], court: numbe
       currentPowerOfBattle: a.currentPowerOfBattle,
       attendeeName: a.attendeeName,
       attendeeGender: a.attendeeGender,
+      attendeeMemberId: a.attendeeMemberId,
     }
   });
   const leftGender = (playerList[index1].attendeeGender || playerList[index1].gender) + (playerList[index2].attendeeGender || playerList[index2].gender);
@@ -82,7 +84,8 @@ export const GetMatchResult = (matches: any[], activityId: string, court: number
           wins: 0,
           lost: 0,
           pointDifference: 0,
-          powerOfBattleChange: 0
+          powerOfBattleChange: 0,
+          season: config.currentSeason
         };
         matchResults.push(result);
       }
@@ -129,6 +132,7 @@ export const GetMatchResult = (matches: any[], activityId: string, court: number
     return b.wins - a.wins
   });
 
+  // TODO for more complex powerOfBattleChange logic
   matchResults.forEach((v: any, i: number) => {
     if (v.wins === 0) {
       v.powerOfBattleChange = 0;
@@ -160,4 +164,12 @@ export const RemoveResultsAsync = async (activityId: string, court: number) => {
   } catch (error) {
     console.log(error);
   }
+}
+
+export const GetAllResultsAsync = async () => {
+  const app = await GetCloudAsync();
+  const db = app.database();
+  const matchResults1 = await db.collection("MatchResults").skip(0).limit(100).get();
+  const matchResults2 = await db.collection("MatchResults").skip(100).limit(100).get();
+  return matchResults1.data.concat(matchResults2.data);
 }
