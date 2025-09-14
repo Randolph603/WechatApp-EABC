@@ -171,5 +171,70 @@ export const GetAllResultsAsync = async () => {
   const db = app.database();
   const matchResults1 = await db.collection("MatchResults").skip(0).limit(100).get();
   const matchResults2 = await db.collection("MatchResults").skip(100).limit(100).get();
-  return matchResults1.data.concat(matchResults2.data);
+  const results = matchResults1.data.concat(matchResults2.data);
+
+  const matchRank: any[] = [];
+  for (const result of results) {
+    const displayName = result['player'].displayName;
+    const attendeeName = result['player'].attendeeName;
+    const name = attendeeName ?? displayName;
+
+    const memberId = result['player'].memberId;
+    const joinMore = result['player'].joinMore;
+
+    const attendeeMemberId = result['player'].attendeeMemberId;
+    if (attendeeMemberId) {
+      const matchIndexByMemberId = matchRank.findIndex(item => item.memberId === attendeeMemberId);
+      if (matchIndexByMemberId >= 0) {
+        matchRank[matchIndexByMemberId].array.push(result);
+        matchRank[matchIndexByMemberId].wins += result.wins;
+        matchRank[matchIndexByMemberId].lost += result.lost;
+        matchRank[matchIndexByMemberId].powerOfBattle += result.powerOfBattleChange;
+        matchRank[matchIndexByMemberId].pointDifference += result.pointDifference;
+      } else {
+        matchRank.push({
+          // id: result._id,
+          name: name,
+          memberId: attendeeMemberId,
+          wins: result.wins,
+          lost: result.lost,
+          powerOfBattle: result.powerOfBattleChange,
+          pointDifference: result.pointDifference,
+          array: [result]
+        })
+      }
+    } else {
+      const matchIndex = matchRank.findIndex(item => item.name === name);
+      if (matchIndex >= 0) {
+        matchRank[matchIndex].array.push(result);
+        matchRank[matchIndex].wins += result.wins;
+        matchRank[matchIndex].lost += result.lost;
+        matchRank[matchIndex].powerOfBattle += result.powerOfBattleChange;
+        matchRank[matchIndex].pointDifference += result.pointDifference;
+        if (joinMore === 0) {
+          matchRank[matchIndex].memberId = memberId;
+        }
+      } else {
+        matchRank.push({
+          id: result._id,
+          name: name,
+          memberId: joinMore === 0 ? memberId : null,
+          wins: result.wins,
+          lost: result.lost,
+          powerOfBattle: result.powerOfBattleChange,
+          pointDifference: result.pointDifference,
+          array: [result]
+        })
+      }
+    }
+  }
+
+  const sortMatchRank = matchRank.sort((a, b) => {
+    if (b.powerOfBattle === a.powerOfBattle) {
+      return b.pointDifference - a.pointDifference;
+    }
+    return b.powerOfBattle - a.powerOfBattle;
+  });
+
+  return sortMatchRank;
 }

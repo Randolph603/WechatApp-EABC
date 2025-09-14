@@ -16,7 +16,7 @@
       <image mode="widthFix" src="/static/images/no_history.png"></image>
       <text>No records</text>
     </view>
-    <scroll-view wx:else class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="loalListAsync" refresher-triggered="{{triggered}}">
+    <scroll-view wx:else class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="LoadDataSource" refresher-triggered="{{triggered}}">
       <block wx:for="{{worldMS}}" wx:key="_id" wx:for-item="user">
         <view class="box view-row">
           <view class="view-row ml-20 mr-10">

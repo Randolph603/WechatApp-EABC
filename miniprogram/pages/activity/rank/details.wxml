@@ -187,10 +187,10 @@
                                 <image wx:if="{{!attendee.attendeeGender && attendee.gender > 0}}" class="icon16" src="/static/icons/{{attendee.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                                 <text class="display-name">{{attendee.attendeeName || attendee.displayName}}</text>
                               </view>
-                              <!-- <view class="view-row-centre">
-                              <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/battle.png" />
-                              <text>战力: {{attendee.currentPowerOfBattle}}</text>
-                            </view> -->
+                              <view wx:if="{{!activity.isCompleted}}" class="view-row-centre">
+                                <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/battle.png" />
+                                <text>战力: {{attendee.currentPowerOfBattle}}</text>
+                              </view>
                             </view>
                           </view>
 
@@ -260,14 +260,14 @@
                             <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
                           </view>
                           <view class="view-row">
-                            <view class="column-result-name">选手姓名</view>                            
-                            <view class="column-result">胜负场</view>                            
+                            <view class="column-result-name">选手姓名</view>
+                            <view class="column-result">胜负场</view>
                             <view class="column-result">净胜分</view>
                             <view class="column-result">战力</view>
                           </view>
                           <view class="divider-main" />
                           <view class="view-column">
-                            <view class="section-result" wx:for="{{matchResultMap[court]}}" wx:key="index" wx:for-item="result">                             
+                            <view class="section-result" wx:for="{{matchResultMap[court]}}" wx:key="index" wx:for-item="result">
                               <view class="view-row column-result-name">
                                 <image wx:if="{{result.player.attendeeGender > 0}}" class="icon16" src="/static/icons/{{result.player.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                                 <image wx:if="{{!result.player.attendeeGender && result.player.gender > 0}}" class="icon16" src="/static/icons/{{result.player.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />

@@ -1,8 +1,8 @@
 import { AddActivityAsync, AutoJoinActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, LoadAllActivitiesAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
-import { AddMatchAsync, AddMatchResultsAsync, GenerateMatch, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
+import { AddMatchAsync, AddMatchResultsAsync, GenerateMatch, GetAllResultsAsync, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
-import { ToNZDateString, ToNZTimeRangeString } from "@Lib/dateExtension";
+import { SortDate, ToNZDateString, ToNZTimeRangeString } from "@Lib/dateExtension";
 import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { ActivityModel } from "@Model/Activity";
@@ -394,7 +394,7 @@ Page({
   },
 
   clearAttendeeMemberId() {
-    this.setData({[`selectedAttendee.attendeeMemberId`]: null });
+    this.setData({ [`selectedAttendee.attendeeMemberId`]: null });
   },
 
   async onSearchAttendeeName() {
@@ -408,7 +408,7 @@ Page({
   },
 
   onCancelAttendeeNameSearch() {
-    this.setData({matchedUsersByAttendeeName: []});
+    this.setData({ matchedUsersByAttendeeName: [] });
   },
 
   onSearchAttendeeSelected(e: IOption) {
@@ -525,13 +525,37 @@ Page({
     const { section } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
     const attendeesInSection = this.data.activity.Attendees.filter((attendee: any) => attendee.sectionIndex === section.index);
-    attendeesInSection.sort((a: any, b: any) => { return a.powerOfBattle - b.powerOfBattle });
+    attendeesInSection.sort((a: any, b: any) => SortDate(a.updateDate, b.updateDate));
+    const joinedAttendeesInSection = attendeesInSection.slice(0, section.maxAttendee);
+
+    var sortMatchRank = await GetAllResultsAsync();
+    console.log(sortMatchRank);
+    joinedAttendeesInSection.forEach((att: any) => {
+      const matchIndexByAttendeeMemberId = sortMatchRank.findIndex(item => item.memberId === att.attendeeMemberId ?? 0);
+      const matchIndexByMemberId = sortMatchRank.findIndex(item => item.memberId === att.memberId && att.joinMore === 0);
+      const matchIndexByAttendeeName = sortMatchRank.findIndex(item => item.name === att.attendeeName);
+      const matchIndexByName = sortMatchRank.findIndex(item => item.name === att.displayName && att.joinMore === 0);
+
+      if (matchIndexByAttendeeMemberId >= 0) {
+        att.currentPowerOfBattle = sortMatchRank[matchIndexByAttendeeMemberId].powerOfBattle;
+      } else if (matchIndexByMemberId >= 0) {
+        att.currentPowerOfBattle = sortMatchRank[matchIndexByMemberId].powerOfBattle;
+      } else if (matchIndexByAttendeeName >= 0) {
+        att.currentPowerOfBattle = sortMatchRank[matchIndexByAttendeeName].powerOfBattle;
+      } else if (matchIndexByName >= 0) {
+        att.currentPowerOfBattle = sortMatchRank[matchIndexByName].powerOfBattle;
+      } else {
+        att.currentPowerOfBattle = 0;
+      }
+    });
+
+    joinedAttendeesInSection.sort((a: any, b: any) => { return a.currentPowerOfBattle - b.currentPowerOfBattle });
 
     const promiseList = [] as any[];
     section.courts.forEach((court: number, index: number) => {
       const start = index * 6;
       const end = start + 6;
-      attendeesInSection.slice(start, end).forEach((attendee: any) => {
+      joinedAttendeesInSection.slice(start, end).forEach((attendee: any) => {
         const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle ?? attendee.powerOfBattle, court);
         promiseList.push(promise);
       });

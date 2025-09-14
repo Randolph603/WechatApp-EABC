@@ -23,8 +23,8 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/admin/activityDetail/activityDetail",
-          "pathName": "pages/admin/activityDetail/activityDetail",
+          "name": "pages/activity/rank/details",
+          "pathName": "pages/activity/rank/details",
           "query": "id=710e54a968be547f0198b15b1c7051e8",
           "launchMode": "default",
           "scene": null
@@ -33,27 +33,6 @@
           "name": "pages/rank/rank",
           "pathName": "pages/rank/rank",
           "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/activity/rank/details",
-          "pathName": "pages/activity/rank/details",
-          "query": "id=29dca3d568742dc4053886ea2b8ee251",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/user/my/my",
-          "pathName": "pages/user/my/my",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/user/profile/profile",
-          "pathName": "pages/user/profile/profile",
-          "query": "memberId=10024",
           "launchMode": "default",
           "scene": null
         }
