@@ -186,6 +186,7 @@ export const LanguageMap: iLanguageMap = {
     adminSetting: "Admin Settings",
     // section of top up
     topUpTitle: "Bank Transfer",
+    topUpAccountName: "Name",
     topUpAccount: "Transfer",
     topUpRef: "Ref",
     topUpTip: "Please ref your member id or name, it will take 1-2 working days.",

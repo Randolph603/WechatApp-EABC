@@ -156,17 +156,19 @@ export const AttendeeMoveSectionAsync = async (activityId: string, memberId: num
 }
 
 export const UpdateAttendeeMoreAsync = async (attendeeId: string, attendeeName: string, attendeeGender: number, attendeeMemberId: number) => {
-  try {
-    await UpdateRecordAsync('Attendees',
-      { _id: attendeeId },
-      {
-        attendeeName,
-        attendeeGender,
-        attendeeMemberId
-      },
-    );
-  } catch (error) {
-    console.log(error);
+  if (attendeeId) {
+    try {
+      await UpdateRecordAsync('Attendees',
+        { _id: attendeeId },
+        {
+          attendeeName,
+          attendeeGender,
+          attendeeMemberId
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 

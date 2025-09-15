@@ -186,7 +186,8 @@ export const LanguageMap: iLanguageMap = {
     adminSetting: "管理员入口",
     // section of top up
     topUpTitle: "银行转账",
-    topUpAccount: "银行账户",
+    topUpAccountName: "银行账户名",
+    topUpAccount: "银行账户号",
     topUpRef: "备注会员号",
     topUpTip: "备注会员号或者姓名, 1-2个工作日到账",
     topUpCancel: "返回",

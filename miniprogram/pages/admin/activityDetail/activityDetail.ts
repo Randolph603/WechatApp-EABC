@@ -46,7 +46,7 @@ Page({
     matchResultMap: null as unknown as any,
     typeArray: ActivityTypeArray,
     typeMap: ActivityTypeMap,
-    courtArray: [1, 2, 3, 4, 5, 6, 7, 8],
+    courtArray: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     converPageArray: ConverPageArray,
     rules: rules,
     // Attendees page
@@ -333,9 +333,7 @@ Page({
     if (activityId) {
       await ExcuteWithProcessingAsync(async () => {
         await JoinActivityAsync(activityId, memberId, more);
-        user.joinMore = more;
-        allActiveAttendees.push(user);
-        this.generateGroupAttendees();
+        await this.ReloadActivityByIdAsync(activityId);
       }, false);
     }
   },
@@ -349,19 +347,13 @@ Page({
     const activityId = this.data.activityId;
 
     await ExcuteWithProcessingAsync(async () => {
-      let newAllActiveAttendees = [];
       if (more > 0) {
         await CancelJoinActivityAsync(activityId, memberId, more);
-        newAllActiveAttendees = allActiveAttendees
-          .filter((a: any) => !(a.memberId === memberId && a.joinMore === more));
       } else {
         await CancelJoinActivityAsync(activityId, memberId, undefined);
-        newAllActiveAttendees = allActiveAttendees
-          .filter((a: any) => a.memberId !== memberId);
       }
 
-      allActiveAttendees = newAllActiveAttendees
-      this.generateGroupAttendees();
+      await this.ReloadActivityByIdAsync(activityId);
     }, false);
   },
 
