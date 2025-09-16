@@ -20,14 +20,18 @@ Page({
       id: 'XD',
       name: '混双',
     }],
-    users: []
+    users: [],
+    worldMS: null,
+    worldWS: null,
+    worldMD: null,
+    worldWD: null,
+    worldXD: null,
   },
 
   async onLoad() {
     UpdateTabBarLaguage();
     await ExcuteWithLoadingAsync(async () => {
-      const worldMS = await LoadMSRankAsync();
-      this.setData({ worldMS });
+      await this.LoadDataSource();
     });
   },
 
@@ -44,12 +48,21 @@ Page({
 
   async onTapTab(e: any) {
     this.setData({ selectedTab: +e.currentTarget.dataset.index });
-    await this.LoadDataSource();
   },
 
   async onChange(e: any) {
-    this.setData({ selectedTab: +e.detail.current });
-    await this.LoadDataSource();
+    const selectedTab = +e.detail.current;
+    this.setData({ selectedTab: selectedTab });
+
+    const reloadData =
+      (selectedTab === 0 && !this.data.worldMS)
+      || (selectedTab === 1 && !this.data.worldWS)
+      || (selectedTab === 2 && !this.data.worldMD)
+      || (selectedTab === 3 && !this.data.worldWD)
+      || (selectedTab === 4 && !this.data.worldXD);
+    if (reloadData) {
+      await this.LoadDataSource();
+    }
   },
 
   async LoadDataSource() {
@@ -76,7 +89,8 @@ Page({
       }
       this.setData({ triggered: false });
     });
-  }
+  },
+
 
 
 })
