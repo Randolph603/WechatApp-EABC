@@ -250,7 +250,10 @@
                   </view>
                   <text class="display-name full-width">{{match.player2.attendeeName || match.player2.displayName}}</text>
                 </view>
-                VS
+                <view class="view-column-centre">
+                  <text>{{match.index}}</text>
+                  <text>VS</text>
+                </view>
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
                   <view class="view-row-centre">
@@ -272,6 +275,10 @@
                 <input type="number" data-match="{{match}}" bindblur="ChangeRightScore" value="{{match.rightScore}}" />
               </view>
             </mp-cell>
+            <mp-cell wx:if="{{courtMatchesMap[court]}}">
+              <button slot="footer" class="weui-btn" type="primary" size="mini" data-court="{{court}}" bindtap="SaveScoreByCourt">保存比分</button>
+            </mp-cell>
+
             <!-- Matches by court end-->
           </mp-cells>
         </block>
@@ -290,7 +297,8 @@
           <mp-cells wx:if="{{matchResultMap[court].length > 0}}" wx:for="{{section.courts}}" wx:key="index" wx:for-index="courtId" wx:for-item="court" title="Court {{court}}">
             <view class="view-column">
               <view class="view-row full-width">
-                <view class="column-result-name">选手姓名</view>
+                <view class="column-result-name">姓名</view>
+                <view class="column-result">级别</view>
                 <view class="column-result">胜负场</view>
                 <view class="column-result">净胜分</view>
                 <view class="column-result">战力</view>
@@ -302,6 +310,11 @@
                     <image wx:if="{{result.player.attendeeGender > 0}}" class="icon16" src="/static/icons/{{result.player.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                     <image wx:if="{{!result.player.attendeeGender && result.player.gender > 0}}" class="icon16" src="/static/icons/{{result.player.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                     <text class="display-name">{{result.player.attendeeName || result.player.displayName}}</text>
+                  </view>
+                  <view class="column-result">
+                    <text wx:if="{{result.player.currentPowerOfBattle<100}}">青铜</text>
+                    <text wx:if="{{result.player.currentPowerOfBattle>100 && result.player.currentPowerOfBattle<200 }}">白银</text>
+                    <text wx:if="{{result.player.currentPowerOfBattle>200 && result.player.currentPowerOfBattle<400 }}">黄金</text>
                   </view>
                   <view class="column-result">{{result.wins}} / {{result.lost}} </view>
                   <view class="column-result">{{result.pointDifference}}</view>

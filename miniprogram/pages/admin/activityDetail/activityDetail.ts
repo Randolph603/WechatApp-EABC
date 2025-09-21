@@ -674,21 +674,40 @@ Page({
   async ChangeLeftScore(e: IOption) {
     const newValue = Number(e.detail.value);
     const { match } = e.currentTarget.dataset;
-    const activityId = this.data.activityId;
-
-    await ExcuteWithProcessingAsync(async () => {
-      await UpdateMatchAsync(activityId, match.court, match.index, newValue, match.rightScore);
-      await this.ReloadActivityByIdAsync(activityId);
+    const matches = this.data.courtMatchesMap[match.court];
+    matches.forEach((m: any) => {
+      if (m.index === match.index) {
+        m.leftScore = newValue;
+      }
     });
+    this.setData({ [`courtMatchesMap[${match.court}]`]: matches });
   },
 
   async ChangeRightScore(e: IOption) {
     const newValue = Number(e.detail.value);
     const { match } = e.currentTarget.dataset;
+    const matches = this.data.courtMatchesMap[match.court];
+    matches.forEach((m: any) => {
+      if (m.index === match.index) {
+        m.rightScore = newValue;
+      }
+    });
+    this.setData({ [`courtMatchesMap[${match.court}]`]: matches });
+  },
+
+  async SaveScoreByCourt(e: IOption) {
+    const { court } = e.currentTarget.dataset;
+    const matches = this.data.courtMatchesMap[court];
     const activityId = this.data.activityId;
 
+    const promiseList = [] as any[];
+    for (const match of matches) {
+      const promise =  UpdateMatchAsync(activityId, match.court, match.index, match.leftScore, match.rightScore);
+      promiseList.push(promise);
+    }
+
     await ExcuteWithProcessingAsync(async () => {
-      await UpdateMatchAsync(activityId, match.court, match.index, match.leftScore, newValue);
+      await Promise.all(promiseList);
       await this.ReloadActivityByIdAsync(activityId);
     });
   },

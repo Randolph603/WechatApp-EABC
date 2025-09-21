@@ -260,7 +260,8 @@
                             <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
                           </view>
                           <view class="view-row">
-                            <view class="column-result-name">选手姓名</view>
+                            <view class="column-result-name">姓名</view>
+                            <view class="column-result">级别</view>
                             <view class="column-result">胜负场</view>
                             <view class="column-result">净胜分</view>
                             <view class="column-result">战力</view>
@@ -272,6 +273,11 @@
                                 <image wx:if="{{result.player.attendeeGender > 0}}" class="icon16" src="/static/icons/{{result.player.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                                 <image wx:if="{{!result.player.attendeeGender && result.player.gender > 0}}" class="icon16" src="/static/icons/{{result.player.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                                 <text class="display-name">{{result.player.attendeeName || result.player.displayName}}</text>
+                              </view>
+                              <view class="column-result">
+                                <text wx:if="{{result.player.currentPowerOfBattle<100}}">青铜</text>
+                                <text wx:if="{{result.player.currentPowerOfBattle>100 && result.player.currentPowerOfBattle<200 }}">白银</text>
+                                <text wx:if="{{result.player.currentPowerOfBattle>200 && result.player.currentPowerOfBattle<400 }}">黄金</text>
                               </view>
                               <view class="column-result">{{result.wins}} / {{result.lost}} </view>
                               <view class="column-result">{{result.pointDifference}}</view>

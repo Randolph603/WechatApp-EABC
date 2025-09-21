@@ -1,9 +1,14 @@
 import { LoadMDRankAsync, LoadMSRankAsync, LoadWDRankAsync, LoadWSRankAsync, LoadXDRankAsync } from "@API/bwfService";
+import { GetAllResultsAsync } from "@API/matchService";
 import { ExcuteWithLoadingAsync, UpdateTabBarLaguage } from "@Lib/utils";
+
+const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
 
 Page({
   data: {
+    showEABC: false,
     selectedTab: 0,
+
     tabList: [{
       id: 'MS',
       name: '男单',
@@ -20,12 +25,24 @@ Page({
       id: 'XD',
       name: '混双',
     }],
-    users: [],
     worldMS: null,
     worldWS: null,
     worldMD: null,
     worldWD: null,
     worldXD: null,
+
+    // EABC
+    tabs: [{
+      id: 'MS',
+      name: '综合',
+    }, {
+      id: 'WS',
+      name: '女',
+    }, {
+      id: 'MD',
+      name: '男',
+    }],
+    users: null as any,
   },
 
   async onLoad() {
@@ -35,12 +52,28 @@ Page({
     });
   },
 
-  // async loalListAsync() {
-  //   await ExcuteWithLoadingAsync(async () => {
-  //     const users = await SearchUsersForRankAsync();
-  //     this.setData({ users: users });
-  //   });
-  // },
+  async loalListAsync() {
+    await ExcuteWithLoadingAsync(async () => {
+      // const allUsers = await SearchAllUsersAsync();
+      const results: any[] = await GetAllResultsAsync();
+      const users = results.map((d, i) => {
+        // const findUser = allUsers.find(u => u.memberId === d.memberId);
+        return {
+          rank: i + 1,
+          rank_change: 0,
+          rank_previous: 0,
+          tournaments: d.array.length,
+          powerOfBattle: d.powerOfBattle,
+          points: Number(d.powerOfBattle).toLocaleString("en-US"),
+          displayName: d.name,
+          nation: "",
+          avatarUrl: defaultAvatarUrl,
+        };
+      });
+      const filterUsers = users.filter(u => u.tournaments > 1 || u.powerOfBattle > 20);
+      this.setData({ users: filterUsers });
+    });
+  },
 
   onShareAppMessage() {
 
@@ -60,7 +93,7 @@ Page({
       || (selectedTab === 2 && !this.data.worldMD)
       || (selectedTab === 3 && !this.data.worldWD)
       || (selectedTab === 4 && !this.data.worldXD);
-    if (reloadData) {
+    if (reloadData && !this.data.showEABC) {
       await this.LoadDataSource();
     }
   },
@@ -91,6 +124,11 @@ Page({
     });
   },
 
-
+  async switchChange() {
+    this.setData({ showEABC: !this.data.showEABC });
+    if (this.data.showEABC) {
+      await this.loalListAsync();
+    }
+  }
 
 })

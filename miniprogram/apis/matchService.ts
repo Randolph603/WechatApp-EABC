@@ -1,6 +1,6 @@
 import { MatchModel } from "@Model/Match";
 import { config } from "../configs/index";
-import { UpdateRecordAsync } from "./commonHelper";
+import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
 import { GetCloudAsync } from "./databaseService";
 
 export const AddMatchAsync = async (matchToAdd: MatchModel) => {
@@ -137,7 +137,16 @@ export const GetMatchResult = (matches: any[], activityId: string, court: number
     if (v.wins === 0) {
       v.powerOfBattleChange = 0;
     } else {
-      v.powerOfBattleChange = (6 - i) * 5;
+      const powerOfBattle: number = v.player.currentPowerOfBattle;
+      if (powerOfBattle < 100) { // 青铜级别，负场不扣战力，场地排序增加战力
+        v.powerOfBattleChange = (6 - i) * 5;
+      } else if (powerOfBattle < 200) { // 白银级别，胜场加战力，负场不扣战力
+        v.powerOfBattleChange = v.wins * 5
+      } else if (powerOfBattle < 400) { // 黄金级别，胜场加战力，负场扣战力
+        v.powerOfBattleChange = v.wins * 5 - v.lost * 5
+      } else { // 400 + ....
+        v.powerOfBattleChange = v.wins * 5 - v.lost * 8
+      }
     }
   });
   return matchResults;
@@ -167,11 +176,10 @@ export const RemoveResultsAsync = async (activityId: string, court: number) => {
 }
 
 export const GetAllResultsAsync = async () => {
-  const app = await GetCloudAsync();
-  const db = app.database();
-  const matchResults1 = await db.collection("MatchResults").skip(0).limit(100).get();
-  const matchResults2 = await db.collection("MatchResults").skip(100).limit(100).get();
-  const results = matchResults1.data.concat(matchResults2.data);
+  const { matchResults: results } = await CallCloudFuncAsync('eabc_match', {
+    where: { season: config.currentSeason },
+    limit: 2000,
+  });
 
   const matchRank: any[] = [];
   for (const result of results) {
