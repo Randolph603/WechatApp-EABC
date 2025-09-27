@@ -1,5 +1,5 @@
 {
-  "libVersion": "3.8.12",
+  "libVersion": "3.10.1",
   "projectname": "WechatApp-EABC",
   "setting": {
     "urlCheck": true,
@@ -22,6 +22,41 @@
   "condition": {
     "miniprogram": {
       "list": [
+        {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "id=61edec1c68d0b7c900780aa011b378d1",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
+          "name": "pages/admin/activityList/activityList",
+          "pathName": "pages/admin/activityList/activityList",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "id=61edec1c68d0b7c900780aa011b378d1",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/admin/settingList/settingList",
+          "pathName": "pages/admin/settingList/settingList",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "id=51c51eb668993c680168dfdb11616987",
+          "launchMode": "default",
+          "scene": null
+        },
         {
           "name": "pages/activity/rank/details",
           "pathName": "pages/activity/rank/details",

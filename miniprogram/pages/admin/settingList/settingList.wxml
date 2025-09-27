@@ -20,6 +20,10 @@
     <view>每周更新</view>
     <image slot="title" class="mp-cell-icon" src="/static/icons/update.png" />
   </mp-cell>
+  <mp-cell link hover bindtap="updateMatchResultWeekly">
+    <view>每周战力更新</view>
+    <image slot="title" class="mp-cell-icon" src="/static/icons/archer.png" />
+  </mp-cell>
 </mp-cells>
 
 <mp-cells title="查看">

@@ -15,14 +15,16 @@ export const AddMatchAsync = async (matchToAdd: MatchModel) => {
 }
 
 export const RemoveMatchAsync = async (activityId: string, court: number) => {
-  try {
-    const app = await GetCloudAsync();
-    const db = app.database();
-    await db.collection('Matches')
-      .where({ activityId: activityId, court: court })
-      .remove();
-  } catch (error) {
-    console.log(error);
+  if (activityId && court) {
+    try {
+      const app = await GetCloudAsync();
+      const db = app.database();
+      await db.collection('Matches')
+        .where({ activityId: activityId, court: court })
+        .remove();
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 
@@ -138,11 +140,11 @@ export const GetMatchResult = (matches: any[], activityId: string, court: number
       v.powerOfBattleChange = 0;
     } else {
       const powerOfBattle: number = v.player.currentPowerOfBattle;
-      if (powerOfBattle < 100) { // 青铜级别，负场不扣战力，场地排序增加战力
+      if (powerOfBattle <= 100) { // 青铜级别，负场不扣战力，场地排序增加战力
         v.powerOfBattleChange = (6 - i) * 5;
-      } else if (powerOfBattle < 200) { // 白银级别，胜场加战力，负场不扣战力
+      } else if (powerOfBattle <= 200) { // 白银级别，胜场加战力，负场不扣战力
         v.powerOfBattleChange = v.wins * 5
-      } else if (powerOfBattle < 400) { // 黄金级别，胜场加战力，负场扣战力
+      } else if (powerOfBattle <= 400) { // 黄金级别，胜场加战力，负场扣战力
         v.powerOfBattleChange = v.wins * 5 - v.lost * 5
       } else { // 400 + ....
         v.powerOfBattleChange = v.wins * 5 - v.lost * 8
@@ -164,14 +166,16 @@ export const AddMatchResultsAsync = async (matchResultToAdd: any) => {
 }
 
 export const RemoveResultsAsync = async (activityId: string, court: number) => {
-  try {
-    const app = await GetCloudAsync();
-    const db = app.database();
-    await db.collection('MatchResults')
-      .where({ activityId: activityId, court: court })
-      .remove();
-  } catch (error) {
-    console.log(error);
+  if (activityId && court) {
+    try {
+      const app = await GetCloudAsync();
+      const db = app.database();
+      await db.collection('MatchResults')
+        .where({ activityId: activityId, court: court })
+        .remove();
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 
@@ -245,4 +249,44 @@ export const GetAllResultsAsync = async () => {
   });
 
   return sortMatchRank;
+}
+
+export const AddMatchRankAsync = async (matchRankToAdd: any) => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    await RemoveMatchRankAsync(matchRankToAdd.weekNumber);
+    await db.collection('MatchRank').add(matchRankToAdd);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const RemoveMatchRankAsync = async (weekNumber: number) => {
+  if (weekNumber) {
+    try {
+      const app = await GetCloudAsync();
+      const db = app.database();
+      await db.collection('MatchRank')
+        .where({ weekNumber: weekNumber })
+        .remove();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+export const GetMatchRankAsync = async (weekNumber: number) => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    const result = await db.collection('MatchRank')
+      .where({ weekNumber: weekNumber })
+      .get();
+    const rank = result.data.find(d => d.weekNumber = weekNumber);
+    return rank;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
 }

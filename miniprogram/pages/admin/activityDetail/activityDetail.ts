@@ -521,12 +521,12 @@ Page({
     const joinedAttendeesInSection = attendeesInSection.slice(0, section.maxAttendee);
 
     var sortMatchRank = await GetAllResultsAsync();
-    console.log(sortMatchRank);
+
     joinedAttendeesInSection.forEach((att: any) => {
+
       const matchIndexByAttendeeMemberId = sortMatchRank.findIndex(item => item.memberId === att.attendeeMemberId ?? 0);
-      const matchIndexByMemberId = sortMatchRank.findIndex(item => item.memberId === att.memberId && att.joinMore === 0);
-      const matchIndexByAttendeeName = sortMatchRank.findIndex(item => item.name === att.attendeeName);
-      const matchIndexByName = sortMatchRank.findIndex(item => item.name === att.displayName && att.joinMore === 0);
+      const matchIndexByMemberId = sortMatchRank.findIndex(item => item.memberId === att.memberId && att.joinMore === 0 && !att.attendeeMemberId && !att.attendeeName);
+      const matchIndexByAttendeeName = sortMatchRank.findIndex(item => item.name === att.attendeeName && !att.attendeeMemberId);
 
       if (matchIndexByAttendeeMemberId >= 0) {
         att.currentPowerOfBattle = sortMatchRank[matchIndexByAttendeeMemberId].powerOfBattle;
@@ -534,14 +534,19 @@ Page({
         att.currentPowerOfBattle = sortMatchRank[matchIndexByMemberId].powerOfBattle;
       } else if (matchIndexByAttendeeName >= 0) {
         att.currentPowerOfBattle = sortMatchRank[matchIndexByAttendeeName].powerOfBattle;
-      } else if (matchIndexByName >= 0) {
-        att.currentPowerOfBattle = sortMatchRank[matchIndexByName].powerOfBattle;
       } else {
         att.currentPowerOfBattle = 0;
       }
     });
 
-    joinedAttendeesInSection.sort((a: any, b: any) => { return a.currentPowerOfBattle - b.currentPowerOfBattle });
+    joinedAttendeesInSection.sort((a: any, b: any) => {
+      const aGender = a.attendeeGender ?? a.gender;
+      const bGender = b.attendeeGender ?? b.gender;
+      if (aGender !== bGender) {
+        return aGender - bGender;
+      }
+      return a.currentPowerOfBattle - b.currentPowerOfBattle
+    });
 
     const promiseList = [] as any[];
     section.courts.forEach((court: number, index: number) => {
@@ -674,25 +679,25 @@ Page({
   async ChangeLeftScore(e: IOption) {
     const newValue = Number(e.detail.value);
     const { match } = e.currentTarget.dataset;
-    const matches = this.data.courtMatchesMap[match.court];
-    matches.forEach((m: any) => {
+    const courtMatchesMap = this.data.courtMatchesMap;
+    courtMatchesMap[match.court].forEach((m: any) => {
       if (m.index === match.index) {
         m.leftScore = newValue;
       }
     });
-    this.setData({ [`courtMatchesMap[${match.court}]`]: matches });
+    this.setData({ courtMatchesMap: courtMatchesMap });
   },
 
   async ChangeRightScore(e: IOption) {
     const newValue = Number(e.detail.value);
     const { match } = e.currentTarget.dataset;
-    const matches = this.data.courtMatchesMap[match.court];
-    matches.forEach((m: any) => {
+    const courtMatchesMap = this.data.courtMatchesMap;
+    courtMatchesMap[match.court].forEach((m: any) => {
       if (m.index === match.index) {
         m.rightScore = newValue;
       }
     });
-    this.setData({ [`courtMatchesMap[${match.court}]`]: matches });
+    this.setData({ courtMatchesMap: courtMatchesMap });
   },
 
   async SaveScoreByCourt(e: IOption) {
@@ -702,7 +707,7 @@ Page({
 
     const promiseList = [] as any[];
     for (const match of matches) {
-      const promise =  UpdateMatchAsync(activityId, match.court, match.index, match.leftScore, match.rightScore);
+      const promise = UpdateMatchAsync(activityId, match.court, match.index, match.leftScore, match.rightScore);
       promiseList.push(promise);
     }
 

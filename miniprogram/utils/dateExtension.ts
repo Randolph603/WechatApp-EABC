@@ -79,3 +79,30 @@ export const SortDateDesc = (a: string | Date, b: string | Date): number => {
   const bDataTime = ConverToDate(b);
   return aDataTime > bDataTime ? -1 : 1
 }
+
+const startOfIsoWeek = (d: Date): Date => {
+  const diff = d.getUTCDay();            // 0=Sun,1=Mon, .. 6=Sat
+  const day = new Date(Date.UTC(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate() - diff
+  ));
+  day.setUTCHours(0, 0, 0, 0);
+  day.setHours(0, 0, 0, 0);
+  return day;
+}
+
+const getWeekSpan = (start: Date, end: Date): number => {
+  const a = startOfIsoWeek(start);
+  const b = startOfIsoWeek(end);
+  const weekMs = 7 * 24 * 60 * 60 * 1000;
+  const diff = Math.floor((b.getTime() - a.getTime()) / weekMs);
+  return diff + 1;
+}
+
+export const getCurrentWeekSpan = (): number => {
+  const start = new Date(2021, 5, 13); //2021/06/13 Sun
+  const today = new Date();
+  const weeks = getWeekSpan(start, today);
+  return weeks;
+}

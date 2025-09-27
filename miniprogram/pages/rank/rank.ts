@@ -1,5 +1,6 @@
 import { LoadMDRankAsync, LoadMSRankAsync, LoadWDRankAsync, LoadWSRankAsync, LoadXDRankAsync } from "@API/bwfService";
-import { GetAllResultsAsync } from "@API/matchService";
+import { GetAllResultsAsync, GetMatchRankAsync } from "@API/matchService";
+import { getCurrentWeekSpan } from "@Lib/dateExtension";
 import { ExcuteWithLoadingAsync, UpdateTabBarLaguage } from "@Lib/utils";
 
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
@@ -54,24 +55,28 @@ Page({
 
   async loalListAsync() {
     await ExcuteWithLoadingAsync(async () => {
+      const weeks = getCurrentWeekSpan();
       // const allUsers = await SearchAllUsersAsync();
-      const results: any[] = await GetAllResultsAsync();
-      const users = results.map((d, i) => {
-        // const findUser = allUsers.find(u => u.memberId === d.memberId);
-        return {
-          rank: i + 1,
-          rank_change: 0,
-          rank_previous: 0,
-          tournaments: d.array.length,
-          powerOfBattle: d.powerOfBattle,
-          points: Number(d.powerOfBattle).toLocaleString("en-US"),
-          displayName: d.name,
-          nation: "",
-          avatarUrl: defaultAvatarUrl,
-        };
-      });
-      const filterUsers = users.filter(u => u.tournaments > 1 || u.powerOfBattle > 20);
-      this.setData({ users: filterUsers });
+      const result = await GetMatchRankAsync(weeks);
+      if (result) {
+        const users = result.generalRank.map((d, i) => {
+          // const findUser = allUsers.find(u => u.memberId === d.memberId);
+          return {
+            rank: i + 1,
+            rank_change: 0,
+            rank_previous: 0,
+            tournaments: d.array.length,
+            powerOfBattle: d.powerOfBattle,
+            points: Number(d.powerOfBattle).toLocaleString("en-US"),
+            displayName: d.name,
+            nation: "",
+            avatarUrl: defaultAvatarUrl,
+          };
+        });
+        const filterUsers = users.filter(u => u.tournaments > 1 || u.powerOfBattle > 20);
+        this.setData({ users: filterUsers });
+      }
+
     });
   },
 

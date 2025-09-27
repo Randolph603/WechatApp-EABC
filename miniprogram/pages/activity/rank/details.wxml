@@ -275,9 +275,9 @@
                                 <text class="display-name">{{result.player.attendeeName || result.player.displayName}}</text>
                               </view>
                               <view class="column-result">
-                                <text wx:if="{{result.player.currentPowerOfBattle<100}}">青铜</text>
-                                <text wx:if="{{result.player.currentPowerOfBattle>100 && result.player.currentPowerOfBattle<200 }}">白银</text>
-                                <text wx:if="{{result.player.currentPowerOfBattle>200 && result.player.currentPowerOfBattle<400 }}">黄金</text>
+                                <text wx:if="{{result.player.currentPowerOfBattle<=100}}">青铜</text>
+                                <text wx:if="{{result.player.currentPowerOfBattle>100 && result.player.currentPowerOfBattle<=200 }}">白银</text>
+                                <text wx:if="{{result.player.currentPowerOfBattle>200 && result.player.currentPowerOfBattle<=400 }}">黄金</text>
                               </view>
                               <view class="column-result">{{result.wins}} / {{result.lost}} </view>
                               <view class="column-result">{{result.pointDifference}}</view>
