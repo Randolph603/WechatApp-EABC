@@ -61,7 +61,7 @@ Page({
     await ExcuteWithLoadingAsync(async () => {
       const weeks = this.data.currentWeek;
       const allUsers = await SearchAllUsersAsync();
-      const results = await GetMatchRankAsync(weeks + 1);
+      const results = await GetMatchRankAsync(weeks);
       console.log(results);
       if (results && results.length > 1) {
         const lastWeekAll = results[0].generalRank;
