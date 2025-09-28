@@ -1,7 +1,7 @@
 <view class="top">
   <view class="title">
     <text>排行榜</text>
-    <text class="subTitle">Rank</text>
+    <text class="subTitle">{{currentWeek}}周</text>
   </view>
   <image mode="widthFix" src="/static/images/trophy.png"></image>
   <view class="view-row-centre">
@@ -19,14 +19,14 @@
   <swiper class="swiper" current="{{selectedTab}}" bindchange="onChange">
     <swiper-item>
       <scroll-view class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="LoadDataSource" refresher-triggered="{{triggered}}">
-        <view wx:if="{{users.length === 0 && users}}" class="view-column-centre">
+        <view wx:if="{{thisWeekAllData.length === 0 && thisWeekAllData}}" class="view-column-centre">
           <image mode="widthFix" src="/static/images/no_history.png"></image>
           <text>Leaderboard recalculation</text>
         </view>
-        <view wx:for="{{users}}" wx:key="_id" wx:for-item="user" class="box view-row">
+        <view wx:for="{{thisWeekAllData}}" wx:key="_id" wx:for-item="user" class="box view-row">
           <view class="view-row ml-20 mr-10">
             <view class="rank-number view-row-centre"> {{user.rank}} </view>
-            <image class="avatar" src="/static/images/blank-profile.jpg" mode="aspectFit" />
+            <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" mode="aspectFit" />
             <view class="rank-change view-row-centre">
               <view wx:if="{{user.rank_change > 0}}" class="view-row">
                 <span class="arrow-up"></span>
@@ -42,7 +42,7 @@
             </view>
           </view>
           <view class="view-column flex-grow ml-10">
-            <text class="play-name">{{user.displayName}}</text>
+            <text class="eabc-play-name">{{user.displayName}}</text>
             <text class="play-nation">{{user.nation}}</text>
           </view>
           <view class="view-column ml-10 mr-20">
@@ -53,16 +53,74 @@
       </scroll-view>
     </swiper-item>
     <swiper-item>
-      <view class="view-column-centre">
-        <image mode="widthFix" src="/static/images/no_history.png"></image>
-        <text>Coming soon...</text>
-      </view>
+      <scroll-view class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="LoadDataSource" refresher-triggered="{{triggered}}">
+        <view wx:if="{{thisWeekFemaleData.length === 0 && thisWeekFemaleData}}" class="view-column-centre">
+          <image mode="widthFix" src="/static/images/no_history.png"></image>
+          <text>Leaderboard recalculation</text>
+        </view>
+        <view wx:for="{{thisWeekFemaleData}}" wx:key="_id" wx:for-item="user" class="box view-row">
+          <view class="view-row ml-20 mr-10">
+            <view class="rank-number view-row-centre"> {{user.rank}} </view>
+            <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" mode="aspectFit" />
+            <view class="rank-change view-row-centre">
+              <view wx:if="{{user.rank_change > 0}}" class="view-row">
+                <span class="arrow-up"></span>
+                <text class="count-up">{{user.rank_change}}</text>
+              </view>
+              <view wx:if="{{user.rank_change < 0}}" class="view-row">
+                <span class="arrow-down"></span>
+                <text class="count-down">{{0-user.rank_change}}</text>
+              </view>
+              <view wx:if="{{user.rank_change === 0}}" class="view-row">
+                <text>-</text>
+              </view>
+            </view>
+          </view>
+          <view class="view-column flex-grow ml-10">
+            <text class="eabc-play-name">{{user.displayName}}</text>
+            <text class="play-nation">{{user.nation}}</text>
+          </view>
+          <view class="view-column ml-10 mr-20">
+            <text class="points">战力: {{user.points}}</text>
+            <text class="tournaments">Games: {{user.tournaments}}</text>
+          </view>
+        </view>
+      </scroll-view>
     </swiper-item>
     <swiper-item>
-      <view class="view-column-centre">
-        <image mode="widthFix" src="/static/images/no_history.png"></image>
-        <text>Coming soon...</text>
-      </view>
+      <scroll-view class="scroll view-column" scroll-y refresher-enabled bindrefresherrefresh="LoadDataSource" refresher-triggered="{{triggered}}">
+        <view wx:if="{{thisWeekMaleData.length === 0 && thisWeekMaleData}}" class="view-column-centre">
+          <image mode="widthFix" src="/static/images/no_history.png"></image>
+          <text>Leaderboard recalculation</text>
+        </view>
+        <view wx:for="{{thisWeekMaleData}}" wx:key="_id" wx:for-item="user" class="box view-row">
+          <view class="view-row ml-20 mr-10">
+            <view class="rank-number view-row-centre"> {{user.rank}} </view>
+            <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" mode="aspectFit" />
+            <view class="rank-change view-row-centre">
+              <view wx:if="{{user.rank_change > 0}}" class="view-row">
+                <span class="arrow-up"></span>
+                <text class="count-up">{{user.rank_change}}</text>
+              </view>
+              <view wx:if="{{user.rank_change < 0}}" class="view-row">
+                <span class="arrow-down"></span>
+                <text class="count-down">{{0-user.rank_change}}</text>
+              </view>
+              <view wx:if="{{user.rank_change === 0}}" class="view-row">
+                <text>-</text>
+              </view>
+            </view>
+          </view>
+          <view class="view-column flex-grow ml-10">
+            <text class="eabc-play-name">{{user.displayName}}</text>
+            <text class="play-nation">{{user.nation}}</text>
+          </view>
+          <view class="view-column ml-10 mr-20">
+            <text class="points">战力: {{user.points}}</text>
+            <text class="tournaments">Games: {{user.tournaments}}</text>
+          </view>
+        </view>
+      </scroll-view>
     </swiper-item>
   </swiper>
 </block>

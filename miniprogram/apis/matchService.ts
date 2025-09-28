@@ -186,14 +186,26 @@ export const GetAllResultsAsync = async () => {
   });
 
   const matchRank: any[] = [];
+
+  // sort for used to use +1 but no member id, later has member id
+  results.sort((a: any, b: any) => {
+    if (a['player'].attendeeMemberId && !b['player'].attendeeMemberId) {
+      return -1;
+    } else if (b['player'].attendeeMemberId && !a['player'].attendeeMemberId) {
+      return 1;
+    } else if (a['player'].memberId && !a['player'].attendeeName) {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
+
   for (const result of results) {
     const displayName = result['player'].displayName;
     const attendeeName = result['player'].attendeeName;
     const name = attendeeName ?? displayName;
-
+    const gender = result['player'].attendeeGender ?? result['player'].gender;
     const memberId = result['player'].memberId;
-    const joinMore = result['player'].joinMore;
-
     const attendeeMemberId = result['player'].attendeeMemberId;
     if (attendeeMemberId) {
       const matchIndexByMemberId = matchRank.findIndex(item => item.memberId === attendeeMemberId);
@@ -205,8 +217,8 @@ export const GetAllResultsAsync = async () => {
         matchRank[matchIndexByMemberId].pointDifference += result.pointDifference;
       } else {
         matchRank.push({
-          // id: result._id,
           name: name,
+          gender: gender,
           memberId: attendeeMemberId,
           wins: result.wins,
           lost: result.lost,
@@ -216,27 +228,47 @@ export const GetAllResultsAsync = async () => {
         })
       }
     } else {
-      const matchIndex = matchRank.findIndex(item => item.name === name);
-      if (matchIndex >= 0) {
-        matchRank[matchIndex].array.push(result);
-        matchRank[matchIndex].wins += result.wins;
-        matchRank[matchIndex].lost += result.lost;
-        matchRank[matchIndex].powerOfBattle += result.powerOfBattleChange;
-        matchRank[matchIndex].pointDifference += result.pointDifference;
-        if (joinMore === 0) {
-          matchRank[matchIndex].memberId = memberId;
+      // fix for duplicate name e.g. Lee
+      if (!attendeeName && memberId) {
+        const matchIndexByMemberId = matchRank.findIndex(item => item.memberId === memberId);
+        if (matchIndexByMemberId >= 0) {
+          matchRank[matchIndexByMemberId].array.push(result);
+          matchRank[matchIndexByMemberId].wins += result.wins;
+          matchRank[matchIndexByMemberId].lost += result.lost;
+          matchRank[matchIndexByMemberId].powerOfBattle += result.powerOfBattleChange;
+          matchRank[matchIndexByMemberId].pointDifference += result.pointDifference;
+        } else {
+          matchRank.push({
+            name: name,
+            gender: gender,
+            memberId: memberId,
+            wins: result.wins,
+            lost: result.lost,
+            powerOfBattle: result.powerOfBattleChange,
+            pointDifference: result.pointDifference,
+            array: [result]
+          })
         }
+
       } else {
-        matchRank.push({
-          id: result._id,
-          name: name,
-          memberId: joinMore === 0 ? memberId : null,
-          wins: result.wins,
-          lost: result.lost,
-          powerOfBattle: result.powerOfBattleChange,
-          pointDifference: result.pointDifference,
-          array: [result]
-        })
+        const matchIndex = matchRank.findIndex(item => item.name === name);
+        if (matchIndex >= 0) {
+          matchRank[matchIndex].array.push(result);
+          matchRank[matchIndex].wins += result.wins;
+          matchRank[matchIndex].lost += result.lost;
+          matchRank[matchIndex].powerOfBattle += result.powerOfBattleChange;
+          matchRank[matchIndex].pointDifference += result.pointDifference;
+        } else {
+          matchRank.push({
+            name: name,
+            gender: gender,
+            wins: result.wins,
+            lost: result.lost,
+            powerOfBattle: result.powerOfBattleChange,
+            pointDifference: result.pointDifference,
+            array: [result]
+          })
+        }
       }
     }
   }
@@ -280,11 +312,12 @@ export const GetMatchRankAsync = async (weekNumber: number) => {
   try {
     const app = await GetCloudAsync();
     const db = app.database();
+    const _ = db.command;
     const result = await db.collection('MatchRank')
-      .where({ weekNumber: weekNumber })
+      .where({ weekNumber: _.in([weekNumber - 1, weekNumber]) })
+      .orderBy("weekNumber", "asc")
       .get();
-    const rank = result.data.find(d => d.weekNumber = weekNumber);
-    return rank;
+    return result.data;
   } catch (error) {
     console.log(error);
     return null;

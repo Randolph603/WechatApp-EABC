@@ -25,9 +25,16 @@
         {
           "name": "pages/admin/activityDetail/activityDetail",
           "pathName": "pages/admin/activityDetail/activityDetail",
-          "query": "id=61edec1c68d0b7c900780aa011b378d1",
+          "query": "id=2ccbb81568a26133024c2bd205e7ddd6",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "id=61edec1c68d0b7c900780aa011b378d1",
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/admin/activityList/activityList",
