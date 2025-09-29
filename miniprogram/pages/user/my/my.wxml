@@ -107,7 +107,7 @@
         <text>{{_lang.topup}}</text>
       </view>
       <!-- url="/pages/user/myAccount/myAccount" -->
-      <navigator class="card-item feature" open-type="navigate">
+      <!-- <navigator class="card-item feature" open-type="navigate">
         <image class="icon24 image-disable" src="/static/icons/members.png" mode="heightFix" />
         <text>{{_lang.subAccount}}</text>
       </navigator>
@@ -126,7 +126,7 @@
       <view class="card-item feature">
         <image class="icon24 image-disable" src="/static/icons/delivery.png" mode="heightFix" />
         <text>{{_lang.order}}</text>
-      </view>
+      </view> -->
     </view>
   </view>
 
