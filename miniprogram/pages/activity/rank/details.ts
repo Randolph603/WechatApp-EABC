@@ -10,7 +10,7 @@ import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { WxShowModalAsync } from '@Lib/promisify';
 import { UserRole } from '@Lib/types';
-import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetCurrentUrl } from '@Lib/utils';
+import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetCurrentUrl, NavigateBack } from '@Lib/utils';
 import { iSection, iUser } from '@Model/index';
 
 Page({
@@ -87,7 +87,7 @@ Page({
       activityId: id
     });
     await this.ReloadAll()
-
+    // await this.UpdateSharedMessage();
   },
 
   async ReloadAll() {
@@ -200,9 +200,7 @@ Page({
   //#endregion
 
   navigateBack() {
-    wx.navigateBack({
-      delta: 0,
-    })
+    NavigateBack();
   },
 
   navigateHome() {

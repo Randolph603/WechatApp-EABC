@@ -37,6 +37,7 @@ interface iLanguageMap {
     required: string;
     save: string;
     register: string;
+    cancel: string;
     selfRatingLevelTitle: string;
   },
   creditHistory: any,

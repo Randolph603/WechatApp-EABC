@@ -41,9 +41,14 @@
     <text style="font-size: 12px; margin-left: 17px; color: rgb(167, 160, 160);">{{_lang.required}}</text>
 
     <view class="bottom-btn-area">
-      <button class="weui-btn" bindtap="submitForm">
-        {{user ? _lang.save: _lang.register}}
-      </button>
+      <view class="view-row ml-20 mr-20">
+        <button class="weui-btn" style="color: #346FC2;" type="default" size="mini" bindtap="navigateBack">
+          {{_lang.cancel}}
+        </button>
+        <button class="weui-btn" style="margin-top: 0;" size="mini" bindtap="submitForm">
+          {{user ? _lang.save: _lang.register}}
+        </button>
+      </view>
     </view>
   </mp-form>
 </scroll-view>

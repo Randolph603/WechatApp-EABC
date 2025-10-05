@@ -36,6 +36,15 @@ export const GetCurrentUrl = () => {
   return currentUrl;
 }
 
+export const NavigateBack = () => {
+  const pages = getCurrentPages();
+  if (pages.length > 1) {
+    wx.navigateBack({ delta: 1 });
+  } else {
+    wx.reLaunch({ url: '/pages/user/my/my' }); // fallback
+  }
+}
+
 export const ExcuteWithProcessingAsync = async (actionAsync: Function, showToast: boolean = true) => {
   var lang = GetLaguageMap().utils;
   try {
@@ -62,7 +71,7 @@ export const ExcuteWithLoadingAsync = async (actionAsync: Function) => {
     wx.hideLoading();
   } catch (error) {
     await HandleException('ExcuteWithLoadingAsync-FirstTimeTry-' + actionAsync.name, error);
-    
+
     // retry once
     try {
       await actionAsync();
@@ -73,6 +82,6 @@ export const ExcuteWithLoadingAsync = async (actionAsync: Function) => {
       await HandleException('ExcuteWithLoadingAsync-SecondTimeTry-' + actionAsync.name, error);
       throw error;
     }
-    throw error;  
+    throw error;
   }
 }

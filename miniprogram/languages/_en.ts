@@ -213,6 +213,7 @@ export const LanguageMap: iLanguageMap = {
     required: "* is a required option",
     save: "Save",
     register: "Register",
+    cancel: "Go back",
     selfRatingLevelTitle: "EABC羽毛球自测等级说明",
   },
   creditHistory: {

@@ -88,7 +88,7 @@ Page({
 
   register() {
     const currentUrl = GetCurrentUrl();
-    wx.redirectTo({
+    wx.navigateTo({
       url: `/pages/user/profile/profile?callbackUrl=${currentUrl}`,
     });
   },

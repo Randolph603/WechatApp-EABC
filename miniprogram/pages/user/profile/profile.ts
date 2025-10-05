@@ -2,7 +2,7 @@ import { UpdateRecordAsync } from "@API/commonHelper";
 import { GetUserByMemberId, RegisterNewUserAsync, UploadAvatarImageAsync } from "@API/userService";
 import { GetLaguageMap } from "@Language/languageUtils";
 import { LevelArray, UserGender, UserGenderArray, userSelfRatingLevelArray, userSelfRatingLevelMap } from "@Lib/types";
-import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
+import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight, NavigateBack } from "@Lib/utils";
 import { IOption } from "@Model/iOption";
 import { ProfileModel } from "@Model/User";
 
@@ -69,6 +69,10 @@ Page({
   },
 
   //#region private method
+  navigateBack() {
+    NavigateBack();
+  },
+
   onChooseAvatar(e: any) {
     const { avatarUrl } = e.detail;
     this.setData({ avatarUrl });
@@ -129,7 +133,7 @@ Page({
                 url: '/' + this.data.callbackUrl,
               })
             } else {
-              wx.navigateBack({ delta: 0 })
+              NavigateBack();
             }
           } catch (e) {
             console.log(e);

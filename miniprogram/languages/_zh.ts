@@ -213,6 +213,7 @@ export const LanguageMap: iLanguageMap = {
     required: "*为必填选项",
     save: "保 存",
     register: "注 册",
+    cancel: "返 回",
     selfRatingLevelTitle: "EABC羽毛球自测等级说明",
   },
   creditHistory: {
