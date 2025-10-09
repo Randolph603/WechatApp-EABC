@@ -20,7 +20,7 @@
               <text>{{user.displayName}} (Lv.{{user.selfRatingLevel || 0}})</text>
             </view>
             <text class="member-id"> #{{user.memberId}} / {{user.userRoleType.name}}</text>
-            <text class="member-id"> Continue: {{user.continueWeeklyJoin}}</text>
+            <text class="member-id"> Continue: {{user.continueWeeklyJoin}} / Absence: {{user.continueWeeklyAbsence}}</text>
           </view>
         </view>
         <view slot="footer">

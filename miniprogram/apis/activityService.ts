@@ -73,7 +73,7 @@ export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancell
   return { activity, courtMatchesMap, matchResultMap };
 }
 
-export const AddActivityAsync = async (activityToAdd: ActivityModel): Promise<any> => {
+export const AddActivityAsync = async (activityToAdd: ActivityModel) => {
   try {
     const app = await GetCloudAsync();
     const db = app.database();
@@ -81,7 +81,7 @@ export const AddActivityAsync = async (activityToAdd: ActivityModel): Promise<an
     return result;
   } catch (error) {
     console.log(error);
-    return null;
+    throw error;
   }
 }
 

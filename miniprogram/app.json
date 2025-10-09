@@ -4,6 +4,7 @@
     "pages/activity/list/list",
     "pages/activity/section/details",
     "pages/activity/rank/details",
+    "pages/activity/tournament/details",
     "pages/rank/rank",
     "pages/shop/shop",
     "pages/user/my/my",

@@ -18,6 +18,7 @@ export const ActivityTypeMap = {
 export const ConverPageArray = [
   'badmintonCover1.jpg',
   'badmintonCover2.jpg',
+  'badmintonCover3.jpg',
 ];
 
 const userRole = {

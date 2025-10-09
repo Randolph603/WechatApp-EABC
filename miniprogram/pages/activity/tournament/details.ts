@@ -246,11 +246,9 @@ Page({
 
     const { join_more } = event.currentTarget.dataset;
     if (this.data.myProfile.continueWeeklyJoin && this.data.myProfile.continueWeeklyJoin > 0) {
-      const continueWeeklyJoin = this.data.myProfile.continueWeeklyJoin;
-      const discount = this.data.myProfile.discount;
       const { confirm } = await WxShowModalAsync({
         title: '取消提示',
-        content: `您已经连续参加活动${continueWeeklyJoin}周次了，这次活动将有${discount} NZD折扣，取消后下次活动将不再享有折扣。`,
+        content: ``,
         cancelText: '再想想',
         confirmText: '难过取消'
       });

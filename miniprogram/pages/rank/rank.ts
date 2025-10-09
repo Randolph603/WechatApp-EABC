@@ -83,9 +83,9 @@ Page({
           .map((data: any, i: number) => mapToData(data, i));
 
         const thisWeek = results[1].generalRank;
-        const mapToDisplayData = (lastWeekData: any, data: any, i: number) => {
-          const matched = lastWeekData.find((lastWeekData: any) =>
-            lastWeekData.memberId === data.memberId
+        const mapToDisplayData = (lastWeekDataArray: any, data: any, i: number) => {
+          const matched = lastWeekDataArray.find((lastWeekData: any) =>
+            (data.memberId && lastWeekData.memberId === data.memberId)
             || (lastWeekData.gender === data.gender && lastWeekData.displayName === data.name));
           const findUser = allUsers.find((u: any) => u.memberId === data.memberId);
           return {

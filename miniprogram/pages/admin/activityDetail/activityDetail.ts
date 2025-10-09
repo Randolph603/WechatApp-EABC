@@ -285,9 +285,9 @@ Page({
             await UpdateRecordAsync('Activities', { _id: this.data.activityId }, activityToUpdate, updateDateData)
           } else {
             // new a activity
-            const { id } = await AddActivityAsync(activityToAdd);
-            if (id) {
-              this.setData({ activityId: id });
+            const result: any = await AddActivityAsync(activityToAdd);
+            if (result) {
+              this.setData({ activityId: result.id });
             }
           }
         });
