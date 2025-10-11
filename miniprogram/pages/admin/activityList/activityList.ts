@@ -36,7 +36,7 @@ Page({
 
   async loadAllActivityAsync() {
     await ExcuteWithLoadingAsync(async () => {
-      const activities = await LoadAllActivitiesAsync(100, undefined, undefined);
+      const activities = await LoadAllActivitiesAsync(30, undefined, undefined);
 
       this.setData({
         allActivity: activities,

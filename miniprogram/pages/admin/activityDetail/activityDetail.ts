@@ -523,8 +523,7 @@ Page({
     var sortMatchRank = await GetAllResultsAsync();
 
     joinedAttendeesInSection.forEach((att: any) => {
-
-      const matchIndexByAttendeeMemberId = sortMatchRank.findIndex(item => item.memberId === att.attendeeMemberId ?? 0);
+      const matchIndexByAttendeeMemberId = sortMatchRank.findIndex(item => att.attendeeMemberId && item.memberId === att.attendeeMemberId);
       const matchIndexByMemberId = sortMatchRank.findIndex(item => item.memberId === att.memberId && att.joinMore === 0 && !att.attendeeMemberId && !att.attendeeName);
       const matchIndexByAttendeeName = sortMatchRank.findIndex(item => item.name === att.attendeeName && !att.attendeeMemberId);
 

@@ -81,8 +81,8 @@ Page({
     this.setData({
       activityId: id
     });
-    await this.ReloadAll()
-
+    await this.ReloadAll();
+    // await this.UpdateSharedMessage();
   },
 
   async ReloadAll() {

@@ -93,6 +93,10 @@ export const getCurrentWeekSpan = (): number => {
   const today = new Date();
   const weeks = getWeekSpan(start, today);
 
-  const day = today.getUTCDay(); // 6=Sun,0=Mon, .. 5=Sat
-  return day === 6 ? weeks - 1 : weeks;
+  var yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayWeeks = getWeekSpan(start, yesterday);
+
+  const todayDay = today.getUTCDay(); // 6=Sun,0=Mon, .. 5=Sat
+  return todayDay === 6 ? yesterdayWeeks : weeks;
 }

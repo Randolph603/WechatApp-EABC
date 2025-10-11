@@ -38,7 +38,7 @@
               <text>{{formData.maxAttendee}}人</text>
             </mp-cell>
             <mp-cell title="封面" show-error prop="coverImage">
-              <radio-group class="view-row-evenly" bindchange="coverImageRadioChange">
+              <radio-group class="view-row-evenly flex-wrap" bindchange="coverImageRadioChange">
                 <radio wx:for="{{converPageArray}}" wx:key="index" value="{{index}}" checked="{{formData.coverImage === item}}">
                   <image class="coverImage" src="/static/images/{{item}}" mode="aspectFill" />
                 </radio>
