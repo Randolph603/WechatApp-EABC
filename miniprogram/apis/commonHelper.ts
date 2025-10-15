@@ -42,8 +42,7 @@ export const HandleException = async (functionName: string, error: any) => {
   const programInfo = `${program.envVersion} - V${program.version}`;
   const app = await GetCloudAsync();
   const db = app.database();
-  const unionId = await GetUnionIdAsync();
-  const user = await CheckUserExistsAsync();
+  const { unionId, userProfile: user } = await CheckUserExistsAsync();
   const memberId = user?.memberId ?? 0;
   const userName = user?.displayName ?? 'not register user';
 

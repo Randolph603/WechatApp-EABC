@@ -513,7 +513,7 @@ Page({
   //#endregion
 
   //#region group and match page private method
-  async GroupForSection(e: IOption) {
+  async GroupAsWDForSection(e: IOption) {
     const { section } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
     const attendeesInSection = this.data.activity.Attendees.filter((attendee: any) => attendee.sectionIndex === section.index);
@@ -552,7 +552,78 @@ Page({
       const start = index * 6;
       const end = start + 6;
       joinedAttendeesInSection.slice(start, end).forEach((attendee: any) => {
-        const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle ?? attendee.powerOfBattle, court);
+        const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
+        promiseList.push(promise);
+      });
+    });
+
+    await ExcuteWithProcessingAsync(async () => {
+      await Promise.all(promiseList);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
+  async GroupAsXDForSection(e: IOption) {
+    const { section } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+    const attendeesInSection = this.data.activity.Attendees.filter((attendee: any) => attendee.sectionIndex === section.index);
+    attendeesInSection.sort((a: any, b: any) => SortDate(a.updateDate, b.updateDate));
+    const joinedAttendeesInSection = attendeesInSection.slice(0, section.maxAttendee);
+
+    var sortMatchRank = await GetAllResultsAsync();
+
+    joinedAttendeesInSection.forEach((att: any) => {
+      const matchIndexByAttendeeMemberId = sortMatchRank.findIndex(item => att.attendeeMemberId && item.memberId === att.attendeeMemberId);
+      const matchIndexByMemberId = sortMatchRank.findIndex(item => item.memberId === att.memberId && att.joinMore === 0 && !att.attendeeMemberId && !att.attendeeName);
+      const matchIndexByAttendeeName = sortMatchRank.findIndex(item => item.name === att.attendeeName && !att.attendeeMemberId);
+
+      if (matchIndexByAttendeeMemberId >= 0) {
+        att.currentPowerOfBattle = sortMatchRank[matchIndexByAttendeeMemberId].powerOfBattle;
+      } else if (matchIndexByMemberId >= 0) {
+        att.currentPowerOfBattle = sortMatchRank[matchIndexByMemberId].powerOfBattle;
+      } else if (matchIndexByAttendeeName >= 0) {
+        att.currentPowerOfBattle = sortMatchRank[matchIndexByAttendeeName].powerOfBattle;
+      } else {
+        att.currentPowerOfBattle = 0;
+      }
+    });
+
+    var sortByCurrentPowerOfBattle = (a: any, b: any) => {
+      return a.currentPowerOfBattle - b.currentPowerOfBattle
+    };
+
+    var joinedMaleAttendees = joinedAttendeesInSection.filter((x: any) => (x.attendeeGender ?? x.gender) === 1).sort(sortByCurrentPowerOfBattle).reverse();
+
+    var joinedFemaleAttendees = joinedAttendeesInSection.filter((x: any) => (x.attendeeGender ?? x.gender) === 2).sort(sortByCurrentPowerOfBattle);
+
+    console.log(joinedMaleAttendees);
+    console.log(joinedFemaleAttendees);
+
+    const promiseList = [] as any[];
+    section.courts.forEach((court: number, index: number) => {
+      const maleStart = index * 4;
+      const maleEnd = maleStart + 4;
+      const maleEndMisMatch = maleEnd - joinedMaleAttendees.length;
+
+      const femaleStart = index * 2;
+      const femaleEnd = femaleStart + 2;
+      const femaleEndMisMatch = femaleEnd - joinedFemaleAttendees.length;
+
+      const maleRealEnd = maleEndMisMatch > 0
+        ? joinedMaleAttendees.length
+        : femaleEndMisMatch > 0 ? femaleEndMisMatch + maleEnd : maleEnd;
+
+      const femaleRealEnd = femaleEndMisMatch > 0
+        ? joinedFemaleAttendees.length
+        : maleEndMisMatch > 0 ? maleEndMisMatch + femaleEnd : femaleEnd;
+
+      joinedMaleAttendees.slice(maleStart, maleRealEnd).forEach((attendee: any) => {
+        const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
+        promiseList.push(promise);
+      });
+
+      joinedFemaleAttendees.slice(femaleStart, femaleRealEnd).forEach((attendee: any) => {
+        const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
         promiseList.push(promise);
       });
     });
@@ -569,51 +640,6 @@ Page({
 
     await ExcuteWithProcessingAsync(async () => {
       await RemoveAttendeeCourtAsync(activityId, section.index);
-      await this.ReloadActivityByIdAsync(activityId);
-    });
-  },
-
-  async CreateMatchesForSection(e: IOption) {
-    const { section } = e.currentTarget.dataset;
-    const activityId = this.data.activityId;
-
-    const promiseList = [] as any[];
-    section.courts.forEach((court: number) => {
-      const attendees = this.data.courtAttendeesMap[court];
-      if (attendees.length === 6) {
-        const match1 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 1);
-        const match2 = GenerateMatch(activityId, attendees, court, 2, 4, 3, 5, 2);
-        const match3 = GenerateMatch(activityId, attendees, court, 0, 4, 1, 5, 3);
-        const match4 = GenerateMatch(activityId, attendees, court, 0, 3, 1, 2, 4);
-        const match5 = GenerateMatch(activityId, attendees, court, 2, 5, 3, 4, 5);
-        const match6 = GenerateMatch(activityId, attendees, court, 0, 5, 1, 4, 6);
-        const matches = [match1, match2, match3, match4, match5, match6];
-
-        matches.forEach((match: any) => {
-          const promise = AddMatchAsync(new MatchModel(match));
-          promiseList.push(promise);
-        });
-      }
-    });
-
-    await ExcuteWithProcessingAsync(async () => {
-      await Promise.all(promiseList);
-      await this.ReloadActivityByIdAsync(activityId);
-    });
-  },
-
-  async RemoveMatchesForSection(e: IOption) {
-    const { section } = e.currentTarget.dataset;
-    const activityId = this.data.activityId;
-
-    const promiseList = [] as any[];
-    section.courts.forEach((court: number) => {
-      const promise = RemoveMatchAsync(activityId, court);
-      promiseList.push(promise);
-    });
-
-    await ExcuteWithProcessingAsync(async () => {
-      await Promise.all(promiseList);
       await this.ReloadActivityByIdAsync(activityId);
     });
   },

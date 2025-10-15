@@ -19,5 +19,17 @@
     "checkInvalidKey": true,
     "ignoreDevUnusedFiles": true
   },
-  "condition": {}
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "id=c075be1768ec6e3a027f08e46fc1cb93",
+          "scene": null,
+          "launchMode": "default"
+        }
+      ]
+    }
+  }
 }

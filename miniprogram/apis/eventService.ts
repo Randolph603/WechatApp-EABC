@@ -1,4 +1,5 @@
-import { GetCloudAsync } from "./databaseService";
+import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
+import { CheckUserExistsAsync } from "./userService";
 
 export const LoadAllEventsAsync = async (): Promise<any> => {
   try {
@@ -19,4 +20,23 @@ export const LoadAllEventsAsync = async (): Promise<any> => {
     console.log(error);
     return null;
   }
+}
+
+export const RecordEvent = async (eventName: string) => {
+  const { unionId, userProfile } = await CheckUserExistsAsync();
+  const memberId = userProfile?.memberId ?? 0;
+
+  if (memberId !== 10024) {
+    const app = await GetCloudAsync();
+    const db = app.database();
+
+    await db.collection('Events').add({
+      date: new Date(),
+      eventName: eventName,
+      unionId: unionId,
+      userName: userProfile?.displayName ?? 'not register user',
+      userMemberId: userProfile?.memberId ?? 0,
+    });
+  }
+
 }

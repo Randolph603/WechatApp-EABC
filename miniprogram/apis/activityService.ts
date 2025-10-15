@@ -183,8 +183,7 @@ export const ConfrimActivityAsync = async (activityId: string, confirmToBeUsers:
   return updatedCount;
 }
 
-export const UpdateAttendeeCourtAsync = async (activityId: string, memberId: number, joinMore: number,
-  powerOfBattle: number, court: number) => {
+export const UpdateAttendeeCourtAsync = async (activityId: string, memberId: number, joinMore: number, powerOfBattle: number, court: number) => {
   try {
     await UpdateRecordAsync('Attendees',
       { activityId: activityId, memberId: memberId, joinMore: joinMore },

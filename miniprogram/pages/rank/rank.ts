@@ -1,6 +1,7 @@
 import { LoadMDRankAsync, LoadMSRankAsync, LoadWDRankAsync, LoadWSRankAsync, LoadXDRankAsync } from "@API/bwfService";
+import { RecordEvent } from "@API/eventService";
 import { GetMatchRankAsync } from "@API/matchService";
-import { SearchAllUsersAsync } from "@API/userService";
+import { CheckUserExistsAsync, SearchAllUsersAsync } from "@API/userService";
 import { getCurrentWeekSpan } from "@Lib/dateExtension";
 import { ExcuteWithLoadingAsync, UpdateTabBarLaguage } from "@Lib/utils";
 
@@ -58,63 +59,63 @@ Page({
   },
 
   async loalListAsync() {
-    await ExcuteWithLoadingAsync(async () => {
-      const weeks = this.data.currentWeek;
-      const allUsers = await SearchAllUsersAsync();
-      const results = await GetMatchRankAsync(weeks);
-      if (results && results.length > 1) {
-        const lastWeekAll = results[0].generalRank;
-        const mapToData = (data: any, i: number) => {
-          return {
-            rank: i + 1,
-            memberId: data.memberId,
-            displayName: data.name,
-            gender: data.gender,
-            tournaments: data.array.length,
-            powerOfBattle: data.powerOfBattle,
-            pointDifference: data.pointDifference,
-          }
-        };
 
-        const lastWeekAllData = lastWeekAll.map((data: any, i: number) => mapToData(data, i));
-        const lastWeekMaleData = lastWeekAll.filter((u: any) => u.gender === 1)
-          .map((data: any, i: number) => mapToData(data, i));
-        const lastWeekFemaleData = lastWeekAll.filter((u: any) => u.gender === 2)
-          .map((data: any, i: number) => mapToData(data, i));
+    const weeks = this.data.currentWeek;
+    const allUsers = await SearchAllUsersAsync();
+    const results = await GetMatchRankAsync(weeks);
+    if (results && results.length > 1) {
+      const lastWeekAll = results[0].generalRank;
+      const mapToData = (data: any, i: number) => {
+        return {
+          rank: i + 1,
+          memberId: data.memberId,
+          displayName: data.name,
+          gender: data.gender,
+          tournaments: data.array.length,
+          powerOfBattle: data.powerOfBattle,
+          pointDifference: data.pointDifference,
+        }
+      };
 
-        const thisWeek = results[1].generalRank;
-        const mapToDisplayData = (lastWeekDataArray: any, data: any, i: number) => {
-          const matched = lastWeekDataArray.find((lastWeekData: any) =>
-            (data.memberId && lastWeekData.memberId === data.memberId)
-            || (lastWeekData.gender === data.gender && lastWeekData.displayName === data.name));
-          const findUser = allUsers.find((u: any) => u.memberId === data.memberId);
-          return {
-            rank: i + 1,
-            rank_change: matched ? matched.rank - (i + 1) : 0,
-            rank_previous: matched ? matched.rank : 0,
-            memberId: data.memberId,
-            displayName: data.name,
-            gender: data.gender,
-            tournaments: data.array.length,
-            tournaments_change: matched ? data.array.length - matched.tournaments : 0,
-            powerOfBattle: data.powerOfBattle,
-            powerOfBattle_change: matched ? data.powerOfBattle - matched.powerOfBattle : 0,
-            points: Number(data.powerOfBattle).toLocaleString("en-US"),
-            pointDifference: data.pointDifference,
-            avatarUrl: findUser ? findUser.avatarUrl : defaultAvatarUrl,
-          }
-        };
-        const thisWeekAllData = thisWeek.map((data: any, i: number) => mapToDisplayData(lastWeekAllData, data, i));
-        const thisWeekMaleData = thisWeek.filter((u: any) => u.gender === 1).map((data: any, i: number) => mapToDisplayData(lastWeekMaleData, data, i));
-        const thisWeekFemaleData = thisWeek.filter((u: any) => u.gender === 2).map((data: any, i: number) => mapToDisplayData(lastWeekFemaleData, data, i));
+      const lastWeekAllData = lastWeekAll.map((data: any, i: number) => mapToData(data, i));
+      const lastWeekMaleData = lastWeekAll.filter((u: any) => u.gender === 1)
+        .map((data: any, i: number) => mapToData(data, i));
+      const lastWeekFemaleData = lastWeekAll.filter((u: any) => u.gender === 2)
+        .map((data: any, i: number) => mapToData(data, i));
 
-        this.setData({
-          thisWeekAllData: thisWeekAllData.slice(0, 20),
-          thisWeekMaleData: thisWeekMaleData.slice(0, 20),
-          thisWeekFemaleData: thisWeekFemaleData.slice(0, 20)
-        });
-      }
-    });
+      const thisWeek = results[1].generalRank;
+      const mapToDisplayData = (lastWeekDataArray: any, data: any, i: number) => {
+        const matched = lastWeekDataArray.find((lastWeekData: any) =>
+          (data.memberId && lastWeekData.memberId === data.memberId)
+          || (lastWeekData.gender === data.gender && lastWeekData.displayName === data.name));
+        const findUser = allUsers.find((u: any) => u.memberId === data.memberId);
+        return {
+          rank: i + 1,
+          rank_change: matched ? matched.rank - (i + 1) : 0,
+          rank_previous: matched ? matched.rank : 0,
+          memberId: data.memberId,
+          displayName: data.name,
+          gender: data.gender,
+          tournaments: data.array.length,
+          tournaments_change: matched ? data.array.length - matched.tournaments : 0,
+          powerOfBattle: data.powerOfBattle,
+          powerOfBattle_change: matched ? data.powerOfBattle - matched.powerOfBattle : 0,
+          points: Number(data.powerOfBattle).toLocaleString("en-US"),
+          pointDifference: data.pointDifference,
+          avatarUrl: findUser ? findUser.avatarUrl : defaultAvatarUrl,
+        }
+      };
+      const thisWeekAllData = thisWeek.map((data: any, i: number) => mapToDisplayData(lastWeekAllData, data, i));
+      const thisWeekMaleData = thisWeek.filter((u: any) => u.gender === 1).map((data: any, i: number) => mapToDisplayData(lastWeekMaleData, data, i));
+      const thisWeekFemaleData = thisWeek.filter((u: any) => u.gender === 2).map((data: any, i: number) => mapToDisplayData(lastWeekFemaleData, data, i));
+
+      this.setData({
+        thisWeekAllData: thisWeekAllData.slice(0, 20),
+        thisWeekMaleData: thisWeekMaleData.slice(0, 20),
+        thisWeekFemaleData: thisWeekFemaleData.slice(0, 20)
+      });
+    }
+
   },
 
   onShareAppMessage() {
@@ -169,7 +170,10 @@ Page({
   async switchChange() {
     this.setData({ showEABC: !this.data.showEABC });
     if (this.data.showEABC) {
-      await this.loalListAsync();
+      await ExcuteWithLoadingAsync(async () => {
+        await RecordEvent('Show EABC Ranking');
+        await this.loalListAsync();
+      });
     }
   }
 

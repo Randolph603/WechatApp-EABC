@@ -107,7 +107,7 @@ Page({
   //#region private method
   // LoadMe first of all
   async LoadMe() {
-    const myProfile = await CheckUserExistsAsync();
+    const { userProfile: myProfile } = await CheckUserExistsAsync();
     if (myProfile) {
       this.setData({
         myProfile: myProfile,

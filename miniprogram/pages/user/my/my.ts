@@ -65,7 +65,7 @@ Page({
 
   //#region private method
   async LoadUser() {
-    const myProfile = await CheckUserExistsAsync();
+    const { userProfile: myProfile } = await CheckUserExistsAsync();
     if (myProfile) {
       const index = Math.floor(Math.random() * Mottos.length);
       this.setData({

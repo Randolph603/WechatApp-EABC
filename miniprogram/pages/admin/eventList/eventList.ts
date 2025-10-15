@@ -1,6 +1,6 @@
 import { LoadAllEventsAsync } from "@API/eventService";
 import { GetLaguageMap } from "@Language/languageUtils";
-import { ToNZDateString, ToNZTimeString } from "@Lib/dateExtension";
+import { ToDayOfWeekString, ToNZDateString, ToNZShortDateString, ToNZTimeString } from "@Lib/dateExtension";
 import { ExcuteWithLoadingAsync } from "@Lib/utils";
 
 Page({
@@ -17,6 +17,9 @@ Page({
     await ExcuteWithLoadingAsync(async () => {
       const list = await LoadAllEventsAsync();
       list.forEach((item: any) => {
+        item.event = item.eventDate
+          ? `${ToNZShortDateString(item.eventDate)} (${ToDayOfWeekString(item.eventDate)})`
+          : '';
         item.dateForDisplay = `${ToNZDateString(item.date)} ${ToNZTimeString(item.date)}`;
       });
 

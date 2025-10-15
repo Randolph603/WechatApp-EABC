@@ -31,7 +31,10 @@ export const CheckUserExistsAsync = async () => {
   if (user) {
     SetupUserTypes(user);
   }
-  return config.mockNewUser ? null : user;
+  return {
+    unionId: unionId,
+    userProfile: config.mockNewUser ? null : user
+  };
 }
 
 export const GetUserByMemberId = async (memberId: number) => {
