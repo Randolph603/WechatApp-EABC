@@ -596,9 +596,6 @@ Page({
 
     var joinedFemaleAttendees = joinedAttendeesInSection.filter((x: any) => (x.attendeeGender ?? x.gender) === 2).sort(sortByCurrentPowerOfBattle);
 
-    console.log(joinedMaleAttendees);
-    console.log(joinedFemaleAttendees);
-
     const promiseList = [] as any[];
     section.courts.forEach((court: number, index: number) => {
       const maleStart = index * 4;
