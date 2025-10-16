@@ -12,11 +12,13 @@
     "pages/user/profile/profile",
     "pages/user/creditHistory/creditHistory",
     "pages/admin/settingList/settingList",
-    "pages/admin/activityDetail/activityDetail",
     "pages/admin/activityList/activityList",
+    "pages/admin/activityDetail/activityDetail",
     "pages/admin/userList/userList",
     "pages/admin/userDetail/userDetail",
-    "pages/admin/eventList/eventList"
+    "pages/admin/eventList/eventList",
+    "pages/admin/tournament/list/list",
+    "pages/admin/tournament/detail/detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

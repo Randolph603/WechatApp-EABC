@@ -1,0 +1,14 @@
+<mp-navigation-bar title='所有比赛 ({{allActivity.length}})' back="{{true}}" />
+
+<scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loadAllActivityAsync" refresher-triggered="{{triggered}}">
+  <mp-cells>
+    <block wx:for="{{allActivity}}" wx:key="_id" wx:for-item="activity">
+      <mp-cell link hover url="/pages/admin/tournament/Detail/activityDetail?id={{activity._id}}">
+        <view style="font-size: small;" class="view-column">
+          <text>{{activity.title}}</text>
+          <text>{{activity.date}}</text>
+        </view>
+      </mp-cell>
+    </block>
+  </mp-cells>
+</scroll-view>

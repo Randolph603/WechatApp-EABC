@@ -9,6 +9,10 @@
     <view>活动信息</view>
     <image slot="title" class="mp-cell-icon" src="/static/icons/activity.png" />
   </mp-cell>
+  <mp-cell link hover url='/pages/admin/tournament/list/list'>
+    <view>比赛信息</view>
+    <image slot="title" class="mp-cell-icon" src="/static/icons/trophy.png" />
+  </mp-cell>
   <mp-cell link hover url='/pages/admin/activityDetail/activityDetail'>
     <view>添加活动</view>
     <image slot="title" class="mp-cell-icon" src="/static/icons/add.png" />
