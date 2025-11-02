@@ -1,7 +1,41 @@
+import { MatchResultType } from "@Lib/types";
 import { MatchModel } from "@Model/Match";
 import { config } from "../configs/index";
 import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
 import { GetCloudAsync } from "./databaseService";
+
+// table of Matches
+export const GenerateMatch = (activityId: string, attendees: any[], court: number, index1: number, index2: number, index3: number, index4: number, index: number) => {
+  const playerList = attendees.map(a => {
+    return {
+      attendeeId: a.attendeeId,
+      memberId: a.memberId,
+      avatarUrl: a.avatarUrl,
+      displayName: a.displayName,
+      gender: a.gender,
+      joinMore: a.joinMore,
+      currentPowerOfBattle: a.currentPowerOfBattle,
+      attendeeName: a.attendeeName,
+      attendeeGender: a.attendeeGender,
+      attendeeMemberId: a.attendeeMemberId,
+    }
+  });
+  const leftGender = (playerList[index1].attendeeGender || playerList[index1].gender) + (playerList[index2].attendeeGender || playerList[index2].gender);
+  const rightGender = (playerList[index3].attendeeGender || playerList[index3].gender) + (playerList[index4].attendeeGender || playerList[index4].gender);
+  const misMatch = leftGender - rightGender;
+  const match = {
+    index: index,
+    activityId: activityId,
+    court: court,
+    player1: playerList[index1],
+    player2: playerList[index2],
+    leftScore: misMatch > 0 ? misMatch * 3 : 0,
+    player3: playerList[index3],
+    player4: playerList[index4],
+    rightScore: misMatch < 0 ? (-misMatch) * 3 : 0,
+  };
+  return match;
+}
 
 export const AddMatchAsync = async (matchToAdd: MatchModel) => {
   try {
@@ -39,38 +73,7 @@ export const UpdateMatchAsync = async (activityId: string, court: number, index:
   }
 }
 
-export const GenerateMatch = (activityId: string, attendees: any[], court: number, index1: number, index2: number, index3: number, index4: number, index: number) => {
-  const playerList = attendees.map(a => {
-    return {
-      attendeeId: a.attendeeId,
-      memberId: a.memberId,
-      avatarUrl: a.avatarUrl,
-      displayName: a.displayName,
-      gender: a.gender,
-      joinMore: a.joinMore,
-      currentPowerOfBattle: a.currentPowerOfBattle,
-      attendeeName: a.attendeeName,
-      attendeeGender: a.attendeeGender,
-      attendeeMemberId: a.attendeeMemberId,
-    }
-  });
-  const leftGender = (playerList[index1].attendeeGender || playerList[index1].gender) + (playerList[index2].attendeeGender || playerList[index2].gender);
-  const rightGender = (playerList[index3].attendeeGender || playerList[index3].gender) + (playerList[index4].attendeeGender || playerList[index4].gender);
-  const misMatch = leftGender - rightGender;
-  const match = {
-    index: index,
-    activityId: activityId,
-    court: court,
-    player1: playerList[index1],
-    player2: playerList[index2],
-    leftScore: misMatch > 0 ? misMatch * 3 : 0,
-    player3: playerList[index3],
-    player4: playerList[index4],
-    rightScore: misMatch < 0 ? (-misMatch) * 3 : 0,
-  };
-  return match;
-}
-
+// table of MatchResults
 export const GetMatchResult = (matches: any[], activityId: string, court: number,) => {
   const matchResults: any[] = [];
   for (const match of matches) {
@@ -87,7 +90,8 @@ export const GetMatchResult = (matches: any[], activityId: string, court: number
           lost: 0,
           pointDifference: 0,
           powerOfBattleChange: 0,
-          season: config.currentSeason
+          season: config.currentSeason,
+          type: MatchResultType.SoloDouble.value
         };
         matchResults.push(result);
       }
@@ -134,6 +138,7 @@ export const GetMatchResult = (matches: any[], activityId: string, court: number
     return b.wins - a.wins
   });
 
+  let lastResult: any = null;
   // TODO for more complex powerOfBattleChange logic
   matchResults.forEach((v: any, i: number) => {
     if (v.wins === 0) {
@@ -149,6 +154,12 @@ export const GetMatchResult = (matches: any[], activityId: string, court: number
       } else { // 400 + ....
         v.powerOfBattleChange = v.wins * 5 - v.lost * 8
       }
+
+      // for fixed couplex to make sure they get same powerOfBattleChange
+      if (lastResult && lastResult.pointDifference === v.pointDifference) {
+        v.powerOfBattleChange = lastResult.powerOfBattleChange;
+      }
+      lastResult = v;
     }
   });
   return matchResults;
@@ -181,7 +192,7 @@ export const RemoveResultsAsync = async (activityId: string, court: number) => {
 
 export const GetAllResultsAsync = async () => {
   const { matchResults: results } = await CallCloudFuncAsync('eabc_match', {
-    where: { season: config.currentSeason },
+    where: { season: config.currentSeason, type: MatchResultType.SoloDouble.value },
     limit: 2000,
   });
 
@@ -282,6 +293,8 @@ export const GetAllResultsAsync = async () => {
 
   return sortMatchRank;
 }
+
+// table of MatchRank
 
 export const AddMatchRankAsync = async (matchRankToAdd: any) => {
   try {

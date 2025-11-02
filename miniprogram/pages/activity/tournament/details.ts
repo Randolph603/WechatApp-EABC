@@ -122,29 +122,41 @@ Page({
     const id = this.data.activityId;
     if (id.length > 0) {
       const { activity, courtMatchesMap, matchResultMap } = await LoadActivityAndMatchesByIdAsync(id, true, recordEvent);
-      const allJoinedAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
-      const allCancelledAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
+      const allJoinedAttendees = activity.Attendees.filter((a: any) => a.isCancelled === false);
+      const allCancelledAttendees = activity.Attendees.filter((a: any) => a.isCancelled === true);
 
-      const allSections: Array<any> = [];
-      if (activity.sections) {
-        activity.sections.forEach((s: iSection) => {
-          const sectionAttendees = allJoinedAttendees.filter((a: { sectionIndex: number; }) => (a.sectionIndex ?? 0) === s.index);
+      const captainMemberIds = allJoinedAttendees
+        .filter((a: any) => a.captainMemberId)
+        .map((a: any) => a.captainMemberId);
+      console.log(captainMemberIds);
 
-          const courtAttendeesMap: any = {};
-          s.courts.forEach(court => {
-            courtAttendeesMap[court] = activity.Attendees
-              .filter((a: any) => a.court === court)
-              .sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
-          });
+      const teams = [];
+      for (const captainMemberId of captainMemberIds) {
+        const captain = allJoinedAttendees
+          .find((a: any) => a.memberId === captainMemberId);
+        const members = allJoinedAttendees
+          .filter((a: any) => a.captainMemberId === captainMemberId);
+        const players = [captain].concat(members);
 
-          allSections.push({
-            info: s,
-            attendees: sectionAttendees.slice(0, s.maxAttendee),
-            onWaitAttendees: sectionAttendees.slice(s.maxAttendee, sectionAttendees.length),
-            courtAttendeesMap
-          });
+        const totalPowerPoint = players.reduce((accumulator, current) => {
+          const powerPoint = (current.joinMore > 0 && !current.attendeeMemberId) ? 0 : (current.powerPoint ?? 0);
+          return accumulator + powerPoint;
+        }, 0);
+
+        teams.push({
+          captain: captain,
+          players: players,
+          totalPowerPoint: totalPowerPoint
         });
       }
+      teams.sort((a: any, b: any) => b.totalPowerPoint - a.totalPowerPoint)
+
+      const maxAttendeeGroup = activity.sections[0].maxAttendee / 2;
+      const joinedTeams = teams.slice(0, maxAttendeeGroup - 1);
+      const waitingTeams = teams.slice(maxAttendeeGroup - 1);
+
+      const soloMembers = allJoinedAttendees
+        .filter((a: any) => !captainMemberIds.includes(a.captainMemberId) && !captainMemberIds.includes(a.memberId));
 
       const attendTitle = GetAttendTitle(allJoinedAttendees.length, activity.maxAttendee);
 
@@ -158,7 +170,9 @@ Page({
       this.setData({
         attendTitle,
         activity,
-        allSections,
+        joinedTeams,
+        waitingTeams,
+        soloMembers,
         allJoinedAttendeesCount: allJoinedAttendees.length,
         allCancelledAttendees,
         courtMatchesMap,

@@ -161,9 +161,25 @@ export const UpdateAttendeeMoreAsync = async (attendeeId: string, attendeeName: 
       await UpdateRecordAsync('Attendees',
         { _id: attendeeId },
         {
-          attendeeName,
-          attendeeGender,
-          attendeeMemberId
+          attendeeName, // if attendeeName is undefined, will not add this feild
+          attendeeGender, // if attendeeGender is undefined, will not add this feild
+          attendeeMemberId // if attendeeMemberId is undefined, will not add this feild
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+export const UpdateAttendeeCaptainAsync = async (attendeeId: string, captainName: string, captainMemberId: number) => {
+  if (attendeeId) {
+    try {
+      await UpdateRecordAsync('Attendees',
+        { _id: attendeeId },
+        {
+          captainName, // if captainName is undefined, will not add this feild
+          captainMemberId // if captainMemberId is undefined, will not add this feild
         },
       );
     } catch (error) {
@@ -194,10 +210,10 @@ export const UpdateAttendeeCourtAsync = async (activityId: string, memberId: num
   }
 }
 
-export const RemoveAttendeeCourtAsync = async (activityId: string, sectionIndex: number) => {
+export const RemoveAttendeeCourtAsync = async (activityId: string) => {
   try {
     await RemoveFieldsAsync('Attendees',
-      { activityId: activityId, sectionIndex: sectionIndex },
+      { activityId: activityId },
       ['court']
     );
   } catch (error) {

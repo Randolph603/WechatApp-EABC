@@ -203,7 +203,7 @@
 
                 <button class="mr-10" type="primary" size="mini" data-section="{{section}}" bindtap="GroupAsXDForSection">混双分组</button>
 
-                <button slot="footer" class="mr-10" type="warn" size="mini" data-section="{{section}}" bindtap="DegroupForSection">去分组</button>
+                <button slot="footer" class="mr-10" type="warn" size="mini" bindtap="DegroupForSection">去分组</button>
               </view>
             </mp-cell>
           </mp-cells>
@@ -211,8 +211,10 @@
             <!-- Group by court -->
             <mp-cell wx:if="{{courtAttendeesMap[court].length > 0}}" title="操作">
               <view slot="footer">
-                <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourt">创建排场</button>
-                <button type="warn" size="mini" data-court="{{court}}" bindtap="RemoveMatchesForCourt">取消排场</button>
+                <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourt">排场</button>
+                <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith3FixedCouple">3固搭</button>
+                <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith1FixedCouple">1固搭</button>
+                <button type="warn" size="mini" data-court="{{court}}" bindtap="RemoveMatchesForCourt">排场</button>
               </view>
             </mp-cell>
             <mp-cell>
@@ -355,7 +357,6 @@
       <view wx:else slot="footer" bindtap="onCancelAttendeeNameSearch">
         <image class="icon24" src="/static/icons/close.png" mode="heightFix" />
       </view>
-
     </mp-cell>
     <!-- Search matched users -->
     <mp-cell wx:for="{{matchedUsersByAttendeeName}}" wx:key="attendeeId" wx:for-item="user">

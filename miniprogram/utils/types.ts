@@ -55,3 +55,11 @@ const userGender = {
 };
 export const UserGender = userGender;
 export const UserGenderArray = [userGender.Unknown, userGender.Male, userGender.Female];
+
+const matchResultType = {
+  SoloSingle: { index: 0, value: 'SoloSingle' },
+  SoloDouble: { index: 1, value: 'SoloDouble' },
+  FixedDouble: { index: 2, value: 'FixedDouble' },
+  TournamentDouble: { index: 3, value: 'TournamentDouble' },
+};
+export const MatchResultType = matchResultType;

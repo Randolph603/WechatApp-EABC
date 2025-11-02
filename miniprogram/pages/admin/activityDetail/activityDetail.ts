@@ -1,8 +1,8 @@
 import { AddActivityAsync, AutoJoinActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, LoadAllActivitiesAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
-import { AddMatchAsync, AddMatchResultsAsync, GenerateMatch, GetAllResultsAsync, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
+import { AddMatchAsync, AddMatchResultsAsync, GenerateMatch, GetMatchRankAsync, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
-import { SortDate, ToNZDateString, ToNZTimeRangeString } from "@Lib/dateExtension";
+import { getCurrentWeekSpan, SortDate, ToNZDateString, ToNZTimeRangeString } from "@Lib/dateExtension";
 import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { ActivityModel } from "@Model/Activity";
@@ -484,6 +484,7 @@ Page({
 
         let charge = 0;
         let useDiscount = true;
+        let attendeeMemberIds: any[] = [];
         attendeeList.forEach((a: any) => {
           const section = sections[a.sectionIndex];
           let actualDiscount = section.useDiscount === true ? discount : 0;
@@ -493,6 +494,10 @@ Page({
           }
           charge = charge + price;
           useDiscount = useDiscount && section.useDiscount
+
+          if (a.attendeeMemberId) {
+            attendeeMemberIds.push(a.attendeeMemberId);
+          }
         });
 
         return {
@@ -500,6 +505,7 @@ Page({
           count: attendeeList.length - 1,
           discount: useDiscount === true ? discount : 0,
           charge: charge,
+          attendeeMemberIds: attendeeMemberIds
         };
       })
       .filter(a => a !== undefined && a !== null);
@@ -513,14 +519,16 @@ Page({
   //#endregion
 
   //#region group and match page private method
-  async GroupAsWDForSection(e: IOption) {
-    const { section } = e.currentTarget.dataset;
-    const activityId = this.data.activityId;
+  async GetAttendeesInSection(section: any) {
     const attendeesInSection = this.data.activity.Attendees.filter((attendee: any) => attendee.sectionIndex === section.index);
     attendeesInSection.sort((a: any, b: any) => SortDate(a.updateDate, b.updateDate));
     const joinedAttendeesInSection = attendeesInSection.slice(0, section.maxAttendee);
 
-    var sortMatchRank = await GetAllResultsAsync();
+    const weeks = getCurrentWeekSpan();
+    const results = await GetMatchRankAsync(weeks);
+    var sortMatchRank: any[] = (results && results.length > 1)
+      ? results[1].generalRank
+      : [];
 
     joinedAttendeesInSection.forEach((att: any) => {
       const matchIndexByAttendeeMemberId = sortMatchRank.findIndex(item => att.attendeeMemberId && item.memberId === att.attendeeMemberId);
@@ -538,26 +546,35 @@ Page({
       }
     });
 
-    joinedAttendeesInSection.sort((a: any, b: any) => {
-      const aGender = a.attendeeGender ?? a.gender;
-      const bGender = b.attendeeGender ?? b.gender;
-      if (aGender !== bGender) {
-        return aGender - bGender;
-      }
-      return a.currentPowerOfBattle - b.currentPowerOfBattle
-    });
+    return joinedAttendeesInSection;
+  },
 
-    const promiseList = [] as any[];
-    section.courts.forEach((court: number, index: number) => {
-      const start = index * 6;
-      const end = start + 6;
-      joinedAttendeesInSection.slice(start, end).forEach((attendee: any) => {
-        const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
-        promiseList.push(promise);
-      });
-    });
+  async GroupAsWDForSection(e: IOption) {
+    const { section } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
 
     await ExcuteWithProcessingAsync(async () => {
+      const joinedAttendeesInSection = await this.GetAttendeesInSection(section);
+
+      joinedAttendeesInSection.sort((a: any, b: any) => {
+        const aGender = a.attendeeGender ?? a.gender;
+        const bGender = b.attendeeGender ?? b.gender;
+        if (aGender !== bGender) {
+          return aGender - bGender;
+        }
+        return a.currentPowerOfBattle - b.currentPowerOfBattle
+      });
+
+      const promiseList = [] as any[];
+      section.courts.forEach((court: number, index: number) => {
+        const start = index * 6;
+        const end = start + 6;
+        joinedAttendeesInSection.slice(start, end).forEach((attendee: any) => {
+          const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
+          promiseList.push(promise);
+        });
+      });
+
       await Promise.all(promiseList);
       await this.ReloadActivityByIdAsync(activityId);
     });
@@ -566,77 +583,53 @@ Page({
   async GroupAsXDForSection(e: IOption) {
     const { section } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
-    const attendeesInSection = this.data.activity.Attendees.filter((attendee: any) => attendee.sectionIndex === section.index);
-    attendeesInSection.sort((a: any, b: any) => SortDate(a.updateDate, b.updateDate));
-    const joinedAttendeesInSection = attendeesInSection.slice(0, section.maxAttendee);
-
-    var sortMatchRank = await GetAllResultsAsync();
-
-    joinedAttendeesInSection.forEach((att: any) => {
-      const matchIndexByAttendeeMemberId = sortMatchRank.findIndex(item => att.attendeeMemberId && item.memberId === att.attendeeMemberId);
-      const matchIndexByMemberId = sortMatchRank.findIndex(item => item.memberId === att.memberId && att.joinMore === 0 && !att.attendeeMemberId && !att.attendeeName);
-      const matchIndexByAttendeeName = sortMatchRank.findIndex(item => item.name === att.attendeeName && !att.attendeeMemberId);
-
-      if (matchIndexByAttendeeMemberId >= 0) {
-        att.currentPowerOfBattle = sortMatchRank[matchIndexByAttendeeMemberId].powerOfBattle;
-      } else if (matchIndexByMemberId >= 0) {
-        att.currentPowerOfBattle = sortMatchRank[matchIndexByMemberId].powerOfBattle;
-      } else if (matchIndexByAttendeeName >= 0) {
-        att.currentPowerOfBattle = sortMatchRank[matchIndexByAttendeeName].powerOfBattle;
-      } else {
-        att.currentPowerOfBattle = 0;
-      }
-    });
-
-    var sortByCurrentPowerOfBattle = (a: any, b: any) => {
-      return a.currentPowerOfBattle - b.currentPowerOfBattle
-    };
-
-    var joinedMaleAttendees = joinedAttendeesInSection.filter((x: any) => (x.attendeeGender ?? x.gender) === 1).sort(sortByCurrentPowerOfBattle).reverse();
-
-    var joinedFemaleAttendees = joinedAttendeesInSection.filter((x: any) => (x.attendeeGender ?? x.gender) === 2).sort(sortByCurrentPowerOfBattle);
-
-    const promiseList = [] as any[];
-    section.courts.forEach((court: number, index: number) => {
-      const maleStart = index * 4;
-      const maleEnd = maleStart + 4;
-      const maleEndMisMatch = maleEnd - joinedMaleAttendees.length;
-
-      const femaleStart = index * 2;
-      const femaleEnd = femaleStart + 2;
-      const femaleEndMisMatch = femaleEnd - joinedFemaleAttendees.length;
-
-      const maleRealEnd = maleEndMisMatch > 0
-        ? joinedMaleAttendees.length
-        : femaleEndMisMatch > 0 ? femaleEndMisMatch + maleEnd : maleEnd;
-
-      const femaleRealEnd = femaleEndMisMatch > 0
-        ? joinedFemaleAttendees.length
-        : maleEndMisMatch > 0 ? maleEndMisMatch + femaleEnd : femaleEnd;
-
-      joinedMaleAttendees.slice(maleStart, maleRealEnd).forEach((attendee: any) => {
-        const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
-        promiseList.push(promise);
-      });
-
-      joinedFemaleAttendees.slice(femaleStart, femaleRealEnd).forEach((attendee: any) => {
-        const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
-        promiseList.push(promise);
-      });
-    });
 
     await ExcuteWithProcessingAsync(async () => {
+      const joinedAttendeesInSection = await this.GetAttendeesInSection(section);
+
+      var joinedMaleAttendees = joinedAttendeesInSection.filter((x: any) => (x.attendeeGender ?? x.gender) === 1).sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
+
+      var joinedFemaleAttendees = joinedAttendeesInSection.filter((x: any) => (x.attendeeGender ?? x.gender) === 2).sort((a: any, b: any) => a.currentPowerOfBattle - b.currentPowerOfBattle);
+
+      const promiseList = [] as any[];
+      section.courts.forEach((court: number, index: number) => {
+        const maleStart = index * 4;
+        const maleEnd = maleStart + 4;
+        const maleEndMisMatch = maleEnd - joinedMaleAttendees.length;
+
+        const femaleStart = index * 2;
+        const femaleEnd = femaleStart + 2;
+        const femaleEndMisMatch = femaleEnd - joinedFemaleAttendees.length;
+
+        const maleRealEnd = maleEndMisMatch > 0
+          ? joinedMaleAttendees.length
+          : femaleEndMisMatch > 0 ? femaleEndMisMatch + maleEnd : maleEnd;
+
+        const femaleRealEnd = femaleEndMisMatch > 0
+          ? joinedFemaleAttendees.length
+          : maleEndMisMatch > 0 ? maleEndMisMatch + femaleEnd : femaleEnd;
+
+        joinedMaleAttendees.slice(maleStart, maleRealEnd).forEach((attendee: any) => {
+          const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
+          promiseList.push(promise);
+        });
+
+        joinedFemaleAttendees.slice(femaleStart, femaleRealEnd).forEach((attendee: any) => {
+          const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, court);
+          promiseList.push(promise);
+        });
+      });
+
       await Promise.all(promiseList);
       await this.ReloadActivityByIdAsync(activityId);
     });
   },
 
-  async DegroupForSection(e: IOption) {
-    const { section } = e.currentTarget.dataset;
+  async DegroupForSection() {
     const activityId = this.data.activityId;
 
     await ExcuteWithProcessingAsync(async () => {
-      await RemoveAttendeeCourtAsync(activityId, section.index);
+      await RemoveAttendeeCourtAsync(activityId);
       await this.ReloadActivityByIdAsync(activityId);
     });
   },
@@ -653,6 +646,58 @@ Page({
       const match4 = GenerateMatch(activityId, attendees, court, 0, 3, 1, 2, 4);
       const match5 = GenerateMatch(activityId, attendees, court, 2, 5, 3, 4, 5);
       const match6 = GenerateMatch(activityId, attendees, court, 0, 5, 1, 4, 6);
+      const matches = [match1, match2, match3, match4, match5, match6];
+
+      matches.forEach((match: any) => {
+        const promise = AddMatchAsync(new MatchModel(match));
+        promiseList.push(promise);
+      });
+    }
+
+    await ExcuteWithProcessingAsync(async () => {
+      await Promise.all(promiseList);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
+  async CreateMatchesForCourtWith3FixedCouple(e: IOption) {
+    const { court } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+    const promiseList = [] as any[];
+    const attendees = this.data.courtAttendeesMap[court];
+    if (attendees.length === 6) {
+      const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
+      const match2 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 2);
+      const match3 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 1, 3);
+      const match4 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 4);
+      const match5 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 5);
+      const match6 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 1, 6);
+      const matches = [match1, match2, match3, match4, match5, match6];
+
+      matches.forEach((match: any) => {
+        const promise = AddMatchAsync(new MatchModel(match));
+        promiseList.push(promise);
+      });
+    }
+
+    await ExcuteWithProcessingAsync(async () => {
+      await Promise.all(promiseList);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
+  async CreateMatchesForCourtWith1FixedCouple(e: IOption) {
+    const { court } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+    const promiseList = [] as any[];
+    const attendees = this.data.courtAttendeesMap[court];
+    if (attendees.length === 6) {
+      const match1 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 2, 1);
+      const match2 = GenerateMatch(activityId, attendees, court, 1, 3, 4, 5, 2);
+      const match3 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 3);
+      const match4 = GenerateMatch(activityId, attendees, court, 4, 5, 1, 2, 4);
+      const match5 = GenerateMatch(activityId, attendees, court, 0, 3, 4, 5, 5);
+      const match6 = GenerateMatch(activityId, attendees, court, 1, 2, 0, 3, 6);
       const matches = [match1, match2, match3, match4, match5, match6];
 
       matches.forEach((match: any) => {
@@ -743,7 +788,7 @@ Page({
     // match result
     const matchResultMap = {} as any;
     for (const court in this.data.courtMatchesMap) {
-      const matches = this.data.courtMatchesMap[court];
+      const matches = this.data.courtMatchesMap[court];      
       matchResultMap[court] = GetMatchResult(matches, this.data.activityId, Number(court));
     }
     this.setData({ matchResultMap, selectedTab: 3 });

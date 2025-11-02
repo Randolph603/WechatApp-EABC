@@ -23,9 +23,9 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/admin/activityDetail/activityDetail",
-          "pathName": "pages/admin/activityDetail/activityDetail",
-          "query": "id=c075be1768ec6e3a027f08e46fc1cb93",
+          "name": "pages/activity/tournament/details",
+          "pathName": "pages/activity/tournament/details",
+          "query": "id=c4a9204c68e5be2701d0da5b5b5d37df",
           "scene": null,
           "launchMode": "default"
         }
