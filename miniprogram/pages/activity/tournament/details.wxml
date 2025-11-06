@@ -49,13 +49,29 @@
               </view>
             </view>
 
-            <view class="view-row mb-20">
-              <view class="view-row">
-                <text>参赛队伍以参加群活动的活跃度排序，优先选取活跃度高的球友，也欢迎新球友参加。</text>
-              </view>
+            <view class="divider mb-20" />
+            <view class="view-row-centre">鸣谢赞助</view>
+            <view class="banner">
+              <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay interval="4000">
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/1.png" mode="aspectFit" />
+                </swiper-item>
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/2.png" mode="aspectFit" />
+                </swiper-item>
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/3.png" mode="aspectFit" />
+                </swiper-item>
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/4.png" mode="aspectFit" />
+                </swiper-item>
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/5.jpg" mode="aspectFit" />
+                </swiper-item>
+              </swiper>
             </view>
 
-            <view class="divider" />
+            <view class="divider mb-20 mt-20" />
           </view>
           <!-- Info section end -->
 
@@ -72,6 +88,9 @@
               <!-- sign up -->
               <swiper-item>
                 <view id="slide0">
+                  <view class="view-row ml-20 mr-20 mt-10">
+                    <text>参赛队伍以参加群活动的活跃度排序，优先选取活跃度高的球友，也欢迎新球友参加。</text>
+                  </view>
                   <!-- For Teams -->
                   <block wx:for="{{joinedTeams}}" wx:key="index" wx:for-item="team">
                     <view class="game-box">

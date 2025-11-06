@@ -152,8 +152,8 @@ Page({
       teams.sort((a: any, b: any) => b.totalPowerPoint - a.totalPowerPoint)
 
       const maxAttendeeGroup = activity.sections[0].maxAttendee / 2;
-      const joinedTeams = teams.slice(0, maxAttendeeGroup - 1);
-      const waitingTeams = teams.slice(maxAttendeeGroup - 1);
+      const joinedTeams = teams.slice(0, maxAttendeeGroup);
+      const waitingTeams = teams.slice(maxAttendeeGroup);
 
       const soloMembers = allJoinedAttendees
         .filter((a: any) => !captainMemberIds.includes(a.captainMemberId) && !captainMemberIds.includes(a.memberId));
