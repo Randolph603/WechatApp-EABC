@@ -127,7 +127,7 @@
                   <!-- Waiting List -->
                   <block wx:if="{{waitingTeams.length > 0}}">
                     <view class="divider-main" />
-                    <view class="header">{{_lang.backUpJoin}}</view>
+                    <view class="header">后补报名 (参加活动，提升活跃度！)</view>
                     <block wx:for="{{waitingTeams}}" wx:key="index" wx:for-item="team">
                       <view class="game-box">
                         <view class="header">

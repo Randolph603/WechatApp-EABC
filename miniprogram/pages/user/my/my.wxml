@@ -146,6 +146,9 @@
         <view class="picker"> {{currentLanguage.setting}} </view>
       </picker>
     </mp-cell>
+    <mp-cell wx:if="{{isAdmin || isManager}}" link hover url='/pages/manager/tournament/list/list' value="比赛信息">
+      <image slot="title" class="mp-cell-icon" src="/static/icons/trophy.png" />
+    </mp-cell>
     <mp-cell wx:if="{{isAdmin}}" link hover url="/pages/admin/settingList/settingList" value="{{_lang.adminSetting}}">
       <image slot="icon" src="/static/icons/setting.png" class="mp-cell-icon" />
     </mp-cell>

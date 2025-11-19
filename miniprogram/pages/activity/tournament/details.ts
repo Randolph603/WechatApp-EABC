@@ -132,10 +132,8 @@ Page({
 
       const teams = [];
       for (const captainMemberId of captainMemberIds) {
-        const captain = allJoinedAttendees
-          .find((a: any) => a.memberId === captainMemberId);
-        const members = allJoinedAttendees
-          .filter((a: any) => a.captainMemberId === captainMemberId);
+        const captain = allJoinedAttendees.find((a: any) => a.memberId === captainMemberId);
+        const members = allJoinedAttendees.filter((a: any) => a.captainMemberId === captainMemberId);
         const players = [captain].concat(members);
 
         const totalPowerPoint = players.reduce((accumulator, current) => {

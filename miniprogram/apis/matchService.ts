@@ -18,6 +18,7 @@ export const GenerateMatch = (activityId: string, attendees: any[], court: numbe
       attendeeName: a.attendeeName,
       attendeeGender: a.attendeeGender,
       attendeeMemberId: a.attendeeMemberId,
+      captainMemberId: a.captainMemberId
     }
   });
   const leftGender = (playerList[index1].attendeeGender || playerList[index1].gender) + (playerList[index2].attendeeGender || playerList[index2].gender);
@@ -163,6 +164,75 @@ export const GetMatchResult = (matches: any[], activityId: string, court: number
     }
   });
   return matchResults;
+}
+
+export const GetTournamentResult = (matches: any[], attendees: any[], activityId: string, court: number,) => {
+  const captainMemberIds = attendees
+    .filter((a: any) => a.captainMemberId)
+    .map((a: any) => a.captainMemberId);
+
+  const teams: any[] = [];
+  for (const captainMemberId of captainMemberIds) {
+    const captain = attendees.find((a: any) => a.memberId === captainMemberId);
+    const members = attendees.filter((a: any) => a.captainMemberId === captainMemberId);
+    const players = [captain].concat(members);
+    teams.push({
+      activityId: activityId,
+      court: court,
+      captain: captain,
+      players: players,
+      wins: 0,
+      lost: 0,
+      pointDifference: 0,
+      powerOfBattleChange: 0,
+      season: config.currentSeason,
+      type: MatchResultType.TournamentDouble.value
+    });
+  }
+
+  for (const match of matches) {
+    // skip draw
+    if (match.leftScore === match.rightScore) continue;
+
+    const setWinnerResult = (player: any, pointDifference: number) => {
+      const findTeam = teams.find((t: any) => t.captain.memberId === player.memberId
+        || t.captain.memberId === player.captainMemberId);
+      if (findTeam) {
+        findTeam.wins = findTeam.wins + 1;
+        findTeam.pointDifference = findTeam.pointDifference + pointDifference;
+      }
+    }
+
+    const setLoserResult = (player: any) => {
+      const findTeam = teams.find((t: any) => t.captain.memberId === player.memberId
+      || t.captain.memberId === player.captainMemberId);
+      if (findTeam) {
+        findTeam.lost = findTeam.lost + 1;
+      }
+    }
+
+    if (match.leftScore > match.rightScore) {
+      const pointDifference = match.leftScore - match.rightScore;
+      setWinnerResult(match.player1, pointDifference);     
+      setLoserResult(match.player4);
+    }
+
+    if (match.rightScore > match.leftScore) {
+      const pointDifference = match.rightScore - match.leftScore;
+      setLoserResult(match.player1);      
+      setWinnerResult(match.player4, pointDifference);
+    }
+  }
+
+  teams.sort((a: any, b: any) => {
+    if (b.wins === a.wins) return b.pointDifference - a.pointDifference;
+    return b.wins - a.wins
+  });
+
+  teams.forEach((v: any, i: number) => {
+    v.powerOfBattleChange = i + 1;
+  });
+  return teams;
 }
 
 export const AddMatchResultsAsync = async (matchResultToAdd: any) => {

@@ -35,6 +35,7 @@ Page({
     motto: Mottos[Math.floor(Math.random() * Mottos.length)],
     // Security
     isAdmin: false,
+    isManager: false
   },
 
   async onLoad() {
@@ -75,7 +76,8 @@ Page({
         myMemberId: myProfile.memberId,
         myProfile: myProfile,
         motto: Mottos[index],
-        isAdmin: myProfile.userRole === UserRole.Admin.value
+        isAdmin: myProfile.userRole === UserRole.Admin.value,
+        isManager: myProfile.userRole === UserRole.Manager.value,
       });
     } else {
       this.setData({

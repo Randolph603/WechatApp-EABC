@@ -73,11 +73,11 @@ Page({
     });
 
     allActiveAttendees = [...activity.Attendees];
-    this.GenerateGroupAttendees();
+    this.generateGroupAttendees();
     this.GenerateMatchResults();
   },
 
-  GenerateGroupAttendees() {
+  generateGroupAttendees() {
     const groupedAttendees: any = [];
     const activeAttendeesGroup = allActiveAttendees
       .filter(a => !a.captainName)
@@ -297,8 +297,6 @@ Page({
     const activityId = this.data.activityId;
     const promiseList = [] as any[];
     const attendees = this.data.courtAttendeesMap[court];
-    console.log(attendees);
-
     if (attendees.length === 8) {
       const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
       const match2 = GenerateMatch(activityId, attendees, court, 0, 1, 4, 5, 2);
@@ -405,7 +403,7 @@ Page({
 
   SeeMatchResults() {
     this.GenerateMatchResults();
-    this.setData({ selectedTab: 2 });
+    this.setData({ selectedTab: 1 });
   }
   //#endregion
 })

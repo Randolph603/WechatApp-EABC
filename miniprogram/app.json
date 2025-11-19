@@ -18,7 +18,9 @@
     "pages/admin/userDetail/userDetail",
     "pages/admin/eventList/eventList",
     "pages/admin/tournament/list/list",
-    "pages/admin/tournament/detail/detail"
+    "pages/admin/tournament/detail/detail",
+    "pages/manager/tournament/list/list",
+    "pages/manager/tournament/detail/detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -235,9 +235,7 @@
             <!-- Group by court end-->
             <!-- Matches by court -->
             <mp-cell wx:for="{{courtMatchesMap[court]}}" wx:for-item="match" wx:key="index">
-              <view slot="title" style="width: 40px;">
-                <input type="number" data-match="{{match}}" bindblur="ChangeLeftScore" value="{{match.leftScore}}" />
-              </view>
+              <view slot="title"> <text>{{match.index}}</text> </view>
               <view class="view-row-evenly">
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player1.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
@@ -255,9 +253,10 @@
                   </view>
                   <text class="display-name full-width">{{match.player2.attendeeName || match.player2.displayName}}</text>
                 </view>
-                <view class="view-column-centre">
-                  <text>{{match.index}}</text>
+                <view class="view-row-centre">
+                  <input style="width: 40px; text-align: center;" type="number" data-match="{{match}}" bindblur="ChangeLeftScore" value="{{match.leftScore}}" />
                   <text>VS</text>
+                  <input style="width: 40px; text-align: center;" type="number" data-match="{{match}}" bindblur="ChangeRightScore" value="{{match.rightScore}}" />
                 </view>
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
@@ -276,14 +275,10 @@
                   <text class="display-name full-width">{{match.player4.attendeeName || match.player4.displayName}}</text>
                 </view>
               </view>
-              <view slot="footer" style="width: 40px;">
-                <input type="number" data-match="{{match}}" bindblur="ChangeRightScore" value="{{match.rightScore}}" />
-              </view>
             </mp-cell>
-            <mp-cell wx:if="{{courtMatchesMap[court]}}">
-              <button slot="footer" class="weui-btn" type="primary" size="mini" data-court="{{court}}" bindtap="SaveScoreByCourt">保存比分</button>
+            <mp-cell class="view-row-centre" wx:if="{{courtMatchesMap[court]}}">
+              <button class="weui-btn" type="primary" size="mini" data-court="{{court}}" bindtap="SaveScoreByCourt">保存比分</button>
             </mp-cell>
-
             <!-- Matches by court end-->
           </mp-cells>
         </block>
