@@ -81,7 +81,7 @@
               <view class="{{selectedTab === 0 ? 'tab-actived' : ''}}" data-index="0" bindtap="onTapTab">报名</view>
               <view class="{{selectedTab === 1 ? 'tab-actived' : ''}}" data-index="1" bindtap="onTapTab">积分赛</view>
               <view class="{{selectedTab === 2 ? 'tab-actived' : ''}}" data-index="2" bindtap="onTapTab">积分表</view>
-              <view class="{{selectedTab === 3 ? 'tab-actived' : ''}}" data-index="2" bindtap="onTapTab">淘汰赛</view>
+              <view class="{{selectedTab === 3 ? 'tab-actived' : ''}}" data-index="3" bindtap="onTapTab">淘汰赛</view>
             </view>
 
             <swiper style="height: 100%;" current="{{selectedTab}}" bindchange="onSwiperChange">
@@ -196,27 +196,21 @@
                   <view wx:if="{{isCourtMatchesMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无分组</view>
                   <view wx:else>
                     <!-- For All Sections -->
-                    <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
-                      <block wx:if="{{section.courtAttendeesMap[court].length > 0}}" wx:for="{{section.info.courts}}" wx:key="index" wx:for-item="court">
+                    <block wx:for="{{activity.sections}}" wx:key="index" wx:for-item="section">
+                      <block wx:if="{{courtAttendeesMap[court].length > 0}}" wx:for="{{section.courts}}" wx:key="index" wx:for-item="court">
                         <view class="game-box">
-                          <view class="view-row">
+                          <view class="ml-20 view-row">
                             <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
                             <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
                           </view>
                           <view class="divider-main" />
                           <view class="attention-row">
-                            <view class="section-group" wx:for="{{section.courtAttendeesMap[court]}}" wx:key="index" wx:for-item="attendee">
+                            <view class="section-group" wx:for="{{courtAttendeesMap[court]}}" wx:key="index" wx:for-item="attendee">
                               <image-loader ext-class="avatar 11level-{{attendee.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{attendee.avatarUrl}}" />
-                              <!-- <text class="display-name">{{attendee.displayName}}</text>
-                            <text wx:if="{{attendee.joinMore}}">+{{attendee.joinMore}}</text> -->
                               <view class="view-row-centre full-width">
                                 <image wx:if="{{attendee.attendeeGender > 0}}" class="icon16" src="/static/icons/{{attendee.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                                 <image wx:if="{{!attendee.attendeeGender && attendee.gender > 0}}" class="icon16" src="/static/icons/{{attendee.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                                 <text class="display-name">{{attendee.attendeeName || attendee.displayName}}</text>
-                              </view>
-                              <view wx:if="{{!activity.isCompleted}}" class="view-row-centre">
-                                <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/battle.png" />
-                                <text>战力: {{attendee.currentPowerOfBattle}}</text>
                               </view>
                             </view>
                           </view>
@@ -279,36 +273,32 @@
                   <view wx:if="{{isMatchResultMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无结果</view>
                   <view wx:else>
                     <!-- For All Sections -->
-                    <block wx:for="{{allSections}}" wx:key="index" wx:for-item="section">
-                      <block wx:if="{{matchResultMap[court].length > 0}}" wx:for="{{section.info.courts}}" wx:key="index" wx:for-item="court">
+                    <block wx:for="{{activity.sections}}" wx:key="index" wx:for-item="section">
+                      <block wx:if="{{matchResultMap[court].length > 0}}" wx:for="{{section.courts}}" wx:key="index" wx:for-item="court">
                         <view class="game-box">
                           <view class="view-row">
                             <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
                             <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
                           </view>
                           <view class="view-row">
-                            <view class="column-result-name">姓名</view>
-                            <view class="column-result">级别</view>
+                            <view class="column-result-name">队伍</view>
                             <view class="column-result">胜负场</view>
                             <view class="column-result">净胜分</view>
-                            <view class="column-result">战力</view>
+                            <view class="column-result">排名</view>
                           </view>
                           <view class="divider-main" />
                           <view class="view-column">
                             <view class="section-result" wx:for="{{matchResultMap[court]}}" wx:key="index" wx:for-item="result">
                               <view class="view-row column-result-name">
-                                <image wx:if="{{result.player.attendeeGender > 0}}" class="icon16" src="/static/icons/{{result.player.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <image wx:if="{{!result.player.attendeeGender && result.player.gender > 0}}" class="icon16" src="/static/icons/{{result.player.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                                <text class="display-name">{{result.player.attendeeName || result.player.displayName}}</text>
-                              </view>
-                              <view class="column-result">
-                                <text wx:if="{{result.player.currentPowerOfBattle<=100}}">青铜</text>
-                                <text wx:if="{{result.player.currentPowerOfBattle>100 && result.player.currentPowerOfBattle<=200 }}">白银</text>
-                                <text wx:if="{{result.player.currentPowerOfBattle>200 && result.player.currentPowerOfBattle<=400 }}">黄金</text>
+                                <block wx:for="{{result.players}}" wx:key="index" wx:for-item="player">
+                                  <image wx:if="{{player.attendeeGender > 0}}" class="icon16" src="/static/icons/{{player.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!player.attendeeGender && player.gender > 0}}" class="icon16" src="/static/icons/{{player.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{player.attendeeName || player.displayName}}</text>
+                                </block>
                               </view>
                               <view class="column-result">{{result.wins}} / {{result.lost}} </view>
                               <view class="column-result">{{result.pointDifference}}</view>
-                              <view class="column-result">+{{result.powerOfBattleChange}}</view>
+                              <view class="column-result">{{result.powerOfBattleChange}}</view>
                             </view>
                           </view>
                         </view>

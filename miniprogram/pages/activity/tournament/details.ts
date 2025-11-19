@@ -5,6 +5,7 @@ import {
   LoadActivityAndMatchesByIdAsync
 } from '@API/activityService';
 import { CallCloudFuncAsync } from '@API/commonHelper';
+import { GetTournamentResult } from '@API/matchService';
 import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { WxShowModalAsync } from '@Lib/promisify';
@@ -27,10 +28,10 @@ Page({
     activityId: '',
     activity: null as any,
     attendTitle: '',
-    allSections: [] as any[],
     allJoinedAttendeesCount: 0,
     allCancelledAttendees: [] as any[],
     joinMore: -1,
+    courtAttendeesMap: {} as any,
     courtMatchesMap: {} as any,
     isCourtMatchesMapEmpty: true,
     matchResultMap: {} as any,
@@ -128,7 +129,6 @@ Page({
       const captainMemberIds = allJoinedAttendees
         .filter((a: any) => a.captainMemberId)
         .map((a: any) => a.captainMemberId);
-      console.log(captainMemberIds);
 
       const teams = [];
       for (const captainMemberId of captainMemberIds) {
@@ -153,6 +153,13 @@ Page({
       const joinedTeams = teams.slice(0, maxAttendeeGroup);
       const waitingTeams = teams.slice(maxAttendeeGroup);
 
+      const courtAttendeesMap: any = {};
+      activity.courts.forEach((court: number) => {
+        courtAttendeesMap[court] = activity.Attendees
+          .filter((a: any) => a.court === court)
+          .sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
+      });
+
       const soloMembers = allJoinedAttendees
         .filter((a: any) => !captainMemberIds.includes(a.captainMemberId) && !captainMemberIds.includes(a.memberId));
 
@@ -173,12 +180,26 @@ Page({
         soloMembers,
         allJoinedAttendeesCount: allJoinedAttendees.length,
         allCancelledAttendees,
+        courtAttendeesMap,
         courtMatchesMap,
         isCourtMatchesMapEmpty: Object.keys(courtMatchesMap).length === 0,
         matchResultMap,
         isMatchResultMapEmpty: Object.keys(matchResultMap).length === 0,
       });
+
+      this.GenerateMatchResults();
     }
+  },
+
+  GenerateMatchResults() {
+    // match result
+    const matchResultMap = {} as any;
+    for (const court in this.data.courtMatchesMap) {
+      const matches = this.data.courtMatchesMap[court];
+      const attendees = this.data.courtAttendeesMap[court];
+      matchResultMap[court] = GetTournamentResult(matches, attendees, this.data.activityId, Number(court));
+    }
+    this.setData({ matchResultMap, isMatchResultMapEmpty: Object.keys(matchResultMap).length === 0, });
   },
 
   async UpdateSharedMessage() {

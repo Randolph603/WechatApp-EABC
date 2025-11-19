@@ -87,8 +87,6 @@
   <swiper-item>
     <scroll-view wx:if="{{activityId}}" style="height: calc(100vh - {{navBarHeight}}px);" scroll-y>
       <block wx:for="{{formData.sections}}" wx:key="index" wx:for-index="id" wx:for-item="section">
-        <mp-cell title="{{section.title}}">
-        </mp-cell>
         <mp-cells wx:if="{{matchResultMap[court].length > 0}}" wx:for="{{section.courts}}" wx:key="index" wx:for-index="courtId" wx:for-item="court" title="Court {{court}}">
           <view class="view-column">
             <view class="view-row full-width">

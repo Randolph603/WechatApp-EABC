@@ -23,29 +23,15 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/admin/tournament/detail/detail",
-          "pathName": "pages/admin/tournament/detail/detail",
-          "query": "id=c4a9204c68e5be2701d0da5b5b5d37df",
-          "scene": null,
-          "launchMode": "default"
-        },
-        {
-          "name": "pages/manager/tournament/detail/detail",
-          "pathName": "pages/manager/tournament/detail/detail",
-          "query": "id=c4a9204c68e5be2701d0da5b5b5d37df",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/admin/tournament/detail/detail",
-          "pathName": "pages/admin/tournament/detail/detail",
-          "query": "id=c4a9204c68e5be2701d0da5b5b5d37df",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
           "name": "pages/activity/tournament/details",
           "pathName": "pages/activity/tournament/details",
+          "query": "id=c4a9204c68e5be2701d0da5b5b5d37df",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/admin/tournament/detail/detail",
+          "pathName": "pages/admin/tournament/detail/detail",
           "query": "id=c4a9204c68e5be2701d0da5b5b5d37df",
           "launchMode": "default",
           "scene": null
