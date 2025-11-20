@@ -1,10 +1,10 @@
 <view class="weui-navigation-bar {{extClass}}">
   <view class="weui-navigation-bar__inner" style="padding-top: {{statusBarHeight-10}}px; height: {{navBarHeight+10}}px; {{innerPaddingRight}}">
-    <view class='weui-navigation-bar__left'>
+    <view class='left'>
       <slot name="left"></slot>
     </view>
 
-    <view class='weui-navigation-bar__center'>
+    <view class='center'>
       <block wx:if="{{title}}">
         <text>{{title}}</text>
       </block>
@@ -13,7 +13,7 @@
       </block>
     </view>
 
-    <view class='weui-navigation-bar__right'>
+    <view>
       <slot name="right"></slot>
     </view>
   </view>
