@@ -13,21 +13,7 @@
     <scroll-view wx:if="{{activityId}}" style="height: calc(100vh - {{navBarHeight}}px);" scroll-y>
       <block wx:for="{{activity.sections}}" wx:key="index" wx:for-index="id" wx:for-item="section">
         <mp-cells title="{{section.title}}" />
-        <mp-cells wx:for="{{section.courts}}" wx:key="index" wx:for-index="courtId" wx:for-item="court" title="Court {{court}}">
-          <!-- Group by court -->
-          <!-- <mp-cell>
-            <view class="view-row-evenly flex-wrap">
-              <view class="view-column-centre court-group-column" wx:for="{{courtAttendeesMap[court]}}" wx:for-item="attendee" wx:key="index">              
-                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{attendee.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
-                <view class="view-row-centre">
-                  <image wx:if="{{attendee.attendeeGender > 0}}" class="icon16" src="/static/icons/{{attendee.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
-                  <image wx:if="{{!attendee.attendeeGender && attendee.gender > 0}}" class="icon16" src="/static/icons/{{attendee.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
-                </view>
-                <text class="display-name full-width">{{attendee.attendeeName || attendee.displayName}}</text>            
-              </view>
-            </view>
-          </mp-cell> -->
-          <!-- Group by court end-->
+        <mp-cells wx:for="{{section.courts}}" wx:key="index" wx:for-index="courtId" wx:for-item="court" title="Court {{court}}">         
           <!-- Matches by court -->
           <mp-cell wx:for="{{courtMatchesMap[court]}}" wx:for-item="match" wx:key="index">
             <view slot="title"> <text>{{match.index}}</text> </view>
