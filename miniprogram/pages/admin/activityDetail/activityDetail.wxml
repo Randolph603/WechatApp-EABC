@@ -254,9 +254,9 @@
                   <text class="display-name full-width">{{match.player2.attendeeName || match.player2.displayName}}</text>
                 </view>
                 <view class="view-row-centre">
-                  <input style="width: 40px; text-align: center;" type="number" data-match="{{match}}" bindblur="ChangeLeftScore" value="{{match.leftScore}}" />
+                  <input style="width: 40px; text-align: center;" type="number" data-match="{{match}}" bindfocus="FocusLeftScore" bindblur="ChangeLeftScore" selection-end value="{{match.leftScore}}" />
                   <text>VS</text>
-                  <input style="width: 40px; text-align: center;" type="number" data-match="{{match}}" bindblur="ChangeRightScore" value="{{match.rightScore}}" />
+                  <input style="width: 40px; text-align: center;" type="number" data-match="{{match}}" bindfocus="FocusRightScore" bindblur="ChangeRightScore" value="{{match.rightScore}}" />
                 </view>
                 <view class="view-column-centre match-column">
                   <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />

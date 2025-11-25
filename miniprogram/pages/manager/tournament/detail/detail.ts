@@ -349,6 +349,20 @@ Page({
     });
   },
 
+  async FocusLeftScore(e: IOption) {
+    const newValue = Number(e.detail.value);
+    if (newValue === 0) {
+      const { match } = e.currentTarget.dataset;
+      const courtMatchesMap = this.data.courtMatchesMap;
+      courtMatchesMap[match.court].forEach((m: any) => {
+        if (m.index === match.index) {
+          m.leftScore = null;
+        }
+      });
+      this.setData({ courtMatchesMap: courtMatchesMap });
+    }
+  },
+
   async ChangeLeftScore(e: IOption) {
     const newValue = Number(e.detail.value);
     const { match } = e.currentTarget.dataset;
@@ -359,6 +373,20 @@ Page({
       }
     });
     this.setData({ courtMatchesMap: courtMatchesMap });
+  },
+
+  async FocusRightScore(e: IOption) {
+    const newValue = Number(e.detail.value);
+    if (newValue === 0) {
+      const { match } = e.currentTarget.dataset;
+      const courtMatchesMap = this.data.courtMatchesMap;
+      courtMatchesMap[match.court].forEach((m: any) => {
+        if (m.index === match.index) {
+          m.rightScore = null;
+        }
+      });
+      this.setData({ courtMatchesMap: courtMatchesMap });
+    }
   },
 
   async ChangeRightScore(e: IOption) {

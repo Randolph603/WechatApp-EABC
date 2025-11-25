@@ -6,7 +6,8 @@
   <view data-index="2" bindtap="onTapTab">新注册</view>
 </view> -->
 
-<mp-searchbar placeholder="Search" cancelText="Cancel" value="{{searchTerm}}" bindclear="onSearchCancel" bindblur="onSearchChange" />
+<mp-searchbar placeholder="Search" cancelText="Cancel" value="{{searchTerm}}" 
+bindclear="onSearchCancel" bindblur="onSearchChange" />
 
 <scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loadUserListAsync" refresher-triggered="{{triggered}}">
   <mp-cells>

@@ -41,6 +41,8 @@ Page({
 
   onSearchChange(e: IOption) {
     const searchText = e.detail.value;
+    if (searchText.length === 0) return;
+
     const filterUsers = this.data.allUsers.filter((user: any) =>
       user.displayName?.toLowerCase().includes(searchText.toLowerCase())
       || user.bankName?.toLowerCase().includes(searchText.toLowerCase())

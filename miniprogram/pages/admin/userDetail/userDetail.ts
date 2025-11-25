@@ -19,7 +19,7 @@ Page({
     // Dialog
     showBalanceChange: false,
     balanceChangeTitle: '充值',
-    balanceChangeValue: 17,
+    balanceChangeValue: 15,
   },
 
   async onLoad(options: Record<string, string | undefined>) {

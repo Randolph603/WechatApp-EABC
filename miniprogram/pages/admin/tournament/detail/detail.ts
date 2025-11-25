@@ -302,10 +302,10 @@ Page({
     if (attendees.length === 8) {
       const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
       const match2 = GenerateMatch(activityId, attendees, court, 0, 1, 4, 5, 2);
-      const match3 = GenerateMatch(activityId, attendees, court, 6, 7, 4, 5, 3);
+      const match3 = GenerateMatch(activityId, attendees, court, 2, 3, 6, 7, 3);
       const match4 = GenerateMatch(activityId, attendees, court, 6, 7, 0, 1, 4);
       const match5 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 5);
-      const match6 = GenerateMatch(activityId, attendees, court, 2, 3, 6, 7, 6);
+      const match6 = GenerateMatch(activityId, attendees, court, 6, 7, 4, 5, 6);
       const matches = [match1, match2, match3, match4, match5, match6];
 
       matches.forEach((match: any) => {
@@ -351,6 +351,20 @@ Page({
     });
   },
 
+  async FocusLeftScore(e: IOption) {
+    const newValue = Number(e.detail.value);
+    if (newValue === 0) {
+      const { match } = e.currentTarget.dataset;
+      const courtMatchesMap = this.data.courtMatchesMap;
+      courtMatchesMap[match.court].forEach((m: any) => {
+        if (m.index === match.index) {
+          m.leftScore = null;
+        }
+      });
+      this.setData({ courtMatchesMap: courtMatchesMap });
+    }
+  },
+
   async ChangeLeftScore(e: IOption) {
     const newValue = Number(e.detail.value);
     const { match } = e.currentTarget.dataset;
@@ -361,6 +375,20 @@ Page({
       }
     });
     this.setData({ courtMatchesMap: courtMatchesMap });
+  },
+
+  async FocusRightScore(e: IOption) {
+    const newValue = Number(e.detail.value);
+    if (newValue === 0) {
+      const { match } = e.currentTarget.dataset;
+      const courtMatchesMap = this.data.courtMatchesMap;
+      courtMatchesMap[match.court].forEach((m: any) => {
+        if (m.index === match.index) {
+          m.rightScore = null;
+        }
+      });
+      this.setData({ courtMatchesMap: courtMatchesMap });
+    }
   },
 
   async ChangeRightScore(e: IOption) {

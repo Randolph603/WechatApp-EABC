@@ -437,28 +437,34 @@ Page({
   async autoAddAttendeesAsync() {
     await ExcuteWithProcessingAsync(async () => {
       const activity = this.data.activity;
+
       let sevenDaysAgo = new Date(activity.startTime);
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      const loadedActivities = await LoadAllActivitiesAsync(4, activity.type, true);
+
+      const loadedActivities = await LoadAllActivitiesAsync(6, activity.type, true);
       const lastSevenDaysActivity = loadedActivities.find((a: any) => ToNZDateString(a.startTimeDate) === ToNZDateString(sevenDaysAgo));
       if (lastSevenDaysActivity) {
         // reload activity to include cancelled attendees
         const { activity: activityLastTime } = await LoadActivityAndMatchesByIdAsync(lastSevenDaysActivity._id, true, false);
-
-        const attendeesLastTime = activityLastTime.Attendees;
-        const attendeesLastTimeMap: Map<number, any> = new Map(attendeesLastTime.map((item: any) => [item.memberId, item]));
+        const attendeesLastTime = activityLastTime.Attendees.filter((a: any) => a.isCancelled === false);
         const allUsersWithContinuely = await SearchUsersSortByContinuelyWeeksAsync() as any[];
+        const allUsersWithContinuelyMap: Map<number, any> =
+          new Map(allUsersWithContinuely.map((item: any) => [item.memberId, item]));
+
         const users = [];
-        for (const user of allUsersWithContinuely) {
-          const attendee = attendeesLastTimeMap.get(user.memberId);
-          if (attendee) {
+        for (const attendee of attendeesLastTime) {
+          const user = allUsersWithContinuelyMap.get(attendee.memberId);
+          if (user) {
             users.push({
-              ...user,
+              continueWeeklyJoin: user.continueWeeklyJoin,
+              memberId: attendee.memberId,
               sectionIndex: attendee.sectionIndex,
             });
           }
         }
-        const targetUsers = users.slice(0, (activityLastTime.maxAttendee * 2 / 3));
+        const targetUsers = users
+          .sort((a, b) => b.continueWeeklyJoin - a.continueWeeklyJoin)
+          .slice(0, (activityLastTime.maxAttendee * 2 / 3));
 
         const promiseList = [] as any[];
         const activityId = this.data.activityId;
@@ -743,6 +749,20 @@ Page({
     });
   },
 
+  async FocusLeftScore(e: IOption) {
+    const newValue = Number(e.detail.value);
+    if (newValue === 0) {
+      const { match } = e.currentTarget.dataset;
+      const courtMatchesMap = this.data.courtMatchesMap;
+      courtMatchesMap[match.court].forEach((m: any) => {
+        if (m.index === match.index) {
+          m.leftScore = null;
+        }
+      });
+      this.setData({ courtMatchesMap: courtMatchesMap });
+    }
+  },
+
   async ChangeLeftScore(e: IOption) {
     const newValue = Number(e.detail.value);
     const { match } = e.currentTarget.dataset;
@@ -755,6 +775,20 @@ Page({
     this.setData({ courtMatchesMap: courtMatchesMap });
   },
 
+  async FocusRightScore(e: IOption) {
+    const newValue = Number(e.detail.value);
+    if (newValue === 0) {
+      const { match } = e.currentTarget.dataset;
+      const courtMatchesMap = this.data.courtMatchesMap;
+      courtMatchesMap[match.court].forEach((m: any) => {
+        if (m.index === match.index) {
+          m.rightScore = null;
+        }
+      });
+      this.setData({ courtMatchesMap: courtMatchesMap });
+    }
+  },
+
   async ChangeRightScore(e: IOption) {
     const newValue = Number(e.detail.value);
     const { match } = e.currentTarget.dataset;
@@ -763,7 +797,7 @@ Page({
       if (m.index === match.index) {
         m.rightScore = newValue;
       }
-    });
+    });    
     this.setData({ courtMatchesMap: courtMatchesMap });
   },
 
@@ -788,7 +822,7 @@ Page({
     // match result
     const matchResultMap = {} as any;
     for (const court in this.data.courtMatchesMap) {
-      const matches = this.data.courtMatchesMap[court];      
+      const matches = this.data.courtMatchesMap[court];
       matchResultMap[court] = GetMatchResult(matches, this.data.activityId, Number(court));
     }
     this.setData({ matchResultMap, selectedTab: 3 });
