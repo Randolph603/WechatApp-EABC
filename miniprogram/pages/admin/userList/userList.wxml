@@ -1,21 +1,28 @@
 <mp-navigation-bar title='All ({{allUsers.length}}) {{total}}NZD' back="{{true}}" />
 
-<!-- <view class="view-row-evenly">
-  <view data-index="0" bindtap="onTapTab">全部</view>
-  <view data-index="1" bindtap="onTapTab">欠费</view>
-  <view data-index="2" bindtap="onTapTab">新注册</view>
-</view> -->
+<view class="full-width view-row-between search-bar">
+  <image class="icon24" src="/static/icons/search-user.png" mode="heightFix" />
+  <input class="search-box" placeholder="Search" type="text" confirm-type="search" value="{{searchTerm}}"
+    bindconfirm="onSearchChange" />
+  <image bindtap="onSearchCancel" class="icon24" slot="footer" src="/static/icons/close.png" mode="heightFix" />
+</view>
 
-<mp-searchbar placeholder="Search" cancelText="Cancel" value="{{searchTerm}}" 
-bindclear="onSearchCancel" bindblur="onSearchChange" />
+<view class="view-row-evenly mt-20 mb-10">
+  <view class="{{selectedTab === 0 ? 'tab-actived' : ''}}" data-index="0" bindtap="onTapTab">活跃</view>
+  <view class="{{selectedTab === 1 ? 'tab-actived' : ''}}" data-index="1" bindtap="onTapTab">欠费</view>
+  <view class="{{selectedTab === 2 ? 'tab-actived' : ''}}" data-index="2" bindtap="onTapTab">非活跃</view>
+  <view class="{{selectedTab === 3 ? 'tab-actived' : ''}}" data-index="3" bindtap="onTapTab">全部</view>
+</view>
 
-<scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loadUserListAsync" refresher-triggered="{{triggered}}">
+<scroll-view class="scroll" scroll-y refresher-enabled bindrefresherrefresh="loadUserListAsync"
+  refresher-triggered="{{triggered}}">
   <mp-cells>
     <block wx:for="{{filterUsers}}" wx:key="_id" wx:for-item="user">
       <!-- <mp-slideview buttons="{{user.isDeleted ? slideActiveButtons : slideCancelButtons}}" data-user="{{user}}" bindbuttontap="slideButtonTap"> -->
       <mp-cell link="{{!user.isDeleted}}" hover url="/pages/admin/userDetail/userDetail?memberId={{user.memberId}}">
-        <view slot="title" class="row-title">
-          <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" mode="aspectFill" />
+        <view slot="title" class="view-row">
+          <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}"
+            mode="aspectFill" />
           <view class="info">
             <view class="{{user.isDeleted ? 'deleted' : ''}}">
               <text>{{user.displayName}} (Lv.{{user.selfRatingLevel || 0}})</text>
@@ -25,7 +32,7 @@ bindclear="onSearchCancel" bindblur="onSearchChange" />
           </view>
         </view>
         <view slot="footer">
-          <text>余额: {{user.creditBalance}} NZD</text>
+          <text>{{user.creditBalance}} NZD</text>
         </view>
       </mp-cell>
       <!-- </mp-slideview> -->

@@ -210,11 +210,16 @@
           <mp-cells wx:for="{{section.courts}}" wx:key="index" wx:for-index="courtId" wx:for-item="court" title="Court {{court}}">
             <!-- Group by court -->
             <mp-cell wx:if="{{courtAttendeesMap[court].length > 0}}" title="操作">
-              <view slot="footer">
-                <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourt">排场</button>
-                <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith3FixedCouple">3固搭</button>
-                <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith1FixedCouple">1固搭</button>
-                <button type="warn" size="mini" data-court="{{court}}" bindtap="RemoveMatchesForCourt">排场</button>
+              <view class="view-column" slot="footer">
+                <view class="mb-20">
+                  <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourt">排场</button>
+                  <button type="warn" size="mini" data-court="{{court}}" bindtap="RemoveMatchesForCourt">排场</button>
+                </view>
+                <view>
+                  <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith3FixedCouple">3固搭</button>
+                  <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith3MixCouple">3混搭</button>
+                  <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith1FixedCouple">1固搭</button>
+                </view>
               </view>
             </mp-cell>
             <mp-cell>
