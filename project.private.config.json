@@ -1,5 +1,5 @@
 {
-  "libVersion": "3.12.0",
+  "libVersion": "3.12.1",
   "projectname": "WechatApp-EABC",
   "setting": {
     "urlCheck": true,
@@ -23,11 +23,18 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/activity/rank/details",
+          "pathName": "pages/activity/rank/details",
+          "query": "id=d84694f2693f732607c1d9422a2642d8",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
           "name": "pages/admin/userList/userList",
           "pathName": "pages/admin/userList/userList",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

@@ -267,6 +267,7 @@ export const LanguageMap: iLanguageMap = {
     cancelWarningTips: "特殊情况请联系群主.",
     lowCreditBalanceTitle: "余额提示",
     lowCreditBalanceDesc: "友情提示：您当前的余额为：",
+    sponsoring: "鸣谢赞助"
   }
 }
 

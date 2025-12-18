@@ -381,6 +381,9 @@
         </view>
       </view>
     </mp-cell>
+    <!-- <mp-cell title="场次">
+      <input class="ml-60" bindinput="changeSelectedAttendeeName" value="{{selectedAttendee.attendeeName}}" />      
+    </mp-cell> -->
   </view>
 
   <button slot="footer" class="weui-btn" type="primary" bindtap="updateSelectedAttendee">更新</button>

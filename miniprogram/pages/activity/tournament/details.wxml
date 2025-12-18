@@ -50,7 +50,7 @@
             </view>
 
             <view class="divider mb-20" />
-            <view class="view-row-centre">鸣谢赞助</view>
+            <view class="view-row-centre">{{_lang.sponsoring}}</view>
             <view class="banner">
               <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay interval="4000">
                 <swiper-item>

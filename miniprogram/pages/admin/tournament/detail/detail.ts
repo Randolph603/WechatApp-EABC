@@ -1,7 +1,6 @@
 import { GetNewActivity, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCaptainAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
-import { AddMatchAsync, GenerateMatch, GetMatchRankAsync, GetMatchResult, GetTournamentResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
+import { AddMatchAsync, GenerateMatch, GetTournamentResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync } from "@API/userService";
-import { getCurrentWeekSpan, SortDate } from "@Lib/dateExtension";
 import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { ActivityModel } from "@Model/Activity";

@@ -267,6 +267,7 @@ export const LanguageMap: iLanguageMap = {
     cancelWarningTips: "In special circumstances, please contact the group owner.",
     lowCreditBalanceTitle: "Low Balance Notification",
     lowCreditBalanceDesc: "Friendly reminder: Your current balance is：",
+    sponsoring:"Thanks for sponsoring",
   }
 }
 export const AttendTitle = (a: number, b: number) => `${a} members joined, ${b} in total.`;

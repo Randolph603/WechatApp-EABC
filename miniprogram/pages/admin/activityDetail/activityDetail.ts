@@ -446,7 +446,7 @@ Page({
       if (lastSevenDaysActivity) {
         // reload activity to include cancelled attendees
         const { activity: activityLastTime } = await LoadActivityAndMatchesByIdAsync(lastSevenDaysActivity._id, true, false);
-        const attendeesLastTime = activityLastTime.Attendees.filter((a: any) => a.isCancelled === false);
+        const attendeesLastTime = activityLastTime.Attendees.filter((a: any) => a.isCancelled === false && a.joinMore === 0);
         const allUsersWithContinuely = await SearchUsersSortByContinuelyWeeksAsync() as any[];
         const allUsersWithContinuelyMap: Map<number, any> =
           new Map(allUsersWithContinuely.map((item: any) => [item.memberId, item]));
