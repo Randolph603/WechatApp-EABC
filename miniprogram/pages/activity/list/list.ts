@@ -1,5 +1,6 @@
 import { LoadAllActivitiesAsync } from "@API/activityService";
 import { HandleException } from "@API/commonHelper";
+import { CheckUserExistsAsync } from "@API/userService";
 import { GetLaguageMap } from "@Language/languageUtils";
 import { ActivityType } from "@Lib/types";
 import { GetNavBarHeight } from "@Lib/utils";
@@ -52,9 +53,14 @@ Page({
 
   async fetchAllDataAsync() {
     this.setData({ isLoaded: false });
+    const { userProfile: myProfile } = await CheckUserExistsAsync();
     const type = this.data.selectedTabType;
     const activities = await LoadAllActivitiesAsync(20, type, true);
-
+    for (const activity of activities) {
+      if (myProfile && !activity.isCompleted) {
+        activity.isJoined = activity.Attendees.some((a: any) => a.memberId === myProfile.memberId);
+      }
+    }
     this.setData({
       allActivities: activities,
       filterActivities: activities.slice(0, this.data.loadMore),

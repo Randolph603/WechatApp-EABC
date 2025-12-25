@@ -232,6 +232,7 @@ Page({
         url: `/pages/user/profile/profile?callbackUrl=${currentUrl}&callbackParameterKey=${callbackParameterKey}&callbackParameterValue=${callbackParameterValue}`,
       });
     }
+    this.updateSwiperHeight(this.data.selectedTab);
   },
 
   async cancelAsync(event: any) {
@@ -265,6 +266,8 @@ Page({
       await this.UpdateSharedMessage();
     };
     await ExcuteWithProcessingAsync(cancelActivityAndReload);
+
+    this.updateSwiperHeight(this.data.selectedTab);
   },
 
   showCancelPolicyDialog() {
@@ -288,6 +291,7 @@ Page({
       await this.LoadActivityAndMatches(false);
     };
     await ExcuteWithProcessingAsync(moveActivityAndReload);
+    this.updateSwiperHeight(this.data.selectedTab);
   }
   //#endregion
 })

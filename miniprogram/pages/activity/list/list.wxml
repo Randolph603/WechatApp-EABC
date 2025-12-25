@@ -1,9 +1,10 @@
 <view>
   <view style="height: {{navBarHeight}}px;" />
 
-  <r-navigation-bar extClass="skyline-nav-bar" title="活动列表" back="{{false}}">
+  <r-navigation-bar title="活动列表" back="{{false}}">
     <view class="nav-left" slot="left">
       <image class="nav-back-image" bindtap="navigateHome" src="/static/icons/navigationbar/back-light.png" />
+      <view class="divider"/>
       <image class="nav-home-image" bindtap="navigateHome" src="/static/icons/navigationbar/home-light.png" />
     </view>
   </r-navigation-bar>
@@ -23,6 +24,7 @@
   <grid-view wx:else cross-axis-gap="6" cross-axis-count="2" type="masonry">
     <view class="grid-item" wx:for="{{filterActivities}}" wx:key="index">
       <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
+      <view wx:if="{{item.isJoined === true}}" class="joinedLabel"></view>
       <view class="card">
         <navigator url="/pages/activity/{{item.type}}/details?id={{item._id}}">
           <image lazy-load="true" class="boxPic" mode="widthFix" src="{{item.coverImageSrc}}">
