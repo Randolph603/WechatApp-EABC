@@ -193,12 +193,13 @@ export const LanguageMap: iLanguageMap = {
     topUpCancel: "Cancel",
     topUpCopy: "Copy Account",
     // section of badge
+    achievementTitle: "Badges",
     championWeek: "Week",
     championMonth: "Month",
     championYear: "Final",
     continueWeeklyJoin5: "5 Weeks",
-    continueWeeklyJoin10: "10 Weeks",
     continueWeeklyJoin15: "15 Weeks",
+    continueWeeklyJoin52: "52 Weeks",
   },
   userProfile: {
     title: "Basic Information",
@@ -267,7 +268,7 @@ export const LanguageMap: iLanguageMap = {
     cancelWarningTips: "In special circumstances, please contact the group owner.",
     lowCreditBalanceTitle: "Low Balance Notification",
     lowCreditBalanceDesc: "Friendly reminder: Your current balance is：",
-    sponsoring:"Thanks for sponsoring",
+    sponsoring: "Thanks for sponsoring",
   }
 }
 export const AttendTitle = (a: number, b: number) => `${a} members joined, ${b} in total.`;

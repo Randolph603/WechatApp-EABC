@@ -193,12 +193,13 @@ export const LanguageMap: iLanguageMap = {
     topUpCancel: "返回",
     topUpCopy: "复制账号",
     // section of badge
+    achievementTitle:"成就徽章",
     championWeek: "周冠军",
     championMonth: "月冠军",
     championYear: "总冠军",
     continueWeeklyJoin5: "连续5周",
-    continueWeeklyJoin10: "连续10周",
     continueWeeklyJoin15: "连续15周",
+    continueWeeklyJoin52: "连续15周",
   },
   userProfile: {
     title: "基本信息",

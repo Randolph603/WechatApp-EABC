@@ -133,7 +133,7 @@ Page({
           const courtAttendeesMap: any = {};
           s.courts.forEach(court => {
             courtAttendeesMap[court] = activity.Attendees
-              .filter((a: any) => a.court === court)
+              .filter((a: any) => a.court === court && a.isCancelled === false)
               .sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
           });
 

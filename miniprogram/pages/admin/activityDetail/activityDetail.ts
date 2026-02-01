@@ -631,6 +631,24 @@ Page({
     });
   },
 
+  async GroupRefreshForSection(e: IOption) {
+    const { section } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+    const defaultCourt = section.courts[0];
+    const promiseList = [] as any[];
+
+    await ExcuteWithProcessingAsync(async () => {
+      const joinedAttendeesInSection = await this.GetAttendeesInSection(section);
+      const newJoinedAttendeesInSection = joinedAttendeesInSection.filter((a: any) => !a.court);
+      newJoinedAttendeesInSection.forEach((attendee: any) => {
+        const promise = UpdateAttendeeCourtAsync(activityId, attendee.memberId, attendee.joinMore, attendee.currentPowerOfBattle, defaultCourt);
+        promiseList.push(promise);
+      });
+      await Promise.all(promiseList);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
   async DegroupForSection() {
     const activityId = this.data.activityId;
 

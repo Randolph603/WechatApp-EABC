@@ -63,3 +63,20 @@ const matchResultType = {
   TournamentDouble: { index: 3, value: 'TournamentDouble' },
 };
 export const MatchResultType = matchResultType;
+
+const userBadges = {
+  Continue5Weeks: { type: 1, title: '5 Weeks' },
+  Continue15Weeks: { type: 2, title: '15 Weeks' },
+  Continue52Weeks: { type: 3, title: '52 Weeks' },
+}
+export const UserBadges = userBadges;
+export const UserBadgesArray = [
+  userBadges.Continue5Weeks, 
+  userBadges.Continue15Weeks, 
+  userBadges.Continue52Weeks
+];
+export const UserBadgesMap = {
+  [`${UserBadges.Continue5Weeks.type}`]: UserBadges.Continue5Weeks,
+  [`${UserBadges.Continue15Weeks.type}`]: UserBadges.Continue15Weeks,
+  [`${UserBadges.Continue52Weeks.type}`]: UserBadges.Continue52Weeks,
+}

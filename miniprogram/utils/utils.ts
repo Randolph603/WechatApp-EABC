@@ -85,3 +85,7 @@ export const ExcuteWithLoadingAsync = async (actionAsync: Function) => {
     throw error;
   }
 }
+
+export const GetRandomIdentityId = () => {
+  return Math.random().toString(36).substr(2, 9) + '-' + new Date().getTime().toString(36);
+}

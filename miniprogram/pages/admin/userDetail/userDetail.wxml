@@ -5,10 +5,12 @@
     <mp-cells title="会员信息">
       <mp-cell title="会员号">
         <text>#{{user.memberId}}</text>
-        <image-loader slot="footer" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' width="100rpx" height="100rpx" mode="aspectFill" />
+        <image-loader slot="footer" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}'
+          width="100rpx" height="100rpx" mode="aspectFill" />
       </mp-cell>
       <mp-cell title="昵称">
-        <input bindinput="FormTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.displayNamePlaceholder}}" />
+        <input bindinput="FormTextChange" data-field="displayName" value="{{formData.displayName}}"
+          placeholder="{{_lang.displayNamePlaceholder}}" />
       </mp-cell>
       <mp-cell title="备注">
         <input bindinput="FormTextChange" data-field="bankName" value="{{formData.bankName}}" />
@@ -25,16 +27,20 @@
         <text>Lv.{{user.selfRatingLevel || 0}}</text>
       </mp-cell>
       <mp-cell title="余额(NZD)" show-error prop="creditBalance">
-        <input bindinput="FormNumberChange" type="number" placeholder="e.g. 100" value="{{formData.creditBalance}}" data-field="creditBalance" />
+        <input bindinput="FormNumberChange" type="number" placeholder="e.g. 100" value="{{formData.creditBalance}}"
+          data-field="creditBalance" />
       </mp-cell>
       <mp-cell title="活跃度" show-error prop="powerPoint">
-        <input bindinput="FormNumberChange" type="number" placeholder="e.g. 100" value="{{formData.powerPoint}}" data-field="powerPoint" />
+        <input bindinput="FormNumberChange" type="number" placeholder="e.g. 100" value="{{formData.powerPoint}}"
+          data-field="powerPoint" />
       </mp-cell>
       <mp-cell title="连续周次" show-error prop="continueWeeklyJoin">
-        <input bindinput="FormNumberChange" type="number" value="{{formData.continueWeeklyJoin}}" data-field="continueWeeklyJoin" />
+        <input bindinput="FormNumberChange" type="number" value="{{formData.continueWeeklyJoin}}"
+          data-field="continueWeeklyJoin" />
       </mp-cell>
       <mp-cell title="战斗力">
-        <input bindinput="FormNumberChange" type="number" value="{{formData.powerOfBattle}}" data-field="powerOfBattle" />
+        <input bindinput="FormNumberChange" type="number" value="{{formData.powerOfBattle}}"
+          data-field="powerOfBattle" />
       </mp-cell>
       <mp-cell>
         <view class="view-row-evenly">
@@ -44,6 +50,15 @@
         </view>
       </mp-cell>
 
+      <mp-cell title="成就徽章">
+        <button slot="footer" type="default" size="mini" bindtap="addBadge">增加</button>
+      </mp-cell>
+      <block wx:for="{{formData.badges}}" wx:key="index" wx:for-index="id" wx:for-item="badge">
+        <mp-cell title="{{badge.createDateString}}">
+          <text data-badge="{{badge}}" bindtap="showBadgeDialog">{{badge.title}}</text>
+          <button slot="footer" type="warn" size="mini" data-badge="{{badge}}" bindtap="removeBadge">删除</button>
+        </mp-cell>
+      </block>
     </mp-cells>
 
     <view class="bottom-btn-area">
@@ -54,6 +69,7 @@
   </mp-form>
 </scroll-view>
 
+<!-- Dialogs -->
 <mp-dialog show="{{showBalanceChange}}" bindbuttontap="TapDialogButton" buttons="{{[{text: '充值'},{text: '扣费'}]}}">
   <view style="display: flex">
     <text style="width: 100rpx">标题</text>
@@ -65,3 +81,21 @@
     NZD
   </view>
 </mp-dialog>
+
+<mp-half-screen-dialog maskClosable="{{true}}" closabled="{{false}}" show="{{showBadgeDialog}}">
+  <view slot="title" style="font-size: medium;" class="view-row-centre">徽章</view>
+  <view slot="desc">
+    <mp-cell title="类别">
+      <picker class="view-row ml-60" bindchange="badgePickerChange" range="{{userBadgesArray}}" range-key="title" value="type">
+        <view> {{theSelectedBadge.title}}</view>
+      </picker>
+    </mp-cell>
+    <mp-cell title="日期" show-error prop="date">
+      <picker class="view-row ml-60" mode="date" bindchange="badgeDateChange">
+        <view>{{theSelectedBadge.createDateString}}</view>
+      </picker>
+    </mp-cell>
+  </view>
+
+  <button slot="footer" class="weui-btn" type="primary" bindtap="SaveBadge">保存</button>
+</mp-half-screen-dialog>

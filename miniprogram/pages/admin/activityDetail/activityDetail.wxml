@@ -200,9 +200,8 @@
             <mp-cell>
               <view class="view-row-between">
                 <button class="mr-10" type="primary" size="mini" data-section="{{section}}" bindtap="GroupAsWDForSection">女双分组</button>
-
                 <button class="mr-10" type="primary" size="mini" data-section="{{section}}" bindtap="GroupAsXDForSection">混双分组</button>
-
+                <button class="mr-10" type="primary" size="mini" data-section="{{section}}" bindtap="GroupRefreshForSection">刷新</button>
                 <button slot="footer" class="mr-10" type="warn" size="mini" bindtap="DegroupForSection">去分组</button>
               </view>
             </mp-cell>
@@ -218,7 +217,7 @@
                 <view>
                   <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith3FixedCouple">3固搭</button>
                   <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith3MixCouple">3混搭</button>
-                  <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith1FixedCouple">1固搭</button>
+                  <button class="mr-10" type="primary" size="mini" data-court="{{court}}" bindtap="CreateMatchesForCourtWith1FixedCouple">1固搭</button>                
                 </view>
               </view>
             </mp-cell>
