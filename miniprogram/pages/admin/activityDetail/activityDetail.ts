@@ -684,6 +684,31 @@ Page({
     });
   },
 
+  async CreateMatchesForCourtWith5(e: IOption) {
+    const { court } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+    const promiseList = [] as any[];
+    const attendees = this.data.courtAttendeesMap[court];
+    if (attendees.length === 5) {
+      const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
+      const match2 = GenerateMatch(activityId, attendees, court, 1, 2, 3, 4, 2);
+      const match3 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 0, 3);
+      const match4 = GenerateMatch(activityId, attendees, court, 3, 4, 0, 1, 4);
+      const match5 = GenerateMatch(activityId, attendees, court, 4, 0, 1, 2, 5);      
+      const matches = [match1, match2, match3, match4, match5];
+
+      matches.forEach((match: any) => {
+        const promise = AddMatchAsync(new MatchModel(match));
+        promiseList.push(promise);
+      });
+    }
+
+    await ExcuteWithProcessingAsync(async () => {
+      await Promise.all(promiseList);
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
   async CreateMatchesForCourtWith3FixedCouple(e: IOption) {
     const { court } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
