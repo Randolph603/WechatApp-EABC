@@ -1,7 +1,7 @@
 <view>
   <view style="height: {{navBarHeight}}px;" />
 
-  <r-navigation-bar extClass="skyline-nav-bar" title="" back="{{false}}">
+  <r-navigation-bar title="" back="{{false}}">
     <view class="nav-left" slot="left">
       <image class="nav-logo" mode="aspectFill" src="/static/images/icon.png" />
       <view class="nav-title">
@@ -11,10 +11,13 @@
   </r-navigation-bar>
 </view>
 
-<scroll-view scroll-y class="panel" style="height: calc(100vh - {{navBarHeight}}px);" type="custom" refresher-enabled scroll-with-animation lower-threshold="{{100}}" bindscrolltolower="handleScrollLower" bindrefresherrefresh="fetchAllDataAsync" refresher-triggered="{{triggered}}" scroll-top="{{top}}">
+<scroll-view scroll-y class="panel" style="height: calc(100vh - {{navBarHeight}}px);" type="custom" refresher-enabled
+  scroll-with-animation lower-threshold="{{100}}" bindrefresherrefresh="reloadAllAsync"
+  refresher-triggered="{{triggered}}" scroll-top="{{top}}">
   <view>
     <view class="banner">
-      <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay interval="4000">
+      <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay
+        interval="4000">
         <swiper-item>
           <image src="/static/images/home1.jpg" mode="aspectFill" />
         </swiper-item>
@@ -34,7 +37,7 @@
 
     <view class="section">
       <view class="context">
-        EABC东羽是一个面向大众开放的羽毛球俱乐部，致力于推广羽毛球运动、提高技术水平和丰富业余生活，营造积极向上的运动氛围。无论你是初学者还是进阶选手，都能在这里找到属于自己的舞台。
+        EABC东羽是一个面向所有球友的约球群，致力于推广羽毛球运动、提高技术水平和丰富业余生活，营造积极向上的运动氛围。无论你是初学者还是进阶选手，都能在这里找到属于自己的舞台。
       </view>
     </view>
   </view>
@@ -50,8 +53,9 @@
   <grid-view wx:else cross-axis-gap="6" cross-axis-count="2" type="masonry">
     <view class="grid-item" wx:for="{{activities}}" wx:key="index">
       <view wx:if="{{item.isCompleted}}" class="completedLabel"></view>
+      <view wx:if="{{item.isJoined === true}}" class="joinedLabel"></view>
       <view class="card">
-        <navigator url="/pages/activity/details/details?id={{item._id}}">
+        <navigator url="/pages/activity/{{item.type}}/details?id={{item._id}}">
           <image lazy-load="true" style="width:100%" mode="widthFix" src="{{item.coverImageSrc}}">
           </image>
           <view class="boxTxt">

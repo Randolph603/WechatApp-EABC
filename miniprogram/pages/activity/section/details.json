@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "mp-navigation-bar": "weui-miniprogram/navigation-bar/navigation-bar",
+    "image-loader": "/components/image-loader/image-loader",
+    "mp-half-screen-dialog": "weui-miniprogram/half-screen-dialog/half-screen-dialog"
+  },
+  "renderer": "webview"
+}

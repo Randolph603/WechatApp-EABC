@@ -3,15 +3,22 @@ import { GetLaguageMap } from "@Language/languageUtils";
 const lang = GetLaguageMap().type;
 
 const activityType = {
-  Section: { value: 0, name: '分组场', title: 'group' },
-  Rank: { value: 1, name: '排位场', title: 'rank' },
+  Section: { index: 0, value: 'section', name: lang.activityType.section },
+  Rank: { index: 1, value: 'rank', name: lang.activityType.rank },
+  Tournament: { index: 2, value: 'tournament', name: lang.activityType.tournament },
 };
 export const ActivityType = activityType;
-export const ActivityTypeArray = [activityType.Section, activityType.Rank];
+export const ActivityTypeArray = [activityType.Section, activityType.Rank, activityType.Tournament];
+export const ActivityTypeMap = {
+  [`${activityType.Section.value}`]: activityType.Section,
+  [`${activityType.Rank.value}`]: activityType.Rank,
+  [`${activityType.Tournament.value}`]: activityType.Tournament,
+}
 
 export const ConverPageArray = [
   'badmintonCover1.jpg',
   'badmintonCover2.jpg',
+  'badmintonCover3.jpg',
 ];
 
 const userRole = {
@@ -35,6 +42,12 @@ const userLevel = {
 export const UserLevel = userLevel;
 export const LevelArray = [userLevel.Unknown, userLevel.D, userLevel.C, userLevel.B, userLevel.A, userLevel.S];
 
+export const userSelfRatingLevelMap = lang.selfRatingLevels.reduce((map, item) => {
+  map[item.level] = item;
+  return map;
+}, {} as Record<number, typeof lang.selfRatingLevels[number]>);
+export const userSelfRatingLevelArray = lang.selfRatingLevels;
+
 const userGender = {
   Unknown: { value: 0, name: lang.gender.choose },
   Male: { value: 1, name: lang.gender.male },
@@ -42,3 +55,28 @@ const userGender = {
 };
 export const UserGender = userGender;
 export const UserGenderArray = [userGender.Unknown, userGender.Male, userGender.Female];
+
+const matchResultType = {
+  SoloSingle: { index: 0, value: 'SoloSingle' },
+  SoloDouble: { index: 1, value: 'SoloDouble' },
+  FixedDouble: { index: 2, value: 'FixedDouble' },
+  TournamentDouble: { index: 3, value: 'TournamentDouble' },
+};
+export const MatchResultType = matchResultType;
+
+const userBadges = {
+  Continue5Weeks: { type: 1, title: '5 Weeks' },
+  Continue15Weeks: { type: 2, title: '15 Weeks' },
+  Continue52Weeks: { type: 3, title: '52 Weeks' },
+}
+export const UserBadges = userBadges;
+export const UserBadgesArray = [
+  userBadges.Continue5Weeks, 
+  userBadges.Continue15Weeks, 
+  userBadges.Continue52Weeks
+];
+export const UserBadgesMap = {
+  [`${UserBadges.Continue5Weeks.type}`]: UserBadges.Continue5Weeks,
+  [`${UserBadges.Continue15Weeks.type}`]: UserBadges.Continue15Weeks,
+  [`${UserBadges.Continue52Weeks.type}`]: UserBadges.Continue52Weeks,
+}

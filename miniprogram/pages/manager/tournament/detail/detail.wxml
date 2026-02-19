@@ -1,0 +1,107 @@
+<wxs src="/utils/comm.wxs" module="utils" />
+
+<mp-navigation-bar title="活动信息" back=" {{true}}" />
+
+<view class="tab-list">
+  <view class="{{selectedTab === 0 ? 'actived' : ''}}" data-index="0" bindtap="onTapTab">分组</view>
+  <view class="{{selectedTab === 1 ? 'actived' : ''}}" data-index="1" bindtap="onTapTab">结果</view>
+</view>
+
+<swiper style="height: calc(100vh - {{navBarHeight}}px);" current="{{selectedTab}}" bindchange="onChange">
+  <!-- Group and match page -->
+  <swiper-item>
+    <scroll-view wx:if="{{activityId}}" style="height: calc(100vh - {{navBarHeight}}px);" scroll-y>
+      <block wx:for="{{activity.sections}}" wx:key="index" wx:for-index="id" wx:for-item="section">
+        <mp-cells title="{{section.title}}" />
+        <mp-cells wx:for="{{section.courts}}" wx:key="index" wx:for-index="courtId" wx:for-item="court" title="Court {{court}}">         
+          <!-- Matches by court -->
+          <mp-cell wx:for="{{courtMatchesMap[court]}}" wx:for-item="match" wx:key="index">
+            <view slot="title"> <text>{{match.index}}</text> </view>
+            <view class="view-row-evenly">
+              <view class="view-column-centre match-column">
+                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player1.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                <view class="view-row-centre">
+                  <image wx:if="{{match.player1.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player1.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                  <image wx:if="{{!match.player1.attendeeGender && match.player1.gender > 0}}" class="icon16" src="/static/icons/{{match.player1.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                </view>
+                <text class="display-name full-width">{{match.player1.attendeeName || match.player1.displayName}}</text>
+              </view>
+              <view class="view-column-centre match-column">
+                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player2.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                <view class="view-row-centre">
+                  <image wx:if="{{match.player2.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player2.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                  <image wx:if="{{!match.player2.attendeeGender && match.player2.gender > 0}}" class="icon16" src="/static/icons/{{match.player2.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                </view>
+                <text class="display-name full-width">{{match.player2.attendeeName || match.player2.displayName}}</text>
+              </view>
+              <view class="view-row-centre">
+                <input style="width: 40px; text-align: center;" type="number" data-match="{{match}}" bindfocus="FocusLeftScore" bindblur="ChangeLeftScore" value="{{match.leftScore}}" />
+                <text>VS</text>
+                <input style="width: 40px; text-align: center;" type="number" data-match="{{match}}" bindfocus="FocusRightScore" bindblur="ChangeRightScore" value="{{match.rightScore}}" />
+              </view>
+              <view class="view-column-centre match-column">
+                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                <view class="view-row-centre">
+                  <image wx:if="{{match.player3.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player3.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                  <image wx:if="{{!match.player3.attendeeGender && match.player3.gender > 0}}" class="icon16" src="/static/icons/{{match.player3.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                </view>
+                <text class="display-name full-width">{{match.player3.attendeeName || match.player3.displayName}}</text>
+              </view>
+              <view class="view-column-centre match-column">
+                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player4.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                <view class="view-row-centre">
+                  <image wx:if="{{match.player4.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player4.attendeeGender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                  <image wx:if="{{!match.player4.attendeeGender && match.player4.gender > 0}}" class="icon16" src="/static/icons/{{match.player4.gender ===1 ? 'male': 'female'}}.png" mode="widthFix" />
+                </view>
+                <text class="display-name full-width">{{match.player4.attendeeName || match.player4.displayName}}</text>
+              </view>
+            </view>
+          </mp-cell>
+          <mp-cell class="view-row-centre" wx:if="{{courtMatchesMap[court]}}">
+            <button class="weui-btn" type="primary" size="mini" data-court="{{court}}" bindtap="SaveScoreByCourt">保存比分</button>
+          </mp-cell>
+          <!-- Matches by court end-->
+        </mp-cells>
+      </block>
+
+      <view wx:if="{{groupedAttendees.length > 0}}" class="bottom-btn-area">
+        <button class="weui-btn" type="primary" bindtap="SeeMatchResults">生成结果</button>
+      </view>
+    </scroll-view>
+  </swiper-item>
+  <!-- Result page -->
+  <swiper-item>
+    <scroll-view wx:if="{{activityId}}" style="height: calc(100vh - {{navBarHeight}}px);" scroll-y>
+      <block wx:for="{{formData.sections}}" wx:key="index" wx:for-index="id" wx:for-item="section">
+        <mp-cells wx:if="{{matchResultMap[court].length > 0}}" wx:for="{{section.courts}}" wx:key="index" wx:for-index="courtId" wx:for-item="court" title="Court {{court}}">
+          <view class="view-column">
+            <view class="view-row full-width">
+              <view class="column-result-name">队伍</view>
+              <view class="column-result">胜负场</view>
+              <view class="column-result">净胜分</view>
+              <view class="column-result">排名</view>
+            </view>
+            <view class="view-column full-width">
+              <view class="section-result" wx:for="{{matchResultMap[court]}}" wx:key="index" wx:for-item="result">
+                <view class="view-row column-result-name">
+                  <block wx:for="{{result.players}}" wx:key="index" wx:for-item="player">
+                    <image wx:if="{{player.attendeeGender > 0}}" class="icon16" src="/static/icons/{{player.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                    <image wx:if="{{!player.attendeeGender && player.gender > 0}}" class="icon16" src="/static/icons/{{player.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                    <text class="display-name">{{player.attendeeName || player.displayName}}</text>
+                  </block>
+                </view>
+                <view class="column-result">{{result.wins}} / {{result.lost}} </view>
+                <view class="column-result">{{result.pointDifference}}</view>
+                <view class="column-result">{{result.powerOfBattleChange}}</view>
+              </view>
+            </view>
+          </view>
+        </mp-cells>
+      </block>
+
+      <!-- <view wx:if="{{matchResultMap}}" class="bottom-btn-area">
+        <button class="weui-btn" type="primary" bindtap="SaveMatchResults">保存结果</button>
+      </view> -->
+    </scroll-view>
+  </swiper-item>
+</swiper>

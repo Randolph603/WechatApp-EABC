@@ -12,14 +12,26 @@ export const CallCloudFuncAsync = async (funcName: string, data: object) => {
 };
 
 // return updated success count
-export const UpdateRecordAsync = async (collection: string, where: object, data: object, dateData: object | null = null) => {
+export const UpdateRecordAsync = async (collection: string, where: object, data: object, dateData: object | null = null, columnsToRemove: Array<string> | null = null) => {
   const response = await CallCloudFuncAsync(
     'updateRecord',
     {
       collection: collection,
       where: where,
       data: data,
-      dateData: dateData
+      dateData: dateData,
+      columnsToRemove: columnsToRemove
+    });
+  return response.updatedCount;
+};
+
+export const RemoveFieldsAsync = async (collection: string, where: object, fieldsToRemove: Array<string>) => {
+  const response = await CallCloudFuncAsync(
+    'updateRecord',
+    {
+      collection: collection,
+      where: where,
+      fieldsToRemove: fieldsToRemove
     });
   return response.updatedCount;
 };
@@ -30,10 +42,16 @@ export const HandleException = async (functionName: string, error: any) => {
   const programInfo = `${program.envVersion} - V${program.version}`;
   const app = await GetCloudAsync();
   const db = app.database();
-  const unionId = await GetUnionIdAsync();
-  const user = await CheckUserExistsAsync();
+  const { unionId, userProfile: user } = await CheckUserExistsAsync();
   const memberId = user?.memberId ?? 0;
   const userName = user?.displayName ?? 'not register user';
+
+  const errorString =
+    error instanceof Error
+      ? error.stack || error.message
+      : typeof error === 'string'
+        ? error
+        : JSON.stringify(error, Object.getOwnPropertyNames(error));
 
   await db.collection('Sys_Exceptions').add({
     functionName: `${currentUrl} - ${functionName}`,
@@ -42,6 +60,6 @@ export const HandleException = async (functionName: string, error: any) => {
     user: userName,
     program: programInfo,
     date: new Date(),
-    exception: error,
+    exception: errorString,
   });
 };

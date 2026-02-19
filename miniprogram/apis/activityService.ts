@@ -1,9 +1,10 @@
-import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
+import { CallCloudFuncAsync, RemoveFieldsAsync, UpdateRecordAsync } from "./commonHelper";
 import { SortDate, ToDayOfWeekString, ToNZDateString, ToNZShortDateString } from "@Lib/dateExtension";
-import { ActivityTypeArray, LevelArray } from "@Lib/types";
-import { ConvertFileIdToHttps } from "@Lib/utils";
-import { GetCloudAsync } from "./databaseService";
+import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { ActivityModel } from "@Model/Activity";
+import { SetupUserTypes } from "./userService";
+
+//#region Activity
 
 const SetupActivity = (activity: any) => {
   activity.startTime = new Date(activity.startTime);
@@ -11,7 +12,6 @@ const SetupActivity = (activity: any) => {
   activity.coverImageSrc = "/static/images/" + activity.coverImage;
   activity.startTimeDate = ToNZDateString(activity.startTime);
   activity.date = `${ToNZShortDateString(activity.startTime)} (${ToDayOfWeekString(activity.startTime)})`;
-  activity.typeValue = ActivityTypeArray[activity.type];
 }
 
 export const GetNewActivity = () => {
@@ -20,9 +20,9 @@ export const GetNewActivity = () => {
   return activity;
 }
 
-export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boolean | undefined) => {
+export const LoadAllActivitiesAsync = async (limit: number = 20, type: string | undefined, onlyPublic: boolean | undefined) => {
   let data = {
-    where: { isCancelled: false, type: undefined, toPublic: onlyPublic },
+    where: { isCancelled: false, type: type, toPublic: onlyPublic },
     sort: { startTime: -1 },
     limit: limit,
   };
@@ -31,27 +31,79 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, onlyPublic: boo
   return activities;
 }
 
-export const LoadActivityByIdAsync = async (id: string, includeCancelledAttendees: boolean) => {
+export const LoadActivityAndMatchesByIdAsync = async (id: string, includeCancelledAttendees: boolean, recordEvent: boolean) => {
+  const unionId = await GetUnionIdAsync();
   let data = {
+    unionId: unionId,
+    recordEvent: recordEvent,
     activityId: id,
     includeCancelledAttendees: includeCancelledAttendees
   };
 
-  const { activity } = await CallCloudFuncAsync('activity_getById', data);
+  const { activity, matches, matchResults } = await CallCloudFuncAsync('eabc_activity_getById', data);
   SetupActivity(activity);
 
   activity.Attendees.forEach((user: any) => {
-    user.userLevelType = LevelArray[user.userLevel];
-    user.key = `${user.memberId}+${user.joinMore}`;
+    SetupUserTypes(user);
     user.userLevelImageSrc = `/static/ranks/${user.userLevel + 1}.png`;
-    if (user.avatarUrl.startsWith('cloud')) {
-      user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
-    }
   });
 
   activity.Attendees.sort((a: { updateDate: any; }, b: { updateDate: any; }) => SortDate(a.updateDate, b.updateDate));
 
-  return activity;
+  // group and match
+  const courtMatchesMap = {} as any;
+  for (const match of matches) {
+    const court = match.court;
+    if (!courtMatchesMap[court]) {
+      courtMatchesMap[court] = [];
+    }
+    courtMatchesMap[court].push(match);
+  }
+
+  // match result
+  const matchResultMap = {} as any;
+  for (const result of matchResults) {
+    const court = result.court;
+    if (!matchResultMap[court]) {
+      matchResultMap[court] = [];
+    }
+    matchResultMap[court].push(result);
+  }
+
+  return { activity, courtMatchesMap, matchResultMap };
+}
+
+export const AddActivityAsync = async (activityToAdd: ActivityModel) => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    const result = await db.collection('Activities').add(activityToAdd);
+    return result;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+//#endregion
+
+//#region Attendee
+export const AutoJoinActivityAsync = async (activityId: string, memberId: number, sectionIndex: number) => {
+  try {
+    const app = await GetCloudAsync();
+    const db = app.database();
+    await db.collection('Attendees').add({
+      activityId: activityId,
+      memberId: memberId,
+      isCancelled: false,
+      createDate: new Date(),
+      updateDate: new Date(),
+      joinMore: 0,
+      sectionIndex: sectionIndex
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export const JoinActivityAsync = async (activityId: string, memberId: number, joinMore: number) => {
@@ -103,17 +155,40 @@ export const AttendeeMoveSectionAsync = async (activityId: string, memberId: num
   }
 }
 
-export const AddActivityAsync = async (activityToAdd: ActivityModel): Promise<any> => {
-  try {
-    const app = await GetCloudAsync();
-    const db = app.database();
-    const result = await db.collection('Activities').add(activityToAdd);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return null;
+export const UpdateAttendeeMoreAsync = async (attendeeId: string, attendeeName: string, attendeeGender: number, attendeeMemberId: number) => {
+  if (attendeeId) {
+    try {
+      await UpdateRecordAsync('Attendees',
+        { _id: attendeeId },
+        {
+          attendeeName, // if attendeeName is undefined, will not add this feild
+          attendeeGender, // if attendeeGender is undefined, will not add this feild
+          attendeeMemberId // if attendeeMemberId is undefined, will not add this feild
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
+
+export const UpdateAttendeeCaptainAsync = async (attendeeId: string, captainName: string, captainMemberId: number) => {
+  if (attendeeId) {
+    try {
+      await UpdateRecordAsync('Attendees',
+        { _id: attendeeId },
+        {
+          captainName, // if captainName is undefined, will not add this feild
+          captainMemberId // if captainMemberId is undefined, will not add this feild
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+//#endregion
 
 export const ConfrimActivityAsync = async (activityId: string, confirmToBeUsers: any[]) => {
   const data = {
@@ -122,4 +197,38 @@ export const ConfrimActivityAsync = async (activityId: string, confirmToBeUsers:
   };
   const { updatedCount } = await CallCloudFuncAsync('eabc_activity_confirm', data);
   return updatedCount;
+}
+
+export const UpdateAttendeeCourtAsync = async (activityId: string, memberId: number, joinMore: number, powerOfBattle: number, court: number) => {
+  try {
+    await UpdateRecordAsync('Attendees',
+      { activityId: activityId, memberId: memberId, joinMore: joinMore },
+      { court, currentPowerOfBattle: powerOfBattle }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const RemoveAttendeeCourtAsync = async (activityId: string) => {
+  try {
+    await RemoveFieldsAsync('Attendees',
+      { activityId: activityId },
+      ['court']
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const UpdateCurrentPowerOfBattleAsync = async (activityId: string, memberId: number, joinMore: number,
+  currentPowerOfBattle: number) => {
+  try {
+    await UpdateRecordAsync('Attendees',
+      { activityId: activityId, memberId: memberId, joinMore: joinMore },
+      { currentPowerOfBattle: currentPowerOfBattle }
+    );
+  } catch (error) {
+    console.log(error);
+  }
 }

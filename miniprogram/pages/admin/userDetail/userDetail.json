@@ -5,6 +5,7 @@
     "mp-cell": "weui-miniprogram/cell/cell",
     "mp-cells": "weui-miniprogram/cells/cells",
     "mp-dialog": "weui-miniprogram/dialog/dialog",
+    "mp-half-screen-dialog": "weui-miniprogram/half-screen-dialog/half-screen-dialog",
     "image-loader": "/components/image-loader/image-loader"
   },
   "disableScroll": true,

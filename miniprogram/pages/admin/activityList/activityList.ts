@@ -1,6 +1,6 @@
 import { LoadAllActivitiesAsync } from "@API/activityService";
 import { ExcuteWithLoadingAsync } from "@Lib/utils";
-
+import { IOption } from "@Model/iOption";
 
 Page({
   data: {
@@ -36,7 +36,7 @@ Page({
 
   async loadAllActivityAsync() {
     await ExcuteWithLoadingAsync(async () => {
-      const activities = await LoadAllActivitiesAsync(8, undefined);
+      const activities = await LoadAllActivitiesAsync(30, undefined, undefined);
 
       this.setData({
         allActivity: activities,
@@ -47,12 +47,12 @@ Page({
     });
   },
 
-  slideButtonTap: async function (e) {
+  slideButtonTap: async function (e: IOption) {
     const { id: activityId } = e.currentTarget.dataset;
     this.deleteActivity(activityId);
   },
 
-  deleteActivity(activityId) {
+  deleteActivity(activityId: string) {
     const that = this;
     wx.showModal({
       title: '确定要删除活动么?',
@@ -66,8 +66,8 @@ Page({
     });
   },
 
-  async updateActivity(activityId, isCancelled) {
-    await cloudUtil.updateRecordAsync('Activities', { _id: activityId }, { isCancelled });
-    await this.loadAllActivityAsync();
+  async updateActivity(activityId: string, isCancelled: boolean) {
+    // await cloudUtil.updateRecordAsync('Activities', { _id: activityId }, { isCancelled });
+    // await this.loadAllActivityAsync();
   },
 })

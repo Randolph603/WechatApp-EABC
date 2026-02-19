@@ -1,13 +1,12 @@
 import { GetUserByMemberId } from "@API/userService";
 import { GetLaguageMap } from "@Language/languageUtils";
 import { SortDateDesc, ToDayOfWeekString, ToNZShortDateString } from "@Lib/dateExtension";
-import { ExcuteWithLoadingAsync, GetNavBarHeight } from "@Lib/utils";
+import { ExcuteWithLoadingAsync } from "@Lib/utils";
 
 Page({
   data: {
     // Static
     _lang: GetLaguageMap().creditHistory,
-    navBarHeight: GetNavBarHeight() + 100,
     // Status:
     isLoaded: false,
     // Variables

@@ -36,3 +36,4 @@ export default wxPromisify;
 export const WxLoginAsync = wxPromisify<any, object>(wx.login);
 export const WxGetFileInfoAsync = wxPromisify<any, any>(wx.getFileSystemManager().getFileInfo);
 export const WxShowModalAsync = wxPromisify<any, object>(wx.showModal);
+export const WxRequestAsync = wxPromisify<WechatMiniprogram.RequestOption, any>(wx.request);

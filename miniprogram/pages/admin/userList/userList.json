@@ -1,7 +1,6 @@
 {
   "usingComponents": {
     "mp-navigation-bar": "weui-miniprogram/navigation-bar/navigation-bar",
-    "mp-searchbar": "weui-miniprogram/searchbar/searchbar",
     "mp-cell": "weui-miniprogram/cell/cell",
     "mp-cells": "weui-miniprogram/cells/cells",
     "mp-slideview": "weui-miniprogram/slideview/slideview",

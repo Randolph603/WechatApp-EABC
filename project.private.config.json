@@ -1,8 +1,8 @@
 {
-  "libVersion": "3.8.11",
+  "libVersion": "3.13.1",
   "projectname": "WechatApp-EABC",
   "setting": {
-    "urlCheck": false,
+    "urlCheck": true,
     "coverView": false,
     "lazyloadPlaceholderEnable": false,
     "skylineRenderEnable": true,
@@ -19,5 +19,52 @@
     "checkInvalidKey": true,
     "ignoreDevUnusedFiles": true
   },
-  "condition": {}
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/admin/userDetail/userDetail",
+          "pathName": "pages/admin/userDetail/userDetail",
+          "query": "memberId=10024",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
+          "name": "pages/admin/activityList/activityList",
+          "pathName": "pages/admin/activityList/activityList",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/admin/userDetail/userDetail",
+          "pathName": "pages/admin/userDetail/userDetail",
+          "query": "memberId=10024",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/user/my/my",
+          "pathName": "pages/user/my/my",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/activity/rank/details",
+          "pathName": "pages/activity/rank/details",
+          "query": "id=d84694f2693f732607c1d9422a2642d8",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/admin/userList/userList",
+          "pathName": "pages/admin/userList/userList",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
+  }
 }

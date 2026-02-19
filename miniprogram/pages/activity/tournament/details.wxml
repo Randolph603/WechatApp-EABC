@@ -1,0 +1,394 @@
+<view class="background">
+  <image class="image" src="/static/images/home3.jpg" mode="aspectFill" />
+  <view class="panel">
+    <mp-navigation-bar title="{{_lang.title}}" back="{{false}}" color="white" bindback="handlerGobackClick">
+      <view class="nav-left" slot="left">
+        <image class="nav-back-image" bindtap="navigateBack" src="/static/icons/navigationbar/back-light.png" />
+        <image class="nav-home-image" bindtap="navigateHome" src="/static/icons/navigationbar/home-light.png" />
+      </view>
+    </mp-navigation-bar>
+
+    <block wx:if="{{isLoaded}}">
+      <scroll-view class="scroll" scroll-y>
+        <view class="scroll-box">
+          <view class="title">{{activity.title}}</view>
+          <!-- Info section -->
+          <view class="mb-20 ml-20 mr-20">
+            <view style="justify-content: space-between;" class="info-row tab-group">
+              <view class="view-row">
+                <image class="icon16 mr-10" src="/static/icons/details/date-white.png" />
+                <text>{{activity.date}}</text>
+              </view>
+              <view class="tab">{{_lang.view}}：{{activity.viewCount}}</view>
+            </view>
+
+            <view class="view-row mb-20">
+              <image class="icon16 mr-10" src="/static/icons/details/location-white.png" />
+              <text>{{_lang.address}}：</text><text user-select>{{activity.address}}</text>
+            </view>
+
+            <view class="view-row-between mb-20">
+              <view class="view-row">
+                <image class="icon16 mr-10" src="/static/icons/details/fee-white.png" />
+                <text>{{_lang.fee}}：{{activity.sections[0].price}} NZD {{_lang.feeSuffix}}</text>
+              </view>
+              <view class="view-row">
+                <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/attention-white.png" />
+                <text>{{_lang.attendeeMax}} {{activity.sections[0].maxAttendee}} {{_lang.member}}</text>
+              </view>
+            </view>
+
+            <view class="view-row-between mb-20">
+              <view class="view-row">
+                <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
+                <text>{{_lang.court}}: {{activity.sections[0].courts}} {{_lang.courtSuffix}}</text>
+              </view>
+              <view class="view-row">
+                <image class="icon16 mr-10" mode="heightFix" src="/static/icons/details/time-white.png" />
+                <text>{{activity.sections[0].timeRange}}</text>
+              </view>
+            </view>
+
+            <view class="divider mb-20" />
+            <view class="view-row-centre">{{_lang.sponsoring}}</view>
+            <view class="banner">
+              <swiper indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" circular autoplay interval="4000">
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/1.png" mode="aspectFit" />
+                </swiper-item>
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/2.png" mode="aspectFit" />
+                </swiper-item>
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/3.png" mode="aspectFit" />
+                </swiper-item>
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/4.png" mode="aspectFit" />
+                </swiper-item>
+                <swiper-item>
+                  <image src="https://7072-prod-4glz11qiccc892f2-1303221174.tcb.qcloud.la/ads/5.jpg" mode="aspectFit" />
+                </swiper-item>
+              </swiper>
+            </view>
+
+            <view class="divider mb-20 mt-20" />
+          </view>
+          <!-- Info section end -->
+
+          <!-- main section -->
+          <view class="swiper-container" style="height: {{swiperHeight + 60}}px;  width: 100%; overflow: hidden;">
+            <view class="view-row-evenly">
+              <view class="{{selectedTab === 0 ? 'tab-actived' : ''}}" data-index="0" bindtap="onTapTab">报名</view>
+              <view class="{{selectedTab === 1 ? 'tab-actived' : ''}}" data-index="1" bindtap="onTapTab">积分赛</view>
+              <view class="{{selectedTab === 2 ? 'tab-actived' : ''}}" data-index="2" bindtap="onTapTab">积分表</view>
+              <view class="{{selectedTab === 3 ? 'tab-actived' : ''}}" data-index="3" bindtap="onTapTab">淘汰赛</view>
+            </view>
+
+            <swiper style="height: 100%;" current="{{selectedTab}}" bindchange="onSwiperChange">
+              <!-- sign up -->
+              <swiper-item>
+                <view id="slide0">
+                  <view class="view-row ml-20 mr-20 mt-10">
+                    <text>参赛队伍以参加群活动的活跃度排序，优先选取活跃度高的球友，也欢迎新球友参加。</text>
+                  </view>
+                  <!-- For Teams -->
+                  <block wx:for="{{joinedTeams}}" wx:key="index" wx:for-item="team">
+                    <view class="game-box">
+                      <view class="header">
+                        <view class="view-row-between">
+                          <text>Team {{index+1}}</text>
+                          <text>总活跃度：{{team.totalPowerPoint}}</text>
+                        </view>
+                      </view>
+
+                      <view class="divider-main" />
+
+                      <view class="attention-row">
+                        <view class="section" wx:for="{{team.players}}" wx:key="attendeeId" wx:for-item="user" wx:for-index="idx">
+                          <view class="head-img">
+                            <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                          </view>
+                          <view class="view-row-centre">
+                            <image wx:if="{{user.attendeeGender > 0}}" class="icon16" src="/static/icons/{{user.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                            <image wx:if="{{!user.attendeeGender && user.gender > 0}}" class="icon16" src="/static/icons/{{user.gender === 1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                            <view>
+                              <text class="display-name">{{user.attendeeName || user.displayName}}</text>
+                              <text wx:if="{{user.joinMore && !user.attendeeName}}">+{{user.joinMore}}</text>
+                            </view>
+                          </view>
+                          <text>活跃度: {{user.powerPoint}}</text>
+                        </view>
+                      </view>
+                    </view>
+                  </block>
+                  <!-- For Teams end-->
+
+                  <view class="mt-100" />
+                  <!-- Waiting List -->
+                  <block wx:if="{{waitingTeams.length > 0}}">
+                    <view class="divider-main" />
+                    <view class="header">后补报名 (参加活动，提升活跃度！)</view>
+                    <block wx:for="{{waitingTeams}}" wx:key="index" wx:for-item="team">
+                      <view class="game-box">
+                        <view class="header">
+                          <view class="view-row-between">
+                            <text>后补队伍 {{index+1}}</text>
+                            <text>总活跃度：{{team.totalPowerPoint}}</text>
+                          </view>
+                        </view>
+
+                        <view class="divider-main" />
+
+                        <view class="attention-row">
+                          <view class="section" wx:for="{{team.players}}" wx:key="attendeeId" wx:for-item="user" wx:for-index="idx">
+                            <view class="head-img">
+                              <image-loader ext-class="avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                            </view>
+                            <view class="view-row-centre">
+                              <image wx:if="{{user.attendeeGender > 0}}" class="icon16" src="/static/icons/{{user.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                              <image wx:if="{{!user.attendeeGender && user.gender > 0}}" class="icon16" src="/static/icons/{{user.gender === 1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                              <view>
+                                <text class="display-name">{{user.attendeeName || user.displayName}}</text>
+                                <text wx:if="{{user.joinMore && !user.attendeeName}}">+{{user.joinMore}}</text>
+                              </view>
+                            </view>
+                            <text>活跃度: {{user.powerPoint}}</text>
+                          </view>
+                        </view>
+                      </view>
+                    </block>
+                  </block>
+
+                  <!-- For Solo -->
+                  <view class="game-box">
+                    <!-- Header information -->
+                    <view class="header">
+                      <view class="view-row">
+                        未组队
+                      </view>
+                    </view>
+                    <!-- Header information End -->
+                    <view class="divider-main" />
+                    <!-- Attendee List -->
+                    <view class="attention-row">
+                      <view class="section-4" wx:for="{{soloMembers}}" wx:key="attendeeId" wx:for-item="user">
+                        <view class="head-img">
+                          <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                        </view>
+                        <view class="view-row-centre full-width">
+                          <image wx:if="{{user.attendeeGender > 0}}" class="icon16" src="/static/icons/{{user.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                          <image wx:if="{{!user.attendeeGender && user.gender > 0}}" class="icon16" src="/static/icons/{{user.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                          <text class="display-name">{{user.attendeeName || user.displayName}}</text>
+                        </view>
+                        <text wx:if="{{user.joinMore && !user.attendeeName}}">+{{user.joinMore}}</text>
+                      </view>
+                    </view>
+                    <!-- Attendee List End-->
+                  </view>
+                  <!-- For Solo end-->
+                </view>
+              </swiper-item>
+              <!-- sign up end-->
+
+              <!-- integral game -->
+              <swiper-item>
+                <view id="slide1">
+                  <view wx:if="{{isCourtMatchesMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无分组</view>
+                  <view wx:else>
+                    <!-- For All Sections -->
+                    <block wx:for="{{activity.sections}}" wx:key="index" wx:for-item="section">
+                      <block wx:if="{{courtAttendeesMap[court].length > 0}}" wx:for="{{section.courts}}" wx:key="index" wx:for-item="court">
+                        <view class="game-box">
+                          <view class="ml-20 view-row">
+                            <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
+                            <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
+                          </view>
+                          <view class="divider-main" />
+                          <view class="attention-row">
+                            <view class="section-group" wx:for="{{courtAttendeesMap[court]}}" wx:key="index" wx:for-item="attendee">
+                              <image-loader ext-class="avatar 11level-{{attendee.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{attendee.avatarUrl}}" />
+                              <view class="view-row-centre full-width">
+                                <image wx:if="{{attendee.attendeeGender > 0}}" class="icon16" src="/static/icons/{{attendee.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <image wx:if="{{!attendee.attendeeGender && attendee.gender > 0}}" class="icon16" src="/static/icons/{{attendee.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                <text class="display-name">{{attendee.attendeeName || attendee.displayName}}</text>
+                              </view>
+                            </view>
+                          </view>
+
+                          <!-- Matches by court -->
+                          <view class="divider-main" />
+                          <block wx:for="{{courtMatchesMap[court]}}" wx:for-item="match" wx:key="index">
+                            <view class="view-row-evenly" style="align-items: flex-start;">
+                              <view class="section-match">
+                                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player1.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                                <view class="view-row-centre full-width">
+                                  <image wx:if="{{match.player1.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player1.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!match.player1.attendeeGender && match.player1.gender > 0}}" class="icon16" src="/static/icons/{{match.player1.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{match.player1.attendeeName || match.player1.displayName}}</text>
+                                </view>
+                              </view>
+                              <view class="section-match">
+                                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player2.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                                <view class="view-row-centre full-width">
+                                  <image wx:if="{{match.player2.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player2.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!match.player2.attendeeGender && match.player2.gender > 0}}" class="icon16" src="/static/icons/{{match.player2.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{match.player2.attendeeName || match.player2.displayName}}</text>
+                                </view>
+                              </view>
+                              <view class="view-column-centre" style="margin-top: 50rpx;">
+                                <text>VS</text>
+                                <!-- <text>{{match.leftScore}}:{{match.rightScore}}</text> -->
+                              </view>
+                              <view class="section-match">
+                                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player3.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                                <view class="view-row-centre full-width">
+                                  <image wx:if="{{match.player3.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player3.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!match.player3.attendeeGender && match.player3.gender > 0}}" class="icon16" src="/static/icons/{{match.player3.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{match.player3.attendeeName || match.player3.displayName}}</text>
+                                </view>
+                              </view>
+                              <view class="section-match">
+                                <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{match.player4.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+                                <view class="view-row-centre full-width">
+                                  <image wx:if="{{match.player4.attendeeGender > 0}}" class="icon16" src="/static/icons/{{match.player4.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!match.player4.attendeeGender && match.player4.gender > 0}}" class="icon16" src="/static/icons/{{match.player4.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{match.player4.attendeeName || match.player4.displayName}}</text>
+                                </view>
+                              </view>
+                            </view>
+                            <!-- Matches by court end-->
+                          </block>
+                        </view>
+                      </block>
+                    </block>
+                    <!-- For All Sections End -->
+                  </view>
+                </view>
+              </swiper-item>
+              <!-- integral game end -->
+
+              <!-- integral -->
+              <swiper-item>
+                <view id="slide2">
+                  <view wx:if="{{isMatchResultMapEmpty}}" style="height: 60px;" class="view-row-centre">暂无结果</view>
+                  <view wx:else>
+                    <!-- For All Sections -->
+                    <block wx:for="{{activity.sections}}" wx:key="index" wx:for-item="section">
+                      <block wx:if="{{matchResultMap[court].length > 0}}" wx:for="{{section.courts}}" wx:key="index" wx:for-item="court">
+                        <view class="game-box">
+                          <view class="view-row">
+                            <image class="icon16 mr-10" mode="aspectFit" src="/static/icons/details/court-white.png" />
+                            <text>{{_lang.court}}: {{court}} {{_lang.courtSuffix}}</text>
+                          </view>
+                          <view class="view-row">
+                            <view class="column-result-name">队伍</view>
+                            <view class="column-result">胜负场</view>
+                            <view class="column-result">净胜分</view>
+                            <view class="column-result">排名</view>
+                          </view>
+                          <view class="divider-main" />
+                          <view class="view-column">
+                            <view class="section-result" wx:for="{{matchResultMap[court]}}" wx:key="index" wx:for-item="result">
+                              <view class="view-row column-result-name">
+                                <block wx:for="{{result.players}}" wx:key="index" wx:for-item="player">
+                                  <image wx:if="{{player.attendeeGender > 0}}" class="icon16" src="/static/icons/{{player.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <image wx:if="{{!player.attendeeGender && player.gender > 0}}" class="icon16" src="/static/icons/{{player.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+                                  <text class="display-name">{{player.attendeeName || player.displayName}}</text>
+                                </block>
+                              </view>
+                              <view class="column-result">{{result.wins}} / {{result.lost}} </view>
+                              <view class="column-result">{{result.pointDifference}}</view>
+                              <view class="column-result">{{result.powerOfBattleChange}}</view>
+                            </view>
+                          </view>
+                        </view>
+                      </block>
+                    </block>
+                    <!-- For All Sections End -->
+                  </view>
+                </view>
+              </swiper-item>
+              <!-- integral end -->
+
+              <!-- knockout round -->
+              <swiper-item>
+                <view id="slide3">
+                  <view style="height: 60px;" class="view-row-centre">暂无结果</view>
+                </view>
+              </swiper-item>
+              <!-- knockout round end -->
+
+            </swiper>
+          </view>
+          <!-- main section end -->
+
+          <!-- Admin looking for cancelled attendees -->
+          <block wx:if="{{isAdmin}}">
+            <view class="info-row">
+              <view class="icon-section">
+                <image class="icon" src="/static/icons/details/attention-white.png" />
+              </view>
+              <text class="small">Cancelled</text>
+            </view>
+            <view class="attention-row">
+              <view class="section-4" wx:for="{{allCancelledAttendees}}" wx:key="attendeeId" wx:for-item="user">
+                <image-loader ext-class="avatar 11level-{{user.userLevel}}" defaultLoadingSrc="/static/images/blank-profile.jpg" src="{{user.avatarUrl}}" />
+                <text class="display-name">{{user.displayName}}</text>
+                <text wx:if="{{user.joinMore}}">+{{user.joinMore}}</text>
+              </view>
+            </view>
+          </block>
+          <!-- Admin looking for cancelled attendees End-->
+        </view>
+      </scroll-view>
+
+      <view class="action-row">
+        <button bindtap="navigateHome" class="section" plain="true" size="mini">
+          <image class="icon" src="/static/icons/details/home-white.png" />
+          <text>{{_lang.activity}}</text>
+        </button>
+        <button bindtap="navigateMe" class="section" plain="true" size="mini">
+          <image class="icon" src="/static/icons/details/attention-white.png" />
+          <text>{{_lang.my}}</text>
+        </button>
+        <button class="section" plain="true" size="mini" open-type="contact">
+          <image class="icon" src="/static/icons/details/contact-white.png" />
+          <text>{{_lang.contact}}</text>
+        </button>
+        <button class="section" plain="true" size="mini" open-type="share">
+          <image class="icon" src="/static/icons/details/share-white.png" />
+          <text>{{_lang.share}}</text>
+        </button>
+
+        <block wx:if="{{!activity.isCompleted}}">
+          <block wx:if="{{joinMore < 0}}">
+            <button class="btn" size="mini" bindtap="joinAsync" data-join_more="{{0}}">{{_lang.join}}</button>
+          </block>
+          <block wx:else>
+            <button wx:if="{{!joinMore}}" class="section" plain="true" size="mini" bindtap="joinAsync" data-join_more="{{1}}">
+              <image class="icon" src="/static/icons/details/add-user.png" />
+              <text>{{_lang.joinMore}}</text>
+            </button>
+            <view wx:else class="add-more">
+              <image bindtap="cancelAsync" data-join_more="{{joinMore}}" class="icon" src="/static/icons/details/minus.png" />
+              <text>+{{joinMore}}</text>
+              <image bindtap="joinAsync" data-join_more="{{joinMore + 1}}" class="icon" src="/static/icons/details/add.png" />
+            </view>
+
+            <view wx:if="{{!joinMore}}" class="section">
+              <button class="btn" size="mini" bindtap="cancelAsync" data-join_more="{{0}}">{{_lang.cancel}}</button>
+              <text style="font-size: 18rpx">*{{_lang.cancelPolicy}}</text>
+            </view>
+          </block>
+        </block>
+      </view>
+    </block>
+    <view wx:if="{{!isLoading && !activity}}" class="view-row-centre" style="height: 75vh;">
+      <button class="btn" size="mini" bindtap="ReloadAll">Reload</button>
+    </view>
+  </view>
+</view>
+
+<mp-half-screen-dialog show="{{showCancelDialog}}" title="{{_lang.cancelWarningTitle}}" desc="{{_lang.cancelWarningDesc}}" tips="{{_lang.cancelWarningTips}}" />
+
+<mp-half-screen-dialog show="{{showLowCreditBalance}}" title="{{_lang.lowCreditBalanceTitle}}" desc="{{_lang.lowCreditBalanceDesc}}{{myProfile.creditBalance}} NZD" />

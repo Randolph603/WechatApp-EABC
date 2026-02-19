@@ -12,28 +12,60 @@
     </mp-cell>
 
     <mp-cell title="*{{_lang.displayName}}" show-error prop="displayName">
-      <input bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.displayNamePlaceholder}}" />
+      <input type="nickname" bindinput="formTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.displayNamePlaceholder}}" />
     </mp-cell>
 
     <mp-cell title="*{{_lang.gender}}" show-error prop="gender">
-      <picker bindchange="genderPickerChange" range="{{genderArray}}" range-key="name" value="{{formData.gender}}">
-        <view class="picker"> {{formData.genderType.name}} </view>
-      </picker>
+      <view class="view-row">
+        <view class="view-row  mr-10 gender-box {{formData.gender ===1 ? 'selected': ''}}" data-value="{{1}}" bindtap="changeGender">
+          <image class="icon24" src="/static/icons/male.png" mode="aspectFit" />
+          <text class="ml-10">{{genderArray[1].name}}</text>
+        </view>
+
+        <view class="view-row mr-10 gender-box ml-10 {{formData.gender ===2 ? 'selected': ''}}" data-value="{{2}}" bindtap="changeGender">
+          <image class="icon24" src="/static/icons/female.png" mode="aspectFit" />
+          <text class="ml-10">{{genderArray[2].name}}</text>
+        </view>
+      </view>
     </mp-cell>
 
-    <mp-cell title="{{_lang.level}}" show-error prop="userLevel">
-      <picker bindchange="levelPickerChange" range="{{levelArray}}" range-key="name" value="{{formData.userLevel}}">
-        <view class="picker"> {{formData.userLevelType.name}} </view>
-      </picker>
-      <mp-badge slot="footer" wx:if="{{formData.userLevel === 0}}" content="New" color="#888" extClass="view-row" />
+    <mp-cell title="*{{_lang.level}}" show-error prop="selfRatingLevel">
+      <view class="picker" bindtap="selfRatingLevel">
+        {{formData.selfRatingLevel > 0 ? "Lv."+userSelfRatingLevelMap[formData.selfRatingLevel].level+" - "+userSelfRatingLevelMap[formData.selfRatingLevel].title : "请选择"}}
+      </view>
+
+      <!-- <view slot="footer">+0.5</view> -->
+      <mp-badge slot="footer" wx:if="{{formData.selfRatingLevel === 0}}" content="New" color="#888" extClass="view-row" />
     </mp-cell>
 
-    <text style="font-size: 12px; margin-left: 17px; color: rgb(167, 160, 160);">*为必填选项</text>
+    <text style="font-size: 12px; margin-left: 17px; color: rgb(167, 160, 160);">{{_lang.required}}</text>
 
     <view class="bottom-btn-area">
-      <button class="weui-btn" style="background: #346Fc2" type="primary" bindtap="submitForm">
-        {{user ? _lang.save: _lang.register}}
-      </button>
+      <view class="view-row ml-20 mr-20">
+        <button class="weui-btn" style="color: #346FC2;" type="default" size="mini" bindtap="navigateBack">
+          {{_lang.cancel}}
+        </button>
+        <button class="weui-btn" style="margin-top: 0;" size="mini" bindtap="submitForm">
+          {{user ? _lang.save: _lang.register}}
+        </button>
+      </view>
     </view>
   </mp-form>
 </scroll-view>
+
+<mp-half-screen-dialog extClass="self-level-container" maskClosable="{{true}}" closabled="{{false}}" show="{{showSelfRatingLevel}}">
+  <view slot="title" style="font-size: medium;" class="view-row-centre">{{_lang.selfRatingLevelTitle}}</view>
+  <swiper slot="desc" style="height: 100%;" current="{{selfRatingLevelIndex}}" bindchange="onSwiperChange" indicator-dots>
+    <swiper-item wx:for="{{userSelfRatingLevelArray}}" wx:key="index" wx:for-item="item">
+      <view class="view-row-centre">Lv.{{item.level}} - {{item.title}}</view>
+      <scroll-view style="height: 90%; font-size: 12px;" scroll-y>
+        <view style="white-space: pre-line; margin: 0 20px;">
+          {{item.content}}
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+  <view slot="footer">
+    <button type="primary" bindtap="chooseSelfLevel">说的就是我</button>
+  </view>
+</mp-half-screen-dialog>

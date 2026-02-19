@@ -2,17 +2,25 @@
   "pages": [
     "pages/home/home",
     "pages/activity/list/list",
-    "pages/activity/details/details",
+    "pages/activity/section/details",
+    "pages/activity/rank/details",
+    "pages/activity/tournament/details",
     "pages/rank/rank",
     "pages/shop/shop",
     "pages/user/my/my",
+    "pages/user/myAccount/myAccount",
     "pages/user/profile/profile",
     "pages/user/creditHistory/creditHistory",
     "pages/admin/settingList/settingList",
-    "pages/admin/activityDetail/activityDetail",
     "pages/admin/activityList/activityList",
+    "pages/admin/activityDetail/activityDetail",
     "pages/admin/userList/userList",
-    "pages/admin/userDetail/userDetail"
+    "pages/admin/userDetail/userDetail",
+    "pages/admin/eventList/eventList",
+    "pages/admin/tournament/list/list",
+    "pages/admin/tournament/detail/detail",
+    "pages/manager/tournament/list/list",
+    "pages/manager/tournament/detail/detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

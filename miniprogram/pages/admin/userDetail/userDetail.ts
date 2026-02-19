@@ -1,26 +1,40 @@
 import { CallCloudFuncAsync, UpdateRecordAsync } from "@API/commonHelper";
 import { GetUserByMemberId } from "@API/userService";
-import { LevelArray, UserGenderArray, UserRoleArray } from "@Lib/types";
-import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
+import { UserBadges, UserBadgesArray, UserGenderArray, UserRoleArray } from "@Lib/types";
+import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight, GetRandomIdentityId } from "@Lib/utils";
 import { IOption } from "@Model/index";
-import { iUser, UserModel } from "@Model/User";
+import { BadgeModel, iBadge, iUser, UserModel } from "@Model/User";
+
+const rules = [
+  { name: 'displayName', rules: { required: true } },
+  { name: 'bankName', rules: { required: false } },
+  { name: 'userRole', rules: { required: true } },
+  { name: 'gender', rules: { required: true } },
+  { name: 'powerPoint', rules: { required: true } },
+  { name: 'continueWeeklyJoin', rules: { required: false } },
+  { name: 'powerOfBattle', rules: { required: false } },
+  { name: 'badges', rules: { required: false } },
+];
 
 Page({
   data: {
     // Static
     navBarHeight: GetNavBarHeight() + 100,
     // Status:
+    rules: rules,
     isLoaded: false,
     // Variables
-    formData: null as unknown as UserModel,
+    formData: new UserModel(),
     user: null as unknown as iUser,
     userRoleArray: UserRoleArray,
-    levelArray: LevelArray,
     genderArray: UserGenderArray,
     // Dialog
     showBalanceChange: false,
     balanceChangeTitle: '充值',
-    balanceChangeValue: 17,
+    balanceChangeValue: 15,
+    showBadgeDialog: false,
+    theSelectedBadge: new BadgeModel(),
+    userBadgesArray: UserBadgesArray
   },
 
   async onLoad(options: Record<string, string | undefined>) {
@@ -65,22 +79,6 @@ Page({
     this.setData({
       [`formData.userRole`]: index,
       [`user.userRoleType`]: UserRoleArray[index],
-    });
-  },
-
-  GenderPickerChange(e: IOption) {
-    const index = Number(e.detail.value);
-    this.setData({
-      [`formData.gender`]: index,
-      [`user.genderType`]: UserGenderArray[index],
-    });
-  },
-
-  LevelPickerChange(e: IOption) {
-    const index = Number(e.detail.value);
-    this.setData({
-      [`formData.userLevel`]: index,
-      [`user.userLevelType`]: LevelArray[index]
     });
   },
 
@@ -153,12 +151,71 @@ Page({
       if (e.detail.index === 1) {
         value = 0 - value;
       }
-      await CallCloudFuncAsync('user_balanceChange', { memberId, title, value });
-      await this.LoadUser(memberId);
+      const topUpAndReloadUser = async () => {
+        await CallCloudFuncAsync('user_balanceChange', { memberId, title, value });
+        await this.LoadUser(memberId);
+      };
+      await ExcuteWithProcessingAsync(topUpAndReloadUser);
     }
 
     this.setData({ showBalanceChange: false });
   },
 
+  showBadgeDialog(e: IOption) {
+    const { badge } = e.currentTarget.dataset;
+    this.setData({
+      showBadgeDialog: true,
+      theSelectedBadge: badge
+    });
+  },
+
+  badgePickerChange(e: IOption) {
+    const index = Number(e.detail.value);
+    const selected = this.data.userBadgesArray[index];
+    this.setData({
+      [`theSelectedBadge.type`]: selected.type,
+      [`theSelectedBadge.title`]: selected.title,
+    });
+  },
+
+  badgeDateChange(e: IOption) {
+    const newDate = new Date(e.detail.value);
+    this.setData({
+      [`theSelectedBadge.createDateString`]: e.detail.value,
+      ['theSelectedBadge.createDate']: newDate
+    });
+  },
+
+  addBadge() {
+    const currentBadges = this.data.formData.badges;
+    currentBadges.push(new BadgeModel());
+    this.setData({
+      [`formData.badges`]: currentBadges,
+      showBadgeDialog: false,
+    });
+  },
+
+  removeBadge(e: IOption) {
+    const { badge } = e.currentTarget.dataset;
+    const currentBadges = this.data.formData.badges;
+    const newBadges = currentBadges.filter((b: iBadge) => b.id !== badge.id);
+    this.setData({
+      [`formData.badges`]: newBadges
+    });
+  },
+
+  SaveBadge() {
+    const currentBadges = this.data.formData.badges;
+    const theSelectedBadge = this.data.theSelectedBadge;
+    const index = currentBadges.findIndex(b => b.id === theSelectedBadge.id);
+    if (index !== -1) {
+      currentBadges[index] = theSelectedBadge;
+    }
+
+    this.setData({
+      [`formData.badges`]: currentBadges,
+      showBadgeDialog: false,
+    });
+  },
   //#endregion
 })

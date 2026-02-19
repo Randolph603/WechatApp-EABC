@@ -9,6 +9,10 @@
     <view>活动信息</view>
     <image slot="title" class="mp-cell-icon" src="/static/icons/activity.png" />
   </mp-cell>
+  <mp-cell link hover url='/pages/admin/tournament/list/list'>
+    <view>比赛信息</view>
+    <image slot="title" class="mp-cell-icon" src="/static/icons/trophy.png" />
+  </mp-cell>
   <mp-cell link hover url='/pages/admin/activityDetail/activityDetail'>
     <view>添加活动</view>
     <image slot="title" class="mp-cell-icon" src="/static/icons/add.png" />
@@ -16,8 +20,19 @@
 </mp-cells>
 
 <mp-cells title="操作">
-  <mp-cell link hover>
+  <mp-cell link hover bindtap="updateContinueWeeklyJoin">
     <view>每周更新</view>
     <image slot="title" class="mp-cell-icon" src="/static/icons/update.png" />
+  </mp-cell>
+  <mp-cell link hover bindtap="updateMatchResultWeekly">
+    <view>每周战力更新</view>
+    <image slot="title" class="mp-cell-icon" src="/static/icons/archer.png" />
+  </mp-cell>
+</mp-cells>
+
+<mp-cells title="查看">
+  <mp-cell link hover url='/pages/admin/eventList/eventList'>
+    <view>事件列表</view>
+    <image slot="title" class="mp-cell-icon" src="/static/icons/adventure.png" />
   </mp-cell>
 </mp-cells>

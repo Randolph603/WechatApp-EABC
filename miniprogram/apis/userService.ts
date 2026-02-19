@@ -1,17 +1,19 @@
 import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { config } from "../configs/index";
-import { UserRoleArray, LevelArray, UserGenderArray } from "@Lib/types";
+import { UserRoleArray, LevelArray } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { WxGetFileInfoAsync } from "@Lib/promisify";
-import { CallCloudFuncAsync } from "./commonHelper";
+import { CallCloudFuncAsync, HandleException } from "./commonHelper";
 
-const SetupUserTypes = (user: any) => {
+export const SetupUserTypes = (user: any) => {
   if (user.avatarUrl.startsWith('cloud')) {
     user.avatarUrl = ConvertFileIdToHttps(user.avatarUrl);
   }
   user.userRoleType = UserRoleArray[user.userRole];
   user.userLevelType = LevelArray[user.userLevel];
-  user.genderType = UserGenderArray[user.gender];
+  user.discount = (user.continueWeeklyJoin ?? 0) > config.maxDiscount
+    ? config.maxDiscount
+    : user.continueWeeklyJoin;
 }
 
 export const RegisterNewUserAsync = async () => {
@@ -28,9 +30,11 @@ export const CheckUserExistsAsync = async () => {
 
   if (user) {
     SetupUserTypes(user);
-  } 
-
-  return config.mockNewUser ? null : user;
+  }
+  return {
+    unionId: unionId,
+    userProfile: config.mockNewUser ? null : user
+  };
 }
 
 export const GetUserByMemberId = async (memberId: number) => {
@@ -44,7 +48,7 @@ export const GetUserByMemberId = async (memberId: number) => {
   return user;
 }
 
-export const UploadAvatarImageAsync = async (filePath: string, memberId: number, avatarUrl: string) => {
+export const UploadAvatarImageAsync = async (filePath: string, memberId: number, avatarFileToDelete: string | null): Promise<any> => {
   try {
     const fileRes = await WxGetFileInfoAsync({ filePath });
     if (fileRes.size > 1024 * 1024 * 2) {
@@ -57,19 +61,22 @@ export const UploadAvatarImageAsync = async (filePath: string, memberId: number,
       const fileTypeArray = filePath.match(/\.[^.]+?$/);
       const fileType = fileTypeArray ? fileTypeArray[0] : '';
       const cloudPath = 'avatar/' + memberId + '-' + random6String + '-' + fileType;
-
       const app = await GetCloudAsync();
-      const { fileID } = await app.uploadFile({
+      const result = await app.uploadFile({
         cloudPath,//云存储图片名字
         filePath,//临时路径
-        method: "post"
+        method: 'post'
       });
-      await app.deleteFile({ fileList: [avatarUrl] });
-      return fileID;
+
+      if (avatarFileToDelete) {
+        await app.deleteFile({ fileList: [avatarFileToDelete] });
+      }
+      return result;
     }
     return null;
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
+    await HandleException('UploadAvatarImageAsync', error)
     return null;
   }
 }
@@ -83,10 +90,10 @@ export const SearchUsersForRankAsync = async () => {
   return users;
 }
 
-export const SearchUsersByKeyAsync = async (searchText: string) => {
+export const SearchUsersByKeyAsync = async (searchText: string, limit: number) => {
   const { users } = await CallCloudFuncAsync('user_search', {
     searchText: searchText,
-    limit: 5
+    limit: limit
   });
   users.forEach((u: any) => SetupUserTypes(u));
   return users;
@@ -98,7 +105,8 @@ export const SearchUsersSortByContinuelyWeeksAsync = async () => {
   const _ = db.command;
   const { users } = await CallCloudFuncAsync('user_search', {
     where: { continueWeeklyJoin: _.gt(0) },
-    limit: 30
+    limit: 100,
+    sort: { continueWeeklyJoin: -1 }
   });
   users.forEach((u: any) => SetupUserTypes(u));
   return users;

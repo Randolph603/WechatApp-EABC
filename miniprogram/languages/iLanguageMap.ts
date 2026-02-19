@@ -2,7 +2,17 @@ interface iLanguageMap {
   tabbar: {
     list: { text: string }[]
   },
-  type: any,
+  type: {
+    gender: any,
+    selfRatingLevels: { level: number; title: string, content: string }[];
+    userLevel: any,
+    userLevelDisplay: any,
+    activityType: {
+      section: string,
+      rank: string,
+      tournament: string
+    },
+  },
   utils: {
     processing: string,
     loading: string,
@@ -14,7 +24,22 @@ interface iLanguageMap {
     // "title": string,
     // "register": string,
   };
-  userProfile: any,
+  userProfile: {
+    title: string;
+    memberId: string;
+    noMemberId: string;
+    avatar: string;
+    setAvatar: string;
+    displayName: string;
+    displayNamePlaceholder: string;
+    gender: string;
+    level: string;
+    required: string;
+    save: string;
+    register: string;
+    cancel: string;
+    selfRatingLevelTitle: string;
+  },
   creditHistory: any,
   hotRank: any,
   activityList: any,

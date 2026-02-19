@@ -1,26 +1,29 @@
-.skyline-nav-bar {
+.nav-left {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  .nav-left {
-    border: 1rpx solid rgba(255, 255, 255, 0.3);
-    border-radius: 40rpx;
-    padding: 12rpx 24rpx;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #1d1b1b59;
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 40rpx;
+  padding: 12rpx 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1d1b1b59;
 
-    .nav-back-image {
-      width: 28px;
-      height: 17px;
-      padding-right: 28rpx;
-      margin-right: 28rpx;
-      border-right: 1px solid rgba(255, 255, 255, 0.5);
-    }
+  .nav-back-image {
+    width: 17px;
+    height: 17px;
 
-    .nav-home-image {
-      width: 17px;
-      height: 17px;
-    }
+  }
+
+  .divider {
+    height: 17px;
+    padding-right: 28rpx;
+    margin-right: 28rpx;
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .nav-home-image {
+    width: 17px;
+    height: 17px;
   }
 }
 
@@ -57,7 +60,7 @@
       position: absolute;
       left: 50%;
       margin-left: -20rpx;
-      bottom: 0;
+      bottom: 5px;
     }
 
     .tab-icon {
@@ -70,13 +73,17 @@
 }
 
 .grid-item:nth-child(odd) {
-  margin: 20rpx 30rpx;
-  margin-right: 6rpx;
+  padding-top: 20rpx;
+  padding-bottom: 20rpx;
+  padding-right: 6rpx;
+  padding-left: 20rpx;
 }
 
 .grid-item:nth-child(even) {
-  margin: 20rpx 30rpx;
-  margin-left: 6rpx;
+  padding-top: 20rpx;
+  padding-bottom: 20rpx;
+  padding-left: 6rpx;
+  padding-right: 20rpx;
 }
 
 .card {
@@ -90,7 +97,7 @@
 
 .completedLabel {
   position: absolute;
-  top: 20rpx;
+  top: 35rpx;
   width: 240rpx;
   z-index: 1;
 
@@ -104,9 +111,42 @@
     line-height: 0.5px;
     color: rgb(0, 0, 0);
     height: 0px;
-    border: 0.8rem solid #2d8cb8a6;
+    border: 0.8rem solid #2d8cb8;
     border-right-color: transparent;
     content: "活动已结束";
+    box-shadow: 0px 0.3125rem 0.3125rem -0.3125rem #000;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 1.85rem;
+    left: -0.45rem;
+    border: 0.25rem solid #89540c;
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+  }
+}
+
+.joinedLabel {
+  position: absolute;
+  top: 35rpx;
+  width: 240rpx;
+  z-index: 1;
+
+  &::before {
+    position: absolute;
+    top: 0.3rem;
+    left: -0.45rem;
+    padding-right: 0.5rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+    line-height: 0.5px;
+    color: rgb(0, 0, 0);
+    height: 0px;
+    border: 0.8rem solid #b5c4b1a6;
+    border-right-color: transparent;
+    content: "已报名";
     box-shadow: 0px 0.3125rem 0.3125rem -0.3125rem #000;
   }
 

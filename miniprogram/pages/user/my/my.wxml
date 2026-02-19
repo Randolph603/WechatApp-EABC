@@ -9,14 +9,17 @@
   </view>
   <view class="view-column" wx:else>
     <view class="view-row" style="align-items: flex-start; width: 100%">
-      <button style="border: 0; width: auto; padding: 0; margin: 0;" plain="true" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-        <image-loader ext-class="user-avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{myProfile.avatarUrl}}' mode="aspectFit" />
+      <button style="border: 0; width: auto; padding: 0; margin: 0;" plain="true" open-type="chooseAvatar"
+        bindchooseavatar="onChooseAvatar">
+        <image-loader ext-class="user-avatar" defaultLoadingSrc="/static/images/blank-profile.jpg"
+          src='{{myProfile.avatarUrl}}' mode="aspectFit" />
       </button>
       <view class="user-info">
         <view class="view-row top-row">
           <view class="view-row">
             <text class="user-status">{{myProfile.userRoleType.name}}</text>
-            <image wx:if="{{myProfile.gender > 0}}" class="user-icon" src="/static/icons/{{myProfile.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+            <image wx:if="{{myProfile.gender > 0}}" class="user-icon"
+              src="/static/icons/{{myProfile.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
             <text class="user-name">{{myProfile.displayName}}</text>
           </view>
           <button class="user-edit" plain="true" size="mini" bindtap='editProfile'>
@@ -33,20 +36,23 @@
       </view>
     </view>
     <view class="view-row user-values">
-      <view class="view-column" style="align-items: center;">
+      <view class="view-column-centre">
         <view>{{myProfile.creditBalance}} <text style="font-size: 11px;">NZD</text></view>
         <text>{{_lang.balance}}</text>
       </view>
-      <view class="view-column" style="align-items: center;">
+      <view class="view-column-centre">
         <view>{{myProfile.continueWeeklyJoin || 0}} <text style="font-size: 11px;">{{_lang.week}}</text></view>
         <text>{{_lang.continueWeekly}}</text>
       </view>
-      <view class="view-column" style="align-items: center;">
+      <view class="view-column-centre">
         <text>{{myProfile.powerPoint || 0}}</text>
-        <text>{{_lang.points}}</text>
+        <view class="view-row-centre">
+          <text>{{_lang.points}}</text>
+          <!-- <image class="icon16 ml-10" src='/static/icons/information.png' mode="heightFix"/> -->
+        </view>
       </view>
-      <view class="view-column" style="align-items: center;">
-        <text>{{myProfile.userLevelType.displayName}}</text>
+      <view class="view-column-centre">
+        <text>Lv.{{myProfile.selfRatingLevel}}</text>
         <text>{{_lang.userLevel}}</text>
       </view>
     </view>
@@ -58,98 +64,89 @@
   <image class="loading" src='/static/images/loading.gif' mode="heightFix" />
 </view>
 
-<scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="LoadUser" refresher-triggered="{{triggered}}">
+<scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="LoadUser"
+  refresher-triggered="{{triggered}}">
 
-  <!-- <view class="card">
-    <view class="card-title">我的成就</view>
+  <!-- <view wx:if='{{hasAuth}}' class="card">
+    <view class="card-title">{{_lang.achievementTitle}}</view>
     <scroll-view scroll-x="{{true}}">
-      <view class="card-items">
-        <navigator class="card-item" url="/pages/home/home" open-type="switchTab">
-          <image class="icon72 image-disable" src="/static/icons/badge/week.png" mode="heightFix" />
-          <text>{{_lang.championWeek}}</text>
-        </navigator>
-        <view class="card-item">
-          <image class="icon72 image-disable" src="/static/icons/badge/month.png" mode="heightFix" />
-          <text>{{_lang.championMonth}}</text>
+      <view class="card-items">       
+        <view class="card-item badge">
+          <image class="icon72" src="/static/icons/badge/5weeks.png" mode="heightFix" />
+          <text>{{_lang.continueWeeklyJoin5}}</text>          
         </view>
-        <view class="card-item">
-          <image class="icon72 image-disable" src="/static/icons/badge/year.png" mode="heightFix" />
-          <text>{{_lang.championYear}}</text>
-        </view>
-        <view class="card-item">
-          <image class="icon72 image-disable" src="/static/icons/badge/5weeks.png" mode="heightFix" />
-          <text>{{_lang.continueWeeklyJoin5}}</text>
-        </view>
-        <view class="card-item">
-          <image class="icon72 image-disable" src="/static/icons/badge/10weeks.png" mode="heightFix" />
-          <text>{{_lang.continueWeeklyJoin10}}</text>
-        </view>
-        <view class="card-item">
+        <view class="card-item badge">
           <image class="icon72 image-disable" src="/static/icons/badge/15weeks.png" mode="heightFix" />
           <text>{{_lang.continueWeeklyJoin15}}</text>
         </view>
-
+        <view class="card-item badge">
+          <image class="icon72 image-disable" src="/static/icons/badge/52weeks.png" mode="heightFix" />
+          <text>{{_lang.continueWeeklyJoin52}}</text>
+        </view>       
       </view>
     </scroll-view>
   </view> -->
 
-  <!-- <view class="card">
-    <view class="card-title">推荐服务</view>
-    <scroll-view scroll-x="{{true}}">
-      <view class="card-items">
-        <navigator class="card-item" url="/pages/home/home" open-type="switchTab">
-          <image class="icon48" src="/static/icons/adventure.png" mode="heightFix" />
-          <text>战绩</text>
-        </navigator>
-        <view class="card-item">
-          <image class="icon48" src="/static/icons/apple-arcade.png" mode="heightFix" />
-          <text>队伍</text>
-        </view>
-        <view class="card-item">
-          <image class="icon48" src="/static/icons/game-controller.png" mode="heightFix" />
-          <text>门派</text>
-        </view>
-        <view class="card-item">
-          <image class="icon48" src="/static/icons/archer.png" mode="heightFix" />
-          <text>战绩</text>
-        </view>
-        <view class="card-item">
-          <image class="icon48" src="/static/icons/spartan-helmet.png" mode="heightFix" />
-          <text>活动</text>
-        </view>
-        <view class="card-item">
-          <image class="icon48" src="/static/icons/armored-boot.png" mode="heightFix" />
-          <text>比赛</text>
-        </view>
+  <view wx:if='{{hasAuth}}' class="card">
+    <view class="card-title">{{_lang.titleAccount}}</view>
+    <view class="card-items" style="flex-wrap: wrap;">
+      <navigator class="card-item feature" url="/pages/user/creditHistory/creditHistory?memberId={{myProfile.memberId}}"
+        open-type="navigate">
+        <image class="icon24" src="/static/icons/purchase-order.png" mode="heightFix" />
+        <text>{{_lang.history}}</text>
+      </navigator>
+      <view class="card-item feature" bindtap="tapDialog" data-value="{{true}}">
+        <image class="icon24" src="/static/icons/payment.png" mode="heightFix" />
+        <text>{{_lang.topup}}</text>
       </view>
-    </scroll-view>
-  </view> -->
+      <!-- url="/pages/user/myAccount/myAccount" -->
+      <!-- <navigator class="card-item feature" open-type="navigate">
+        <image class="icon24 image-disable" src="/static/icons/members.png" mode="heightFix" />
+        <text>{{_lang.subAccount}}</text>
+      </navigator>
+      <view class="card-item feature">
+        <image class="icon24 image-disable" src="/static/icons/user-setting.png" mode="heightFix" />
+        <text>{{_lang.preference}}</text>
+      </view>
+      <view class="card-item feature">
+        <image class="icon24 image-disable" src="/static/icons/trophy.png" mode="heightFix" />
+        <text>{{_lang.achievement}}</text>
+      </view>
+      <view class="card-item feature">
+        <image class="icon24 image-disable" src="/static/icons/wallet.png" mode="heightFix" />
+        <text>{{_lang.wallet}}</text>
+      </view>
+      <view class="card-item feature">
+        <image class="icon24 image-disable" src="/static/icons/delivery.png" mode="heightFix" />
+        <text>{{_lang.order}}</text>
+      </view> -->
+    </view>
+  </view>
 
-  <view class="feature-card">
-    <mp-cells title="{{_lang.features}}">
-      <!-- <mp-cell wx:if='{{hasAuth}}' link hover value="{{_lang.wallet}}">
+  <view class="card">
+    <view class="card-title">{{_lang.titleFeatures}}</view>
+    <!-- <mp-cells> -->
+    <!-- <mp-cell wx:if='{{hasAuth}}' link hover value="{{_lang.wallet}}">
         <image slot="icon" src="/static/icons/wallet.png" class="mp-cell-icon" />
       </mp-cell> -->
-      <mp-cell wx:if='{{hasAuth}}' link hover url="/pages/user/creditHistory/creditHistory?memberId={{myProfile.memberId}}" value="{{_lang.history}}">
-        <image slot="icon" src="/static/icons/purchase-order.png" class="mp-cell-icon" />
-      </mp-cell>
-      <mp-cell wx:if='{{hasAuth}}' link hover value="{{_lang.topup}}" bindtap="tapDialog" data-value="{{true}}">
-        <image slot="icon" src="/static/icons/payment.png" class="mp-cell-icon" />
-      </mp-cell>
-      <mp-cell link value="{{_lang.contactUs}}">
-        <button style="border: 0" class="contact-btn" plain="true" open-type="contact" />
-        <image slot="icon" src="/static/icons/contact-us.png" class="mp-cell-icon" />
-      </mp-cell>
-      <mp-cell link>
-        <image slot="icon" src="/static/icons/language.png" class="mp-cell-icon" />
-        <picker bindchange="languagePickerChange" range="{{languageArray}}" range-key="name" value="{{currentLanguage.index}}">
-          <view class="picker"> {{currentLanguage.setting}} </view>
-        </picker>
-      </mp-cell>
-      <mp-cell wx:if="{{isAdmin}}" link hover url="/pages/admin/settingList/settingList" value="{{_lang.adminSetting}}">
-        <image slot="icon" src="/static/icons/setting.png" class="mp-cell-icon" />
-      </mp-cell>
-    </mp-cells>
+    <mp-cell link value="{{_lang.contactUs}}">
+      <button style="border: 0" class="contact-btn" plain="true" open-type="contact" />
+      <image slot="icon" src="/static/icons/contact-us.png" class="mp-cell-icon" />
+    </mp-cell>
+    <mp-cell link>
+      <image slot="icon" src="/static/icons/language.png" class="mp-cell-icon" />
+      <picker bindchange="languagePickerChange" range="{{languageArray}}" range-key="name"
+        value="{{currentLanguage.index}}">
+        <view class="picker"> {{currentLanguage.setting}} </view>
+      </picker>
+    </mp-cell>
+    <mp-cell wx:if="{{isAdmin || isManager}}" link hover url='/pages/manager/tournament/list/list' value="比赛信息">
+      <image slot="title" class="mp-cell-icon" src="/static/icons/trophy.png" />
+    </mp-cell>
+    <mp-cell wx:if="{{isAdmin}}" link hover url="/pages/admin/settingList/settingList" value="{{_lang.adminSetting}}">
+      <image slot="icon" src="/static/icons/setting.png" class="mp-cell-icon" />
+    </mp-cell>
+    <!-- </mp-cells> -->
   </view>
 
   <view class="support-by">
@@ -162,8 +159,13 @@
   </view>
 </scroll-view>
 
-<mp-dialog show="{{dialogShow}}" bindbuttontap="tapDialog" buttons="{{[{text: _lang.topUpCancel},{text: _lang.topUpCopy}]}}" title="{{_lang.topUpTitle}}">
+<mp-dialog show="{{dialogShow}}" bindbuttontap="tapDialog"
+  buttons="{{[{text: _lang.topUpCancel},{text: _lang.topUpCopy}]}}" title="{{_lang.topUpTitle}}">
   <view class="dialog-box">
+    <view class="row">
+      <text class="name">{{_lang.topUpAccountName}}:</text>
+      <text class="value">EABC</text>
+    </view>
     <view class="row">
       <text class="name">{{_lang.topUpAccount}}:</text>
       <text class="value">06-0869-0723571-05</text>

@@ -1,8 +1,9 @@
 import { UpdateRecordAsync } from "@API/commonHelper";
 import { GetUserByMemberId, RegisterNewUserAsync, UploadAvatarImageAsync } from "@API/userService";
 import { GetLaguageMap } from "@Language/languageUtils";
-import { LevelArray, UserGender, UserGenderArray, UserLevel } from "@Lib/types";
-import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
+import { LevelArray, UserGender, UserGenderArray, userSelfRatingLevelArray, userSelfRatingLevelMap } from "@Lib/types";
+import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight, NavigateBack } from "@Lib/utils";
+import { IOption } from "@Model/iOption";
 import { ProfileModel } from "@Model/User";
 
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
@@ -22,26 +23,30 @@ Page({
     rules: [
       { name: 'displayName', rules: { required: true, maxlength: 20, message: 'name is required with max 20 characters' } },
       { name: 'gender', rules: { required: true, min: 1, message: 'Gender is required' } },
-      { name: 'genderType', rules: { required: false } },
-      { name: 'userLevel', rules: { required: true } },
-      { name: 'userLevelType', rules: { required: false } },
+      { name: 'selfRatingLevel', rules: { required: true } },
     ],
     levelArray: LevelArray,
     genderArray: UserGenderArray,
+    showSelfRatingLevel: false,
+    selfRatingLevelIndex: 0,
+    userSelfRatingLevelMap: userSelfRatingLevelMap,
+    userSelfRatingLevelArray: userSelfRatingLevelArray,
   },
 
   async onLoad(options: Record<string, string | undefined>) {
-    const { memberId, callbackUrl } = options;
+    const { memberId, callbackUrl, callbackParameterKey, callbackParameterValue } = options;
     if (callbackUrl) {
-      this.setData({ callbackUrl });
+      if (callbackParameterKey) {
+        this.setData({ callbackUrl: `${callbackUrl}?${callbackParameterKey}=${callbackParameterValue}` });
+      } else {
+        this.setData({ callbackUrl });
+      }
     }
 
     let formData = {
       displayName: '',
       gender: UserGender.Unknown.value,
-      genderType: UserGender.Unknown,
-      userLevel: UserLevel.Unknown.value,
-      userLevelType: UserLevel.Unknown,
+      selfRatingLevel: 0,
     };
 
     await ExcuteWithLoadingAsync(async () => {
@@ -52,11 +57,10 @@ Page({
           formData = {
             displayName: user.displayName,
             gender: user.gender,
-            genderType: user.genderType,
-            userLevel: user.userLevel,
-            userLevelType: user.userLevelType,
+            selfRatingLevel: user.selfRatingLevel ?? 0
           }
-          this.setData({ avatarUrl: user.avatarUrl });
+          var selfRatingLevelIndex = user.selfRatingLevel ?? 0 > 1 ? user.selfRatingLevel - 1 : 0
+          this.setData({ avatarUrl: user.avatarUrl, selfRatingLevelIndex: selfRatingLevelIndex });
         }
         this.setData({ user });
       }
@@ -65,6 +69,10 @@ Page({
   },
 
   //#region private method
+  navigateBack() {
+    NavigateBack();
+  },
+
   onChooseAvatar(e: any) {
     const { avatarUrl } = e.detail;
     this.setData({ avatarUrl });
@@ -77,19 +85,24 @@ Page({
     });
   },
 
-  genderPickerChange(e: any) {
-    const index = Number(e.detail.value);
-    this.setData({
-      [`formData.gender`]: index,
-      [`formData.genderType`]: UserGenderArray[index],
-    });
+  changeGender(e: IOption) {
+    const { value } = e.currentTarget.dataset;
+    this.setData({ [`formData.gender`]: value });
   },
 
-  levelPickerChange(e: any) {
-    const index = Number(e.detail.value);
+  selfRatingLevel() {
+    this.setData({ showSelfRatingLevel: true });
+  },
+
+  onSwiperChange(e: any) {
+    const current = e.detail.current;
+    this.setData({ selfRatingLevelIndex: current });
+  },
+
+  chooseSelfLevel() {
     this.setData({
-      [`formData.userLevel`]: index,
-      [`formData.userLevelType`]: LevelArray[index]
+      showSelfRatingLevel: false,
+      [`formData.selfRatingLevel`]: this.data.selfRatingLevelIndex + 1
     });
   },
 
@@ -97,7 +110,6 @@ Page({
     this.selectComponent('#form').validate(async (valid: any, errors: any) => {
       if (!valid) {
         const firstError = Object.keys(errors);
-        console.log(firstError);
         if (firstError.length) {
           wx.showToast({
             title: errors[firstError[0]].message,
@@ -111,17 +123,17 @@ Page({
             if (!existingUser) {
               // update avatar need to know member id, register first if no member id
               const newUser = await RegisterNewUserAsync();
-              await this.Save(newUser.memberId, defaultAvatarUrl);
+              await this.Save(newUser.memberId, newUser.avatarUrl);
             } else {
-              await this.Save(existingUser.memberId, existingUser.avatarUrl);
+              await this.Save(existingUser.memberId, existingUser.avatarUrl, existingUser.avatarFile);
             }
 
             if (this.data.callbackUrl) {
               wx.reLaunch({
-                url: '/' + this.data.callbackUrl + '?fromCallback=true',
+                url: '/' + this.data.callbackUrl,
               })
             } else {
-              wx.navigateBack({ delta: 0 })
+              NavigateBack();
             }
           } catch (e) {
             console.log(e);
@@ -131,17 +143,20 @@ Page({
     });
   },
 
-  async Save(memberId: number, avatarUrl: string) {
+  async Save(memberId: number, oldAvatarUrl: string, oldAvatarFile: string | null = null) {
     if (!memberId) return;
     const newAvatarUrl = this.data.avatarUrl;
     const profile = new ProfileModel(this.data.formData);
-    if (newAvatarUrl !== avatarUrl && newAvatarUrl !== defaultAvatarUrl) {
-      const fileID = await UploadAvatarImageAsync(newAvatarUrl, memberId, avatarUrl);
-      const updateData = { ...profile, avatarUrl: fileID };
-      await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
-    } else {
-      await UpdateRecordAsync('UserProfiles', { memberId }, profile);
+    const updateData = { ...profile } as any;
+    if (newAvatarUrl !== oldAvatarUrl && newAvatarUrl !== defaultAvatarUrl) {
+      const result = await UploadAvatarImageAsync(newAvatarUrl, memberId, oldAvatarFile);
+      if (result) {
+        const { fileID, download_url } = result;
+        if (download_url) { updateData.avatarUrl = download_url; }
+        if (fileID) { updateData.avatarFile = fileID; }
+      }
     }
+    await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
   },
 
   //#endregion

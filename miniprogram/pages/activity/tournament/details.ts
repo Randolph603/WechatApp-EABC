@@ -2,31 +2,39 @@ import {
   AttendeeMoveSectionAsync,
   CancelJoinActivityAsync,
   JoinActivityAsync,
-  LoadActivityByIdAsync
+  LoadActivityAndMatchesByIdAsync
 } from '@API/activityService';
 import { CallCloudFuncAsync } from '@API/commonHelper';
+import { GetTournamentResult } from '@API/matchService';
 import { CheckUserExistsAsync } from '@API/userService';
 import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { WxShowModalAsync } from '@Lib/promisify';
 import { UserRole } from '@Lib/types';
-import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetCurrentUrl } from '@Lib/utils';
+import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetCurrentUrl, NavigateBack } from '@Lib/utils';
 import { iSection, iUser } from '@Model/index';
 
 Page({
   data: {
     // Static
     _lang: GetLaguageMap().activityDetail,
+    // Tab
+    selectedTab: 0,
+    swiperHeight: 0,
     // Status:
     isLoaded: false,
+    isLoading: false,
     myProfile: null as unknown as iUser,
     // Variables
     activityId: '',
-    activity: {} as any,
+    activity: null as any,
     attendTitle: '',
-    allSections: [] as any[],
     allJoinedAttendeesCount: 0,
     allCancelledAttendees: [] as any[],
     joinMore: -1,
+    courtAttendeesMap: {} as any,
+    courtMatchesMap: {} as any,
+    isCourtMatchesMapEmpty: true,
+    matchResultMap: {} as any,
     // Dialog
     showLowCreditBalance: false,
     showCancelDialog: false,
@@ -42,7 +50,6 @@ Page({
     const promise = new Promise((resolve, reject) => {
       CallCloudFuncAsync('eabc_activity_share', { activityId: activity._id, router: 'createActivityId' })
         .then(result => {
-          console.log(result);
           const wxActivityId = result.wxActivityId;
           wx.updateShareMenu({
             withShareTicket: true,
@@ -68,7 +75,7 @@ Page({
     });
 
     return {
-      title: `${activity.date}, ${activity.title}, ${this.data._lang.shareMessage} 333`,
+      title: `${activity.date}, ${activity.title}, ${this.data._lang.shareMessage}`,
       imageUrl: `${activity.coverImageSrc}`,
       promise
     };
@@ -79,19 +86,29 @@ Page({
     this.setData({
       activityId: id
     });
+    await this.ReloadAll()
+    // await this.UpdateSharedMessage();
+  },
 
-    const fetchData = async () => {
-      await this.LoadMe();
-      await this.LoadActivity();
-      this.setData({ isLoaded: true });
-    };
-    await ExcuteWithLoadingAsync(fetchData);
+  async ReloadAll() {
+    try {
+      this.setData({ isLoading: true });
+      const fetchData = async () => {
+        await this.LoadMe();
+        await this.LoadActivityAndMatches(true);
+        this.setData({ isLoaded: true, isLoading: false });
+      };
+      await ExcuteWithLoadingAsync(fetchData);
+      this.updateSwiperHeight(0);
+    } finally {
+      this.setData({ isLoading: false });
+    }
   },
 
   //#region private method
   // LoadMe first of all
   async LoadMe() {
-    const myProfile = await CheckUserExistsAsync();
+    const { userProfile: myProfile } = await CheckUserExistsAsync();
     if (myProfile) {
       this.setData({
         myProfile: myProfile,
@@ -102,24 +119,49 @@ Page({
   },
 
   // Run after LoadMe fired
-  async LoadActivity() {
+  async LoadActivityAndMatches(recordEvent: boolean) {
     const id = this.data.activityId;
     if (id.length > 0) {
-      const activity = await LoadActivityByIdAsync(id, true);
-      const allJoinedAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === false);
-      const allCancelledAttendees = activity.Attendees.filter((a: { isCancelled: boolean; }) => a.isCancelled === true);
+      const { activity, courtMatchesMap, matchResultMap } = await LoadActivityAndMatchesByIdAsync(id, true, recordEvent);
+      const allJoinedAttendees = activity.Attendees.filter((a: any) => a.isCancelled === false);
+      const allCancelledAttendees = activity.Attendees.filter((a: any) => a.isCancelled === true);
 
-      const allSections: Array<any> = [];
-      if (activity.sections) {
-        activity.sections.forEach((s: iSection) => {
-          const sectionAttendees = allJoinedAttendees.filter((a: { sectionIndex: number; }) => (a.sectionIndex ?? 0) === s.index);
-          allSections.push({
-            info: s,
-            attendees: sectionAttendees.slice(0, s.maxAttendee),
-            onWaitAttendees: sectionAttendees.slice(s.maxAttendee, sectionAttendees.length),
-          });
+      const captainMemberIds = allJoinedAttendees
+        .filter((a: any) => a.captainMemberId)
+        .map((a: any) => a.captainMemberId);
+
+      const teams = [];
+      for (const captainMemberId of captainMemberIds) {
+        const captain = allJoinedAttendees.find((a: any) => a.memberId === captainMemberId);
+        const members = allJoinedAttendees.filter((a: any) => a.captainMemberId === captainMemberId);
+        const players = [captain].concat(members);
+
+        const totalPowerPoint = players.reduce((accumulator, current) => {
+          const powerPoint = (current.joinMore > 0 && !current.attendeeMemberId) ? 0 : (current.powerPoint ?? 0);
+          return accumulator + powerPoint;
+        }, 0);
+
+        teams.push({
+          captain: captain,
+          players: players,
+          totalPowerPoint: totalPowerPoint
         });
       }
+      teams.sort((a: any, b: any) => b.totalPowerPoint - a.totalPowerPoint)
+
+      const maxAttendeeGroup = activity.sections[0].maxAttendee / 2;
+      const joinedTeams = teams.slice(0, maxAttendeeGroup);
+      const waitingTeams = teams.slice(maxAttendeeGroup);
+
+      const courtAttendeesMap: any = {};
+      activity.courts.forEach((court: number) => {
+        courtAttendeesMap[court] = activity.Attendees
+          .filter((a: any) => a.court === court)
+          .sort((a: any, b: any) => b.currentPowerOfBattle - a.currentPowerOfBattle);
+      });
+
+      const soloMembers = allJoinedAttendees
+        .filter((a: any) => !captainMemberIds.includes(a.captainMemberId) && !captainMemberIds.includes(a.memberId));
 
       const attendTitle = GetAttendTitle(allJoinedAttendees.length, activity.maxAttendee);
 
@@ -133,19 +175,64 @@ Page({
       this.setData({
         attendTitle,
         activity,
-        allSections,
+        joinedTeams,
+        waitingTeams,
+        soloMembers,
         allJoinedAttendeesCount: allJoinedAttendees.length,
-        allCancelledAttendees
+        allCancelledAttendees,
+        courtAttendeesMap,
+        courtMatchesMap,
+        isCourtMatchesMapEmpty: Object.keys(courtMatchesMap).length === 0,
+        matchResultMap,
+        isMatchResultMapEmpty: Object.keys(matchResultMap).length === 0,
       });
 
-      await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
+      this.GenerateMatchResults();
     }
   },
 
+  GenerateMatchResults() {
+    // match result
+    const matchResultMap = {} as any;
+    for (const court in this.data.courtMatchesMap) {
+      const matches = this.data.courtMatchesMap[court];
+      const attendees = this.data.courtAttendeesMap[court];
+      matchResultMap[court] = GetTournamentResult(matches, attendees, this.data.activityId, Number(court));
+    }
+    this.setData({ matchResultMap, isMatchResultMapEmpty: Object.keys(matchResultMap).length === 0, });
+  },
+
+  async UpdateSharedMessage() {
+    await CallCloudFuncAsync('eabc_activity_share', { activityId: this.data.activityId, router: 'setUpdatableMsg' });
+  },
+
+  //#region top tap
+  onTapTab(e: any) {
+    const current = Number(e.currentTarget.dataset.index);
+    this.updateSwiperHeight(current);
+  },
+
+  onSwiperChange(e: any) {
+    const current = e.detail.current;
+    this.updateSwiperHeight(current);
+  },
+
+  updateSwiperHeight(index: number) {
+    this.setData({ selectedTab: index });
+    const id = `#slide${index}`;
+    const query = wx.createSelectorQuery();
+    query.select(id).boundingClientRect();
+    query.exec((res) => {
+      if (res[0]) {
+        const swiperHeight = res[0].height;
+        this.setData({ swiperHeight });
+      }
+    });
+  },
+  //#endregion
+
   navigateBack() {
-    wx.navigateBack({
-      delta: 0,
-    })
+    NavigateBack();
   },
 
   navigateHome() {
@@ -166,13 +253,16 @@ Page({
       const { join_more } = event.currentTarget.dataset;
       const joinActivityAndReload = async () => {
         await JoinActivityAsync(this.data.activityId, myMemberId, join_more);
-        await this.LoadActivity();
+        await this.LoadActivityAndMatches(false);
+        await this.UpdateSharedMessage();
       };
       await ExcuteWithProcessingAsync(joinActivityAndReload);
     } else {
       const currentUrl = GetCurrentUrl();
+      const callbackParameterKey = 'id'
+      const callbackParameterValue = this.data.activityId;
       wx.navigateTo({
-        url: '/pages/user/profile/profile?callbackUrl=' + currentUrl,
+        url: `/pages/user/profile/profile?callbackUrl=${currentUrl}&callbackParameterKey=${callbackParameterKey}&callbackParameterValue=${callbackParameterValue}`,
       });
     }
   },
@@ -189,11 +279,9 @@ Page({
 
     const { join_more } = event.currentTarget.dataset;
     if (this.data.myProfile.continueWeeklyJoin && this.data.myProfile.continueWeeklyJoin > 0) {
-      const continueWeeklyJoin = this.data.myProfile.continueWeeklyJoin;
-      const discount = continueWeeklyJoin > 3 ? 3 : continueWeeklyJoin;
       const { confirm } = await WxShowModalAsync({
         title: '取消提示',
-        content: `您已经连续参加活动${continueWeeklyJoin}周次了，这次活动将有${discount} NZD折扣，取消后下次活动将不再享有折扣。`,
+        content: ``,
         cancelText: '再想想',
         confirmText: '难过取消'
       });
@@ -204,7 +292,8 @@ Page({
 
     const cancelActivityAndReload = async () => {
       await CancelJoinActivityAsync(this.data.activityId, myMemberId, join_more);
-      await this.LoadActivity();
+      await this.LoadActivityAndMatches(false);
+      await this.UpdateSharedMessage();
     };
     await ExcuteWithProcessingAsync(cancelActivityAndReload);
   },
@@ -227,7 +316,7 @@ Page({
     const { section_index, join_more, member_id } = event.currentTarget.dataset;
     const moveActivityAndReload = async () => {
       await AttendeeMoveSectionAsync(this.data.activityId, member_id, join_more, section_index);
-      await this.LoadActivity();
+      await this.LoadActivityAndMatches(false);
     };
     await ExcuteWithProcessingAsync(moveActivityAndReload);
   }

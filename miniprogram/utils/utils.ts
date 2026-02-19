@@ -36,6 +36,15 @@ export const GetCurrentUrl = () => {
   return currentUrl;
 }
 
+export const NavigateBack = () => {
+  const pages = getCurrentPages();
+  if (pages.length > 1) {
+    wx.navigateBack({ delta: 1 });
+  } else {
+    wx.reLaunch({ url: '/pages/user/my/my' }); // fallback
+  }
+}
+
 export const ExcuteWithProcessingAsync = async (actionAsync: Function, showToast: boolean = true) => {
   var lang = GetLaguageMap().utils;
   try {
@@ -61,8 +70,22 @@ export const ExcuteWithLoadingAsync = async (actionAsync: Function) => {
     await actionAsync();
     wx.hideLoading();
   } catch (error) {
-    wx.hideLoading();
-    wx.showToast({ title: lang.failed, icon: 'none' });
-    await HandleException('ExcuteWithLoadingAsync-' + actionAsync.name, error);
+    await HandleException('ExcuteWithLoadingAsync-FirstTimeTry-' + actionAsync.name, error);
+
+    // retry once
+    try {
+      await actionAsync();
+      wx.hideLoading();
+    } catch (error) {
+      wx.hideLoading();
+      wx.showToast({ title: lang.failed, icon: 'none' });
+      await HandleException('ExcuteWithLoadingAsync-SecondTimeTry-' + actionAsync.name, error);
+      throw error;
+    }
+    throw error;
   }
+}
+
+export const GetRandomIdentityId = () => {
+  return Math.random().toString(36).substr(2, 9) + '-' + new Date().getTime().toString(36);
 }

@@ -1,0 +1,18 @@
+<mp-navigation-bar title='事件' ext-class="nav-bar" back="{{true}}" />
+<scroll-view class="scroll" scroll-y>
+  <!-- empty page -->
+  <mp-cells>
+    <mp-cell wx:for="{{list}}" wx:key="index" wx:for-item="item">
+      <view slot="title" class="view-column" style="min-width: 70px; font-size: 14px;">
+        <text>{{item.userName}}</text>
+        <text>{{item.userMemberId}}</text>
+      </view>
+      <view class="view-column">
+        <view style="font-size: 14px;">{{item.eventName}}</view>
+        <view style="font-size: 14px;">{{item.event}}</view>
+      </view>
+      
+      <view slot="footer" style="font-size: 14px;">{{item.dateForDisplay}}</view>
+    </mp-cell>
+  </mp-cells>
+</scroll-view>

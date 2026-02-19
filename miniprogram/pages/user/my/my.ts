@@ -35,13 +35,22 @@ Page({
     motto: Mottos[Math.floor(Math.random() * Mottos.length)],
     // Security
     isAdmin: false,
+    isManager: false
   },
 
   async onLoad() {
     try {
       await this.LoadUser();
     } catch (error) {
-      await HandleException('onLoad', error)
+      await HandleException('onLoad-1', error);
+      // try second time
+      try {
+        await this.LoadUser();
+      } catch (error) {
+        await HandleException('onLoad-2', error);
+        throw error;
+      }
+      throw error;
     }
   },
 
@@ -57,7 +66,7 @@ Page({
 
   //#region private method
   async LoadUser() {
-    const myProfile = await CheckUserExistsAsync();
+    const { userProfile: myProfile } = await CheckUserExistsAsync();
     if (myProfile) {
       const index = Math.floor(Math.random() * Mottos.length);
       this.setData({
@@ -67,7 +76,8 @@ Page({
         myMemberId: myProfile.memberId,
         myProfile: myProfile,
         motto: Mottos[index],
-        isAdmin: myProfile.userRole === UserRole.Admin.value
+        isAdmin: myProfile.userRole === UserRole.Admin.value,
+        isManager: myProfile.userRole === UserRole.Manager.value,
       });
     } else {
       this.setData({
@@ -80,7 +90,7 @@ Page({
 
   register() {
     const currentUrl = GetCurrentUrl();
-    wx.redirectTo({
+    wx.navigateTo({
       url: `/pages/user/profile/profile?callbackUrl=${currentUrl}`,
     });
   },
