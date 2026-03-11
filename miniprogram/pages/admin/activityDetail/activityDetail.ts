@@ -694,7 +694,7 @@ Page({
       const match2 = GenerateMatch(activityId, attendees, court, 1, 2, 3, 4, 2);
       const match3 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 0, 3);
       const match4 = GenerateMatch(activityId, attendees, court, 3, 4, 0, 1, 4);
-      const match5 = GenerateMatch(activityId, attendees, court, 4, 0, 1, 2, 5);      
+      const match5 = GenerateMatch(activityId, attendees, court, 4, 0, 1, 2, 5);
       const matches = [match1, match2, match3, match4, match5];
 
       matches.forEach((match: any) => {

@@ -16,7 +16,7 @@
     "noUnusedParameters": true,
     "strict": true,
     "strictPropertyInitialization": true,
-    "lib": ["ES2020"],
+    "lib": ["ES2015", "ES2017", "dom", "ES2020"],
     "typeRoots": [
       "./typings"
     ]
