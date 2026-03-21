@@ -1,10 +1,9 @@
 import { ToNZDateString } from "@Lib/dateExtension";
 import { UserBadges } from "@Lib/types";
-import { GetRandomIdentityId } from "@Lib/utils";
 
 export interface iBadge {
   // Store in db
-  id: string;
+  id: string | null;
   createDate: Date;
   type: number;
 
@@ -14,7 +13,7 @@ export interface iBadge {
 }
 
 export class BadgeModel {
-  public id = GetRandomIdentityId();
+  public id = null;
   public createDate = new Date();
   public createDateString = ToNZDateString(this.createDate);
   public type = UserBadges.Continue5Weeks.type;
@@ -91,7 +90,7 @@ export class UserModel {
   constructor(fields?: Partial<ProfileModel>) {
     if (fields) {
       const allowedKeys = ['displayName', 'bankName', 'userRole', 'gender', 'userLevel',
-        'creditBalance', 'powerPoint', 'continueWeeklyJoin', 'powerOfBattle'];
+        'creditBalance', 'powerPoint', 'continueWeeklyJoin', 'powerOfBattle', 'badges'];
       for (const key of allowedKeys) {
         if (key in fields) {
           (this as any)[key] = (fields as any)[key];

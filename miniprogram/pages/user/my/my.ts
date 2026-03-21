@@ -1,9 +1,10 @@
 import { HandleException } from '@API/commonHelper';
 import { CheckUserExistsAsync } from '@API/userService';
 import { GetLaguageMap, GetCurrentLanguage, LanguageArray, ChangeLanguage } from '@Language/languageUtils';
-import { UserRole } from '@Lib/types';
+import { UserBadgesArray, UserRole } from '@Lib/types';
 import { GetCurrentUrl, GetNavBarHeight, UpdateTabBarLaguage } from '@Lib/utils';
 import { IOption } from '@Model/index';
+import { iBadge } from '@Model/User';
 
 const Mottos = [
   "球伴技术好，你赢球的可能性就大.",
@@ -69,6 +70,9 @@ Page({
     const { userProfile: myProfile } = await CheckUserExistsAsync();
     if (myProfile) {
       const index = Math.floor(Math.random() * Mottos.length);
+      const myOwnBadges = myProfile.badges ?? [];
+      const myOwnBadgeTypes = myOwnBadges.map((b: iBadge) => b.type); 
+      var myBadges = UserBadgesArray.map(b => myOwnBadgeTypes.includes(b.type));
       this.setData({
         isLoaded: true,
         triggered: false,
@@ -78,6 +82,7 @@ Page({
         motto: Mottos[index],
         isAdmin: myProfile.userRole === UserRole.Admin.value,
         isManager: myProfile.userRole === UserRole.Manager.value,
+        myBadges: myBadges
       });
     } else {
       this.setData({

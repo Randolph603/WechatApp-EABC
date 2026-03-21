@@ -67,25 +67,25 @@
 <scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="LoadUser"
   refresher-triggered="{{triggered}}">
 
-  <!-- <view wx:if='{{hasAuth}}' class="card">
+  <view wx:if='{{hasAuth}}' class="card">
     <view class="card-title">{{_lang.achievementTitle}}</view>
     <scroll-view scroll-x="{{true}}">
       <view class="card-items">       
         <view class="card-item badge">
-          <image class="icon72" src="/static/icons/badge/5weeks.png" mode="heightFix" />
+          <image class="icon72 {{myBadges[0] ? '' : 'image-disable'}}" src="/static/icons/badge/5weeks.png" mode="heightFix" />
           <text>{{_lang.continueWeeklyJoin5}}</text>          
         </view>
         <view class="card-item badge">
-          <image class="icon72 image-disable" src="/static/icons/badge/15weeks.png" mode="heightFix" />
+          <image class="icon72 {{myBadges[1] ? '' : 'image-disable'}}" src="/static/icons/badge/15weeks.png" mode="heightFix" />
           <text>{{_lang.continueWeeklyJoin15}}</text>
         </view>
         <view class="card-item badge">
-          <image class="icon72 image-disable" src="/static/icons/badge/52weeks.png" mode="heightFix" />
+          <image class="icon72 {{myBadges[2] ? '' : 'image-disable'}}" src="/static/icons/badge/52weeks.png" mode="heightFix" />
           <text>{{_lang.continueWeeklyJoin52}}</text>
         </view>       
       </view>
     </scroll-view>
-  </view> -->
+  </view>
 
   <view wx:if='{{hasAuth}}' class="card">
     <view class="card-title">{{_lang.titleAccount}}</view>

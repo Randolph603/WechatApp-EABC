@@ -33,7 +33,7 @@ Page({
     balanceChangeTitle: '充值',
     balanceChangeValue: 15,
     showBadgeDialog: false,
-    theSelectedBadge: new BadgeModel(),
+    theSelectedBadge: null as unknown as iBadge,
     userBadgesArray: UserBadgesArray
   },
 
@@ -104,7 +104,7 @@ Page({
 
   async Save() {
     await ExcuteWithProcessingAsync(async () => {
-      const updateData = { ...this.data.formData };
+      const updateData = { ...this.data.formData };      
       const memberId = this.data.user.memberId;
       if (memberId) {
         await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
@@ -161,13 +161,7 @@ Page({
     this.setData({ showBalanceChange: false });
   },
 
-  showBadgeDialog(e: IOption) {
-    const { badge } = e.currentTarget.dataset;
-    this.setData({
-      showBadgeDialog: true,
-      theSelectedBadge: badge
-    });
-  },
+  // Badges
 
   badgePickerChange(e: IOption) {
     const index = Number(e.detail.value);
@@ -186,12 +180,12 @@ Page({
     });
   },
 
-  addBadge() {
-    const currentBadges = this.data.formData.badges;
-    currentBadges.push(new BadgeModel());
+  showBadgeDialog(e: IOption) {
+    const { badge } = e.currentTarget.dataset;
+    const theSelectedBadge = badge ? badge : new BadgeModel();
     this.setData({
-      [`formData.badges`]: currentBadges,
-      showBadgeDialog: false,
+      showBadgeDialog: true,
+      theSelectedBadge: theSelectedBadge
     });
   },
 
@@ -207,9 +201,14 @@ Page({
   SaveBadge() {
     const currentBadges = this.data.formData.badges;
     const theSelectedBadge = this.data.theSelectedBadge;
-    const index = currentBadges.findIndex(b => b.id === theSelectedBadge.id);
-    if (index !== -1) {
-      currentBadges[index] = theSelectedBadge;
+    if (theSelectedBadge.id) {
+      const index = currentBadges.findIndex(b => b.id === theSelectedBadge.id);
+      if (index !== -1) {
+        currentBadges[index] = theSelectedBadge;
+      }
+    } else {
+      theSelectedBadge.id = GetRandomIdentityId();
+      currentBadges.push(theSelectedBadge);
     }
 
     this.setData({

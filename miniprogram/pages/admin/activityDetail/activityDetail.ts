@@ -767,12 +767,12 @@ Page({
     const promiseList = [] as any[];
     const attendees = this.data.courtAttendeesMap[court];
     if (attendees.length === 6) {
-      const match1 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 2, 1);
-      const match2 = GenerateMatch(activityId, attendees, court, 1, 3, 4, 5, 2);
-      const match3 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 3);
-      const match4 = GenerateMatch(activityId, attendees, court, 4, 5, 1, 2, 4);
-      const match5 = GenerateMatch(activityId, attendees, court, 0, 3, 4, 5, 5);
-      const match6 = GenerateMatch(activityId, attendees, court, 1, 2, 0, 3, 6);
+      const match1 = GenerateMatch(activityId, attendees, court, 1, 2, 0, 3, 1);
+      const match2 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 2, 2);
+      const match3 = GenerateMatch(activityId, attendees, court, 1, 3, 4, 5, 3);
+      const match4 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 4);
+      const match5 = GenerateMatch(activityId, attendees, court, 4, 5, 1, 2, 5);
+      const match6 = GenerateMatch(activityId, attendees, court, 0, 3, 4, 5, 6);
       const matches = [match1, match2, match3, match4, match5, match6];
 
       matches.forEach((match: any) => {
