@@ -1,6 +1,6 @@
 import { CallCloudFuncAsync, UpdateRecordAsync } from "@API/commonHelper";
-import { GetUserByMemberId } from "@API/userService";
-import { UserBadges, UserBadgesArray, UserGenderArray, UserRoleArray } from "@Lib/types";
+import { creditTransferAsync, GetUserByMemberId, SearchUsersByKeyAsync, SetupUserBadges } from "@API/userService";
+import { UserBadgesArray, UserGenderArray, UserRoleArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight, GetRandomIdentityId } from "@Lib/utils";
 import { IOption } from "@Model/index";
 import { BadgeModel, iBadge, iUser, UserModel } from "@Model/User";
@@ -15,6 +15,8 @@ const rules = [
   { name: 'powerOfBattle', rules: { required: false } },
   { name: 'badges', rules: { required: false } },
 ];
+
+const defaultCreditTransferUser = { memberId: 0, name: '', value: 0 };
 
 Page({
   data: {
@@ -34,7 +36,11 @@ Page({
     balanceChangeValue: 15,
     showBadgeDialog: false,
     theSelectedBadge: null as unknown as iBadge,
-    userBadgesArray: UserBadgesArray
+    userBadgesArray: UserBadgesArray,
+    // Credit transfer dialog
+    showCreditTransferDialog: false,
+    creditTransferUser: defaultCreditTransferUser,
+    creditTransferSearchUsers: [] as any[]
   },
 
   async onLoad(options: Record<string, string | undefined>) {
@@ -104,7 +110,10 @@ Page({
 
   async Save() {
     await ExcuteWithProcessingAsync(async () => {
-      const updateData = { ...this.data.formData };      
+      const updateData = {
+        ...this.data.formData,
+        badges: this.data.formData.badges.map((b: any) => new BadgeModel(b))
+      };
       const memberId = this.data.user.memberId;
       if (memberId) {
         await UpdateRecordAsync('UserProfiles', { memberId }, updateData);
@@ -124,7 +133,7 @@ Page({
     })
   },
 
-  ShowBalanceChangeDialog() {
+  ShowCreditChangeDialog() {
     this.setData({ showBalanceChange: true });
   },
 
@@ -152,13 +161,79 @@ Page({
         value = 0 - value;
       }
       const topUpAndReloadUser = async () => {
-        await CallCloudFuncAsync('user_balanceChange', { memberId, title, value });
+        await CallCloudFuncAsync('user_balanceChange', { list: [{ memberId, title, value }] });
         await this.LoadUser(memberId);
       };
       await ExcuteWithProcessingAsync(topUpAndReloadUser);
     }
 
     this.setData({ showBalanceChange: false });
+  },
+
+  // Credit Transfer Dialog
+  ShowCreditTransferDialog() {
+    this.setData({ showCreditTransferDialog: true });
+  },
+
+  clearCreditTransferUser() {
+    this.setData({ creditTransferUser: defaultCreditTransferUser });
+  },
+
+  changeCreditTransferUserName(e: IOption) {
+    this.setData({ [`creditTransferUser.name`]: e.detail.value });
+  },
+
+  async onSearchCreditTransferUser() {
+    await ExcuteWithProcessingAsync(async () => {
+      const searchText = this.data.creditTransferUser.name;
+      const users = await SearchUsersByKeyAsync(searchText, 3);
+      const { memberId } = this.data.user;
+      const creditTransferSearchUsers = users.filter((u: any) => u.memberId !== memberId);
+      this.setData({ creditTransferSearchUsers });
+    }, false);
+  },
+
+  onCancelCreditTransferUserSearch() {
+    this.setData({ creditTransferSearchUsers: [] });
+    this.setData({ [`creditTransferUser.name`]: '' });
+  },
+
+  onSearchUserSelected(e: IOption) {
+    const { user } = e.currentTarget.dataset;
+    if (!user) return;
+
+    this.setData({
+      [`creditTransferUser.memberId`]: user.memberId,
+      [`creditTransferUser.name`]: user.displayName,
+      creditTransferSearchUsers: []
+    });
+  },
+
+  onCreditTransferValueChange(e: IOption) {
+    this.setData({
+      [`creditTransferUser.value`]: Number(e.detail.value)
+    });
+  },
+
+  async creditTransfer() {
+    const toUser = this.data.creditTransferUser;
+    const { memberId, displayName, creditBalance } = this.data.user;
+    const from = { memberId, name: displayName };
+    const to = { memberId: toUser.memberId, name: toUser.name };
+    if (creditBalance >= toUser.value && toUser.value > 0) {
+      const transferAndReloadUser = async () => {
+        await creditTransferAsync(toUser.value, from, to);
+        await this.LoadUser(memberId);
+      };
+      await ExcuteWithProcessingAsync(transferAndReloadUser);
+      this.setData({ showCreditTransferDialog: false });
+    } else {
+      wx.showToast({
+        title: '余额不足或无转账',
+        icon: 'error',
+        duration: 2000
+      })
+    }
   },
 
   // Badges
@@ -182,7 +257,8 @@ Page({
 
   showBadgeDialog(e: IOption) {
     const { badge } = e.currentTarget.dataset;
-    const theSelectedBadge = badge ? badge : new BadgeModel();
+    const newBadge = SetupUserBadges(new BadgeModel());
+    const theSelectedBadge = badge ? badge : newBadge;
     this.setData({
       showBadgeDialog: true,
       theSelectedBadge: theSelectedBadge

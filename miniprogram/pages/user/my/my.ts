@@ -82,7 +82,8 @@ Page({
         motto: Mottos[index],
         isAdmin: myProfile.userRole === UserRole.Admin.value,
         isManager: myProfile.userRole === UserRole.Manager.value,
-        myBadges: myBadges
+        myBadges: myBadges,
+        userBadgesArray: UserBadgesArray
       });
     } else {
       this.setData({

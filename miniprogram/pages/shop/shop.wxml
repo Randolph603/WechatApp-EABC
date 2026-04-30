@@ -1,3 +1,60 @@
-<view style="height: 100%; width: 100%;" class="view-column-centre">
-  <image mode="widthFix" src="/static/images/no_history.png"></image>
+<view>
+  <view style="height: {{navBarHeight}}px;" />
+
+  <r-navigation-bar title="" back="{{false}}">
+    <view class="nav-left" slot="left">
+      <image class="nav-logo" mode="aspectFill" src="/static/images/icon.png" />
+      <view class="nav-title">
+        <text>EABC羽毛球助手</text>
+      </view>
+    </view>
+  </r-navigation-bar>
+</view>
+
+<view class="shop-container">
+  <view class="header">
+    <view class="search-box">
+      <icon type="search" size="16" color="#3A96FF"></icon>
+      <input placeholder="寻找你的心仪装备..." placeholder-class="ph-color" />
+    </view>
+    <view class="admin-btn">搜索</view>
+  </view>
+
+  <view class="main">
+    <scroll-view scroll-y class="side-bar">
+      <view wx:for="{{categories}}" wx:key="id" class="menu-item {{activeId == item.id ? 'active' : ''}}" bindtap="switchCategory" data-id="{{item.id}}">
+        <image src="{{item.icon}}" class="menu-icon"></image>
+        <text>{{item.name}}</text>
+      </view>
+    </scroll-view>
+
+    <scroll-view scroll-y class="content-scroll">
+      <view wx:if="{{products.length == 0}}" class="empty">
+        <image src="/static/icons/shop/empty.png" mode="widthFix" />
+        <text>暂无商品</text>
+      </view>
+      <block wx:else>
+        <view class="product-card" wx:for="{{products}}" wx:key="id">
+          <view class="img-box">
+            <image src="{{item.image}}" mode="widthFix"></image>
+          </view>
+          <view class="info">
+            <view class="title">{{item.title}}</view>
+            <view class="stock-text">剩余 {{item.stock}} {{item.unit}}</view>
+            <view class="progress-bg">
+              <view class="progress-inner" style="width: 50%"></view>
+            </view>
+            <view class="bottom-row">
+              <view class="stars">
+                <text wx:for="{{5}}" wx:key="index" class="star">★</text>
+              </view>
+             
+            </view>
+            <view class="price">{{item.price}}</view>
+          </view>
+        </view>
+      </block>
+
+    </scroll-view>
+  </view>
 </view>

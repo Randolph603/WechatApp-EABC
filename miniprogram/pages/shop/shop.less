@@ -1,9 +1,250 @@
-.card {
+page {
+  background-color: #F0F8FF;
+  height: 100%;
+  font-family: "PingFang SC", sans-serif;
+}
+
+.nav-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.nav-logo {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+
+.nav-title {
+  margin-left: 10rpx;
+  font-size: 20px;
+  color: #3f3e3e;
+  letter-spacing: 2rpx;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* empty page */
+.empty {
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  image {
+    width: 180rpx;
+    height: 180rpx;
+  }
+}
+
+.shop-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+
+/* 头部 */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background: #F0F8FF;
+}
+
+.search-box {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  padding: 15rpx 30rpx;
+  border-radius: 50rpx;
+  border: 4rpx solid #3A96FF;
+}
+
+.ph-color {
+  color: #A9D4FF;
+}
+
+.admin-btn {
+  margin-left: 20rpx;
+  background: #3A96FF;
+  color: #fff;
+  font-size: 24rpx;
+  padding: 15rpx 25rpx;
+  border-radius: 40rpx;
+}
+
+/* 主体内容 */
+.main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* 侧边栏 */
+.side-bar {
+  width: 160rpx;
+  background: #E6F3FF;
+}
+
+.menu-item {
+  padding: 30rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 22rpx;
+  color: #5A7D9A;
+}
+
+.menu-item.active {
+  background: #fff;
+  color: #3A96FF;
+  font-weight: bold;
+}
+
+.menu-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-bottom: 10rpx;
+}
+
+/* 商品卡片 */
+.content-scroll {
+  flex: 1;
+  padding: 20rpx;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 30rpx;
+  border: 4rpx solid #D0E8FF;
+  margin-bottom: 25rpx;
+  display: flex;
+  padding: 20rpx;
+}
+
+.img-box {
+  width: 170rpx;
+  height: 170rpx;
+  background: #F9FCFF;
   border-radius: 20rpx;
-  border: black solid 2rpx;
-  margin: 15rpx 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+}
+
+.info {
+  flex: 1;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.stock-text {
+  font-size: 20rpx;
+  color: #88A0B5;
+  margin-top: 5rpx;
+}
+
+/* 进度条 */
+.progress-bg {
+  height: 12rpx;
+  background: #E0EFFF;
+  border-radius: 10rpx;
+  margin: 15rpx 0;
+}
+
+.progress-inner {
+  height: 100%;
+  background: #3A96FF;
+  border-radius: 10rpx;
+}
+
+.bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stars {
+  display: flex;
+}
+
+.star {
+  color: #87C4FF;
+  font-size: 24rpx;
+}
+
+.price {
+  display: flex;
+  justify-content: flex-end;
+  color: #3A96FF;
+  font-weight: bold;
+  font-size: 30rpx;
+}
+
+/* 底部 */
+.cart-footer {
+  height: 120rpx;
+  background: #fff;
+  border-top: 4rpx solid #E6F3FF;
+  display: flex;
+  align-items: center;
+  padding: 0 30rpx;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.cart-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.cart-bag {
+  position: relative;
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.cart-bag image {
+  width: 100%;
+  height: 100%;
+}
+
+.badge {
+  position: absolute;
+  top: -5rpx;
+  right: -5rpx;
+  background: #3A96FF;
+  color: #fff;
+  font-size: 18rpx;
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.total-price {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-left: 20rpx;
+}
+
+.settle-btn {
+  background: #3A96FF;
+  color: #fff;
+  padding: 20rpx 60rpx;
+  border-radius: 50rpx;
+  font-weight: bold;
 }

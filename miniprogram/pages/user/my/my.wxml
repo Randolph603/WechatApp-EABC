@@ -9,17 +9,14 @@
   </view>
   <view class="view-column" wx:else>
     <view class="view-row" style="align-items: flex-start; width: 100%">
-      <button style="border: 0; width: auto; padding: 0; margin: 0;" plain="true" open-type="chooseAvatar"
-        bindchooseavatar="onChooseAvatar">
-        <image-loader ext-class="user-avatar" defaultLoadingSrc="/static/images/blank-profile.jpg"
-          src='{{myProfile.avatarUrl}}' mode="aspectFit" />
+      <button style="border: 0; width: auto; padding: 0; margin: 0;" plain="true" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image-loader ext-class="user-avatar" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{myProfile.avatarUrl}}' mode="aspectFit" />
       </button>
       <view class="user-info">
         <view class="view-row top-row">
           <view class="view-row">
             <text class="user-status">{{myProfile.userRoleType.name}}</text>
-            <image wx:if="{{myProfile.gender > 0}}" class="user-icon"
-              src="/static/icons/{{myProfile.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
+            <image wx:if="{{myProfile.gender > 0}}" class="user-icon" src="/static/icons/{{myProfile.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
             <text class="user-name">{{myProfile.displayName}}</text>
           </view>
           <button class="user-edit" plain="true" size="mini" bindtap='editProfile'>
@@ -64,16 +61,15 @@
   <image class="loading" src='/static/images/loading.gif' mode="heightFix" />
 </view>
 
-<scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="LoadUser"
-  refresher-triggered="{{triggered}}">
+<scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="LoadUser" refresher-triggered="{{triggered}}">
 
   <view wx:if='{{hasAuth}}' class="card">
     <view class="card-title">{{_lang.achievementTitle}}</view>
     <scroll-view scroll-x="{{true}}">
-      <view class="card-items">       
+      <view class="card-items">
         <view class="card-item badge">
           <image class="icon72 {{myBadges[0] ? '' : 'image-disable'}}" src="/static/icons/badge/5weeks.png" mode="heightFix" />
-          <text>{{_lang.continueWeeklyJoin5}}</text>          
+          <text>{{_lang.continueWeeklyJoin5}}</text>
         </view>
         <view class="card-item badge">
           <image class="icon72 {{myBadges[1] ? '' : 'image-disable'}}" src="/static/icons/badge/15weeks.png" mode="heightFix" />
@@ -82,16 +78,36 @@
         <view class="card-item badge">
           <image class="icon72 {{myBadges[2] ? '' : 'image-disable'}}" src="/static/icons/badge/52weeks.png" mode="heightFix" />
           <text>{{_lang.continueWeeklyJoin52}}</text>
-        </view>       
+        </view>
+        <!-- <view class="card-item badge">
+          <image class="icon72 {{'image-disable'}}" src="/static/icons/badge/week.png" mode="heightFix" />
+          <text>周冠军</text>
+        </view> -->
       </view>
     </scroll-view>
   </view>
 
+  <!-- <view class="card svip-container">
+      <view class="svip-info">
+        <text class="svip-title">SSR级 - 最强王者</text>
+        <text class="svip-unlock-condition">距离升级还差100战力</text>
+        <view class="progress-bar-wrapper">
+          <view class="progress-bar" style="width: 95%"></view>
+        </view>
+      </view>
+      <view class="svip-badge">
+        <image src="/static/ranks/7.png" class="badge-image"></image>
+      </view>
+      <view class="svip-footer">
+        <text class="svip-footer-text">当前战力：999</text>
+        <button size="mini" class="svip-activate-button">查看战绩</button>
+      </view>    
+  </view> -->
+
   <view wx:if='{{hasAuth}}' class="card">
     <view class="card-title">{{_lang.titleAccount}}</view>
     <view class="card-items" style="flex-wrap: wrap;">
-      <navigator class="card-item feature" url="/pages/user/creditHistory/creditHistory?memberId={{myProfile.memberId}}"
-        open-type="navigate">
+      <navigator class="card-item feature" url="/pages/user/creditHistory/creditHistory?memberId={{myProfile.memberId}}" open-type="navigate">
         <image class="icon24" src="/static/icons/purchase-order.png" mode="heightFix" />
         <text>{{_lang.history}}</text>
       </navigator>
@@ -135,8 +151,7 @@
     </mp-cell>
     <mp-cell link>
       <image slot="icon" src="/static/icons/language.png" class="mp-cell-icon" />
-      <picker bindchange="languagePickerChange" range="{{languageArray}}" range-key="name"
-        value="{{currentLanguage.index}}">
+      <picker bindchange="languagePickerChange" range="{{languageArray}}" range-key="name" value="{{currentLanguage.index}}">
         <view class="picker"> {{currentLanguage.setting}} </view>
       </picker>
     </mp-cell>
@@ -159,8 +174,7 @@
   </view>
 </scroll-view>
 
-<mp-dialog show="{{dialogShow}}" bindbuttontap="tapDialog"
-  buttons="{{[{text: _lang.topUpCancel},{text: _lang.topUpCopy}]}}" title="{{_lang.topUpTitle}}">
+<mp-dialog show="{{dialogShow}}" bindbuttontap="tapDialog" buttons="{{[{text: _lang.topUpCancel},{text: _lang.topUpCopy}]}}" title="{{_lang.topUpTitle}}">
   <view class="dialog-box">
     <view class="row">
       <text class="name">{{_lang.topUpAccountName}}:</text>
@@ -177,3 +191,20 @@
     <view class="backup">* {{_lang.topUpTip}}</view>
   </view>
 </mp-dialog>
+
+<mp-half-screen-dialog extClass="self-level-container" maskClosable="{{true}}" closabled="{{false}}" show="{{false}}">
+  <view slot="title" style="font-size: medium;" class="view-row-centre">{{_lang.selfRatingLevelTitle}}</view>
+  <swiper slot="desc" style="height: 100%;" current="{{0}}" indicator-dots>
+    <swiper-item wx:for="{{userBadgesArray}}" wx:key="index" wx:for-item="item">
+      <view class="view-row-centre">{{item.title}}</view>
+      <scroll-view style="height: 90%; font-size: 12px;" scroll-y>
+        <view style="white-space: pre-line; margin: 0 20px;">
+          {{item.type}}
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+  <view slot="footer">
+    <button type="primary" bindtap="chooseSelfLevel">说的就是我</button>
+  </view>
+</mp-half-screen-dialog>

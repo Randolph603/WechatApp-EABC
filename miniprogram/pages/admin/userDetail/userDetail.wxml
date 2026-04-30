@@ -36,11 +36,16 @@
       <mp-cell title="战斗力">
         <input bindinput="FormNumberChange" type="number" value="{{formData.powerOfBattle}}" data-field="powerOfBattle" />
       </mp-cell>
-      <mp-cell>
-        <view class="view-row-evenly">
+      <mp-cell title="页面">
+        <view class="view-row">
           <button bindtap="GoToHitoryPage" size="mini">活动记录</button>
           <button bindtap="GoToProfilePage" size="mini">个人信息</button>
-          <button bindtap="ShowBalanceChangeDialog" size="mini">充值/扣费</button>
+        </view>
+      </mp-cell>
+      <mp-cell title="操作">
+        <view class="view-row">
+          <button bindtap="ShowCreditChangeDialog" size="mini">充值扣费</button>
+          <button bindtap="ShowCreditTransferDialog" size="mini">他人转账</button>
         </view>
       </mp-cell>
 
@@ -93,4 +98,42 @@
   </view>
 
   <button slot="footer" class="weui-btn" type="primary" bindtap="SaveBadge">{{theSelectedBadge.id ? '保存' : '添加' }}</button>
+</mp-half-screen-dialog>
+
+<mp-half-screen-dialog maskClosable="{{true}}" closabled="{{false}}" show="{{showCreditTransferDialog}}">
+  <view slot="title" class="view-row-centre">当前金额：{{user.creditBalance}} NZD</view>
+
+  <view slot="desc">
+    <mp-cell title="会员号">
+      <text class="ml-30">#{{creditTransferUser.memberId || ''}}</text>
+      <view wx:if="{{creditTransferUser.memberId}}" slot="footer" bindtap="clearCreditTransferUser">
+        <image class="icon24" src="/static/icons/close.png" mode="heightFix" />
+      </view>
+    </mp-cell>
+    <mp-cell title="姓名">
+      <input class="ml-60" bindinput="changeCreditTransferUserName" value="{{creditTransferUser.name}}" placeholder="请先输入姓名或会员号查询" />
+      <view wx:if="{{creditTransferSearchUsers.length === 0}}" slot="footer" bindtap="onSearchCreditTransferUser">
+        <image class="icon24" src="/static/icons/search-user.png" mode="heightFix" />
+      </view>
+      <view wx:else slot="footer" bindtap="onCancelCreditTransferUserSearch">
+        <image class="icon24" src="/static/icons/close.png" mode="heightFix" />
+      </view>
+    </mp-cell>
+    <!-- Search matched users -->
+    <mp-cell wx:for="{{creditTransferSearchUsers}}" wx:key="attendeeId" wx:for-item="user">
+      <view slot="title" class="view-row">
+        <image-loader defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' ext-class="avatar" mode="aspectFill" />
+        <text style="margin-left: 20rpx;">{{user.displayName}}</text>
+      </view>
+      <view slot="footer">
+        <button type="default" size="mini" data-user="{{user}}" bindtap="onSearchUserSelected">选择</button>
+      </view>
+    </mp-cell>
+    <mp-cell title="金额">
+      <input class="ml-60" bindinput="onCreditTransferValueChange" type="number" placeholder="请输入金额" value='{{creditTransferUser.value}}' />
+      <text slot="footer">NZD</text>
+    </mp-cell>
+  </view>
+
+  <button disabled="{{!creditTransferUser.memberId}}" slot="footer" class="weui-btn" type="primary" bindtap="creditTransfer">转账</button>
 </mp-half-screen-dialog>

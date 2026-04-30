@@ -1,3 +1,6 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "r-title": "/components/title/title",
+    "r-navigation-bar": "/components/navigation-bar"
+  }
 }

@@ -15,13 +15,11 @@ export interface iBadge {
 export class BadgeModel {
   public id = null;
   public createDate = new Date();
-  public createDateString = ToNZDateString(this.createDate);
-  public type = UserBadges.Continue5Weeks.type;
-  public title = UserBadges.Continue5Weeks.title;
+  public type = 1;
 
   constructor(fields?: Partial<BadgeModel>) {
     if (fields) {
-      const allowedKeys = ['id', 'createDate', 'type', 'title'];
+      const allowedKeys = ['id', 'createDate', 'type'];
       for (const key of allowedKeys) {
         if (key in fields) {
           (this as any)[key] = (fields as any)[key];

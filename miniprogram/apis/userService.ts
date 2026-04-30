@@ -1,9 +1,11 @@
 import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { config } from "../configs/index";
-import { UserRoleArray, LevelArray } from "@Lib/types";
+import { UserRoleArray, LevelArray, UserBadgesArray, UserBadgesMap } from "@Lib/types";
 import { ConvertFileIdToHttps } from "@Lib/utils";
 import { WxGetFileInfoAsync } from "@Lib/promisify";
 import { CallCloudFuncAsync, HandleException } from "./commonHelper";
+import { BadgeModel, iBadge } from "@Model/User";
+import { ToNZDateString } from "@Lib/dateExtension";
 
 export const SetupUserTypes = (user: any) => {
   if (user.avatarUrl.startsWith('cloud')) {
@@ -14,6 +16,17 @@ export const SetupUserTypes = (user: any) => {
   user.discount = (user.continueWeeklyJoin ?? 0) > config.maxDiscount
     ? config.maxDiscount
     : user.continueWeeklyJoin;
+
+  if (user.badges) {
+    user.badges = user.badges.map((b: any) => SetupUserBadges(b));
+  }
+}
+
+export const SetupUserBadges = (badge: BadgeModel) => {
+  const title = UserBadgesMap[badge.type].title;
+  const createDateString = ToNZDateString(badge.createDate);
+  const badgeForDisplay: iBadge = { ...badge, title, createDateString };
+  return badgeForDisplay;
 }
 
 export const RegisterNewUserAsync = async () => {
@@ -118,4 +131,15 @@ export const SearchAllUsersAsync = async () => {
   });
   users.forEach((u: any) => SetupUserTypes(u));
   return users;
+}
+
+export const creditTransferAsync = async (value: number, from: { memberId: number, name: string }, to: { memberId: number, name: string }) => {
+  const fromTitle = `to ${to.name}(${to.memberId})`;
+  const toTitle = `from ${from.name}(${from.memberId})`;
+  await CallCloudFuncAsync('user_balanceChange', {
+    list: [
+      { memberId: from.memberId, title: fromTitle, value: -value },
+      { memberId: to.memberId, title: toTitle, value: value },
+    ]
+  });
 }

@@ -3,6 +3,7 @@ export const LanguageMap: iLanguageMap = {
     list: [
       { text: 'Activities' },
       { text: 'Rank' },
+      { text: 'Shop' },
       { text: 'My' },
     ]
   },
@@ -200,6 +201,7 @@ export const LanguageMap: iLanguageMap = {
     continueWeeklyJoin5: "5 Weeks",
     continueWeeklyJoin15: "15 Weeks",
     continueWeeklyJoin52: "52 Weeks",
+    continueWeeklyJoin100: "100 Weeks",
   },
   userProfile: {
     title: "Basic Information",

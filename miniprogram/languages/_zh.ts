@@ -3,6 +3,7 @@ export const LanguageMap: iLanguageMap = {
     list: [
       { text: '活动' },
       { text: '排名' },
+      { text: '商店' },
       { text: '我的' },
     ]
   },
@@ -199,7 +200,8 @@ export const LanguageMap: iLanguageMap = {
     championYear: "总冠军",
     continueWeeklyJoin5: "连续5周",
     continueWeeklyJoin15: "连续15周",
-    continueWeeklyJoin52: "连续15周",
+    continueWeeklyJoin52: "连续52周",
+    continueWeeklyJoin100: "连续100周",
   },
   userProfile: {
     title: "基本信息",
