@@ -1,4 +1,4 @@
-import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
+import { GetCloudAsync } from "./databaseService";
 import { CheckUserExistsAsync } from "./userService";
 
 export const LoadAllEventsAsync = async (): Promise<any> => {

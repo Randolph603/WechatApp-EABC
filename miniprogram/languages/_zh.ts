@@ -205,6 +205,7 @@ export const LanguageMap: iLanguageMap = {
   },
   userProfile: {
     title: "基本信息",
+    parentMemberId: "主会员号",
     memberId: "会员号",
     noMemberId: "注册后自动生成",
     avatar: "头像",

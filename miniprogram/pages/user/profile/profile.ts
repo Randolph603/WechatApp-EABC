@@ -18,8 +18,9 @@ Page({
     callbackUrl: '',
     // Variables
     avatarUrl: defaultAvatarUrl,
+    parentMemberId: undefined,
     user: null as any,
-    formData: {},
+    formData: {} as any,
     rules: [
       { name: 'displayName', rules: { required: true, maxlength: 20, message: 'name is required with max 20 characters' } },
       { name: 'gender', rules: { required: true, min: 1, message: 'Gender is required' } },
@@ -34,19 +35,21 @@ Page({
   },
 
   async onLoad(options: Record<string, string | undefined>) {
-    const { memberId, callbackUrl, callbackParameterKey, callbackParameterValue } = options;
+    const { memberId, parentMemberId, callbackUrl, callbackParameterKey, callbackParameterValue } = options;
+
     if (callbackUrl) {
-      if (callbackParameterKey) {
-        this.setData({ callbackUrl: `${callbackUrl}?${callbackParameterKey}=${callbackParameterValue}` });
-      } else {
-        this.setData({ callbackUrl });
-      }
+      this.setData({
+        callbackUrl: callbackParameterKey
+          ? `${callbackUrl}?${callbackParameterKey}=${callbackParameterValue}`
+          : callbackUrl
+      });
     }
 
     let formData = {
       displayName: '',
       gender: UserGender.Unknown.value,
       selfRatingLevel: 0,
+      parentMemberId: parentMemberId ?  Number(parentMemberId) : undefined
     };
 
     await ExcuteWithLoadingAsync(async () => {
@@ -54,11 +57,11 @@ Page({
         const id = Number(memberId);
         const user = await GetUserByMemberId(id);
         if (user) {
-          formData = {
-            displayName: user.displayName,
-            gender: user.gender,
-            selfRatingLevel: user.selfRatingLevel ?? 0
-          }
+          formData.displayName = user.displayName;
+          formData.gender = user.gender;
+          formData.selfRatingLevel = user.selfRatingLevel ?? 0;
+          formData.parentMemberId = user.parentMemberId;
+
           var selfRatingLevelIndex = user.selfRatingLevel ?? 0 > 1 ? user.selfRatingLevel - 1 : 0
           this.setData({ avatarUrl: user.avatarUrl, selfRatingLevelIndex: selfRatingLevelIndex });
         }
@@ -120,18 +123,17 @@ Page({
         await ExcuteWithProcessingAsync(async () => {
           try {
             const existingUser = this.data.user;
-            if (!existingUser) {
-              // update avatar need to know member id, register first if no member id
-              const newUser = await RegisterNewUserAsync();
-              await this.Save(newUser.memberId, newUser.avatarUrl);
-            } else {
+            if (existingUser) {
               await this.Save(existingUser.memberId, existingUser.avatarUrl, existingUser.avatarFile);
+            } else {
+              // update avatar need to know member id, register first if no member id
+              const { parentMemberId } = this.data.formData;
+              const newUser = await RegisterNewUserAsync(parentMemberId);
+              await this.Save(newUser.memberId, newUser.avatarUrl);
             }
 
             if (this.data.callbackUrl) {
-              wx.reLaunch({
-                url: '/' + this.data.callbackUrl,
-              })
+              wx.reLaunch({ url: '/' + this.data.callbackUrl });
             } else {
               NavigateBack();
             }

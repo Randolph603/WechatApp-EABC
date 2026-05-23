@@ -1,7 +1,7 @@
 import { GetCloudAsync, GetUnionIdAsync } from "./databaseService";
 import { config } from "../configs/index";
 import { UserRoleArray, LevelArray, UserBadgesArray, UserBadgesMap } from "@Lib/types";
-import { ConvertFileIdToHttps } from "@Lib/utils";
+import { ConvertFileIdToHttps, GetRandomIdentityId } from "@Lib/utils";
 import { WxGetFileInfoAsync } from "@Lib/promisify";
 import { CallCloudFuncAsync, HandleException } from "./commonHelper";
 import { BadgeModel, iBadge } from "@Model/User";
@@ -29,8 +29,8 @@ export const SetupUserBadges = (badge: BadgeModel) => {
   return badgeForDisplay;
 }
 
-export const RegisterNewUserAsync = async () => {
-  const unionId = await GetUnionIdAsync();
+export const RegisterNewUserAsync = async (parentMemberId: string) => {
+  const unionId = parentMemberId ? "SubAccount-" + GetRandomIdentityId() : await GetUnionIdAsync();
   return await CallCloudFuncAsync('eabc_user_register', { unionId });
 }
 
@@ -59,6 +59,17 @@ export const GetUserByMemberId = async (memberId: number) => {
     SetupUserTypes(user);
   }
   return user;
+}
+
+export const GetSubUsersByParentMemberId = async (parentMemberId: number) => {
+  const app = await GetCloudAsync();
+  const db = app.database();
+  const profiles = await db.collection("UserProfiles").where({ parentMemberId }).get();
+  const subUsers = profiles.data ?? [];
+  for (const user of subUsers) {
+    SetupUserTypes(user);
+  }
+  return subUsers;
 }
 
 export const UploadAvatarImageAsync = async (filePath: string, memberId: number, avatarFileToDelete: string | null): Promise<any> => {

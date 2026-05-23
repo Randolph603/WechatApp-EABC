@@ -176,7 +176,7 @@ export const LanguageMap: iLanguageMap = {
     titleAccount: "Settings",
     history: "Receipt",
     topup: "Top Up",
-    subAccount: "Sub Account",
+    subAccount: "Sub Users",
     preference: "Setting",
     achievement: "Trophey",
     wallet: "Wallet",
@@ -205,6 +205,7 @@ export const LanguageMap: iLanguageMap = {
   },
   userProfile: {
     title: "Basic Information",
+    parentMemberId: "Parent Id",
     memberId: "Member Id",
     noMemberId: "Automatically generated after registration",
     avatar: "Avatar",

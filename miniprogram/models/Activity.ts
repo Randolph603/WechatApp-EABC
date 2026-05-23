@@ -70,7 +70,7 @@ export class ActivityModel {
   public startTime = today;
   public title = '双打羽毛球';
   public toPublic = true;
-  public type = ActivityType.Section.value;
+  public type = ActivityType.Rank.value;
   public updateDate = today;
   public viewCount = 0;
 

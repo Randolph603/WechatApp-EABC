@@ -60,10 +60,11 @@ export class ProfileModel {
   public displayName = '';
   public gender = 0;
   public selfRatingLevel = 0;
+  public parentMemberId = 0;
 
   constructor(fields?: Partial<ProfileModel>) {
     if (fields) {
-      const allowedKeys = ['displayName', 'gender', 'selfRatingLevel'];
+      const allowedKeys = ['displayName', 'gender', 'selfRatingLevel', 'parentMemberId'];
       for (const key of allowedKeys) {
         if (key in fields) {
           (this as any)[key] = (fields as any)[key];

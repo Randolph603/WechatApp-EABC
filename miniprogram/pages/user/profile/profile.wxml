@@ -2,6 +2,9 @@
 
 <scroll-view wx:if="{{isLoaded}}" class="scroll" scroll-y>
   <mp-form id="form" rules="{{rules}}" models="{{formData}}">
+    <mp-cell wx:if="{{formData.parentMemberId}}" title="{{_lang.parentMemberId}}">
+      <text>{{formData.parentMemberId}}</text>
+    </mp-cell>
     <mp-cell title="{{_lang.memberId}}">
       <text>{{user ? '#'+user.memberId : _lang.noMemberId}}</text>
     </mp-cell>

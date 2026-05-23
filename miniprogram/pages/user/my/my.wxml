@@ -64,7 +64,10 @@
 <scroll-view wx:else class="scroll" scroll-y="{{true}}" refresher-enabled="{{hasAuth}}" bindrefresherrefresh="LoadUser" refresher-triggered="{{triggered}}">
 
   <view wx:if='{{hasAuth}}' class="card">
-    <view class="card-title">{{_lang.achievementTitle}}</view>
+    <view class="card-title view-row">
+      <image class="icon24 image mr-10" src="/static/icons/trophy.png" mode="heightFix" />
+      {{_lang.achievementTitle}}
+    </view>
     <scroll-view scroll-x="{{true}}">
       <view class="card-items">
         <view class="card-item badge">
@@ -105,7 +108,10 @@
   </view> -->
 
   <view wx:if='{{hasAuth}}' class="card">
-    <view class="card-title">{{_lang.titleAccount}}</view>
+    <view class="card-title view-row">
+      <image class="icon24 image mr-10" src="/static/icons/settings.png" mode="heightFix" />
+      {{_lang.titleAccount}}
+    </view>
     <view class="card-items" style="flex-wrap: wrap;">
       <navigator class="card-item feature" url="/pages/user/creditHistory/creditHistory?memberId={{myProfile.memberId}}" open-type="navigate">
         <image class="icon24" src="/static/icons/purchase-order.png" mode="heightFix" />
@@ -115,12 +121,11 @@
         <image class="icon24" src="/static/icons/payment.png" mode="heightFix" />
         <text>{{_lang.topup}}</text>
       </view>
-      <!-- url="/pages/user/myAccount/myAccount" -->
-      <!-- <navigator class="card-item feature" open-type="navigate">
-        <image class="icon24 image-disable" src="/static/icons/members.png" mode="heightFix" />
+      <navigator wx:if="{{subUsers.length}}" class="card-item feature">
+        <image class="icon24 image" src="/static/icons/members.png" mode="heightFix" />
         <text>{{_lang.subAccount}}</text>
       </navigator>
-      <view class="card-item feature">
+      <!-- <view class="card-item feature">
         <image class="icon24 image-disable" src="/static/icons/user-setting.png" mode="heightFix" />
         <text>{{_lang.preference}}</text>
       </view>
@@ -139,8 +144,26 @@
     </view>
   </view>
 
+  <view wx:if='{{hasAuth && subUsers.length}}' class="card">
+    <view class="card-title view-row">
+      <image class="icon24 image mr-10" src="/static/icons/members.png" mode="heightFix" />
+      {{_lang.subAccount}}
+    </view>
+    <view class="card-items" style="flex-wrap: wrap;">
+      <block wx:for="{{subUsers}}" wx:key="index" wx:for-index="id" wx:for-item="subUser">
+        <navigator class="card-item feature" url="/pages/user/profile/profile?memberId={{subUser.memberId}}" open-type="navigate">
+          <image-loader ext-class="icon48" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{subUser.avatarUrl}}' mode="aspectFit" />
+          <text>{{subUser.displayName}}</text>
+        </navigator>
+      </block>
+    </view>
+  </view>
+
   <view class="card">
-    <view class="card-title">{{_lang.titleFeatures}}</view>
+    <view class="card-title view-row">
+      <image class="icon24 image mr-10" src="/static/icons/features.png" mode="heightFix" />
+      {{_lang.titleFeatures}}
+    </view>
     <!-- <mp-cells> -->
     <!-- <mp-cell wx:if='{{hasAuth}}' link hover value="{{_lang.wallet}}">
         <image slot="icon" src="/static/icons/wallet.png" class="mp-cell-icon" />

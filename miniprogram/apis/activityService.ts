@@ -172,6 +172,38 @@ export const UpdateAttendeeMoreAsync = async (attendeeId: string, attendeeName: 
   }
 }
 
+export const ChangeAttendeeAsync = async (activityId: string, attendeeId: string,
+  attendeeUpdateDate: string, attendeeSectionIndex: number, memberId: number) => {
+  if (attendeeId) {
+    try {
+      // if attendee existing
+      const updatedCount = await UpdateRecordAsync('Attendees',
+        { activityId: activityId, memberId: memberId, joinMore: 0 },
+        { isCancelled: false, sectionIndex: attendeeSectionIndex },
+        { updateDate: JSON.stringify(new Date(attendeeUpdateDate)) }
+      );
+      if (updatedCount === 0) {
+        await UpdateRecordAsync('Attendees',
+          { _id: attendeeId },
+          { memberId, joinMore: 0 },
+        );
+      } else {
+        await UpdateRecordAsync('Attendees',
+          { _id: attendeeId },
+          { isCancelled: true },
+        );
+      }
+
+      await RemoveFieldsAsync('Attendees',
+        { _id: attendeeId },
+        ['court', 'attendeeName', 'attendeeGender', 'attendeeMemberId']
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
 export const UpdateAttendeeCaptainAsync = async (attendeeId: string, captainName: string, captainMemberId: number) => {
   if (attendeeId) {
     try {

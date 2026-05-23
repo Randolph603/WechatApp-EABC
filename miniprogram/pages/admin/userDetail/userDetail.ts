@@ -1,5 +1,5 @@
 import { CallCloudFuncAsync, UpdateRecordAsync } from "@API/commonHelper";
-import { creditTransferAsync, GetUserByMemberId, SearchUsersByKeyAsync, SetupUserBadges } from "@API/userService";
+import { creditTransferAsync, GetSubUsersByParentMemberId, GetUserByMemberId, SearchUsersByKeyAsync, SetupUserBadges } from "@API/userService";
 import { UserBadgesArray, UserGenderArray, UserRoleArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight, GetRandomIdentityId } from "@Lib/utils";
 import { IOption } from "@Model/index";
@@ -56,8 +56,9 @@ Page({
   async LoadUser(memberId: number) {
     const user = await GetUserByMemberId(memberId);
     if (user) {
+      const subUsers = await GetSubUsersByParentMemberId(memberId);
       const formData = new UserModel(user);
-      this.setData({ formData, user });
+      this.setData({ formData, user, subUsers });
     } else {
       wx.showToast({
         title: '会员未知',
@@ -170,7 +171,7 @@ Page({
     this.setData({ showBalanceChange: false });
   },
 
-  // Credit Transfer Dialog
+  //#region Credit Transfer
   ShowCreditTransferDialog() {
     this.setData({ showCreditTransferDialog: true });
   },
@@ -235,9 +236,9 @@ Page({
       })
     }
   },
+  //#endregion
 
-  // Badges
-
+  //#region Badges
   badgePickerChange(e: IOption) {
     const index = Number(e.detail.value);
     const selected = this.data.userBadgesArray[index];
@@ -293,4 +294,17 @@ Page({
     });
   },
   //#endregion
+
+  AddSubAccountPage() {
+    wx.navigateTo({
+      url: '/pages/user/profile/profile?parentMemberId=' + this.data.user.memberId,
+    })
+  },
+
+  GoToAccountPage(e: IOption) {
+    const { id } = e.currentTarget.dataset;
+    wx.navigateTo({
+      url: '/pages/admin/userDetail/userDetail?memberId=' + id,
+    });
+  }
 })

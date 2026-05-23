@@ -1,4 +1,4 @@
-import { AddActivityAsync, AutoJoinActivityAsync, CancelJoinActivityAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, LoadAllActivitiesAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
+import { AddActivityAsync, AutoJoinActivityAsync, CancelJoinActivityAsync, ChangeAttendeeAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, LoadAllActivitiesAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
 import { AddMatchAsync, AddMatchResultsAsync, GenerateMatch, GetMatchRankAsync, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
@@ -103,7 +103,7 @@ Page({
     const groupedAttendees: any = [];
     const activeAttendeesGroup = allActiveAttendees
       .reduce((acc: any, currentValue: any) => {
-        let groupKey = currentValue['memberId'];
+        let groupKey = currentValue['parentMemberId'] ?? currentValue['memberId'];
         if (!acc[groupKey]) {
           acc[groupKey] = [];
         }
@@ -112,8 +112,15 @@ Page({
       }, {});
 
     Object.values(activeAttendeesGroup).forEach((atts: any) => {
-      const mainAttendee = atts.find((a: any) => a.joinMore === 0);
+      const mainAttendeeList = atts.filter((a: any) => a.joinMore === 0);
+      const mainAttendee = mainAttendeeList.length === 1
+        ? mainAttendeeList[0]
+        : mainAttendeeList.find((a: any) => !a.parentMemberId);
+      const restingAttendeeList = atts.filter(
+        (a: any) => a.attendeeName || a.attendeeId !== mainAttendee.attendeeId);
+
       const aggregateAttendee = {
+        attendeeId: mainAttendee.attendeeId,
         avatarUrl: mainAttendee.avatarUrl,
         continueWeeklyJoin: mainAttendee.continueWeeklyJoin,
         creditBalance: mainAttendee.creditBalance,
@@ -125,10 +132,16 @@ Page({
           return {
             attendeeId: a.attendeeId,
             joinMore: a.joinMore,
+            updateDate: a.updateDate,
             sectionIndex: a.sectionIndex,
             attendeeName: a.attendeeName,
             attendeeGender: a.attendeeGender,
-            attendeeMemberId: a.attendeeMemberId
+            attendeeMemberId: a.attendeeMemberId,
+            parentMemberId: a.parentMemberId,
+            avatarUrl: a.avatarUrl,
+            displayName: a.displayName,
+            gender: a.gender,
+            continueWeeklyJoin: a.continueWeeklyJoin
           }
         })
       };
@@ -136,9 +149,7 @@ Page({
       groupedAttendees.push(aggregateAttendee);
     });
 
-    this.setData({
-      groupedAttendees: groupedAttendees
-    });
+    this.setData({ groupedAttendees: groupedAttendees });
   },
 
   //#region top tap
@@ -369,6 +380,8 @@ Page({
     const selectedAttendee = {
       attendeeId: attendee.attendeeId,
       attendeeJoinMore: attendee.joinMore,
+      attendeeUpdateDate: attendee.updateDate,
+      attendeeSectionIndex: attendee.sectionIndex,
       accountName: user.displayName,
       accountMemberId: user.memberId,
       attendeeName: attendee.attendeeName,
@@ -432,6 +445,23 @@ Page({
       await this.ReloadActivityByIdAsync(activityId);
       this.setData({ showAttendeeDialog: false });
     }, false);
+  },
+
+  async changeAttendee() {
+    const activityId = this.data.activityId;
+    const selectedAttendee = this.data.selectedAttendee;
+    if (selectedAttendee.attendeeMemberId) {
+      await ExcuteWithProcessingAsync(async () => {
+        await ChangeAttendeeAsync(
+          activityId,
+          selectedAttendee.attendeeId,
+          selectedAttendee.attendeeUpdateDate,
+          selectedAttendee.attendeeSectionIndex,
+          selectedAttendee.attendeeMemberId);
+        await this.ReloadActivityByIdAsync(activityId);
+        this.setData({ showAttendeeDialog: false });
+      }, false);
+    }
   },
 
   async autoAddAttendeesAsync() {

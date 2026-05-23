@@ -7,6 +7,10 @@
         <text>#{{user.memberId}}</text>
         <image-loader slot="footer" defaultLoadingSrc="/static/images/blank-profile.jpg" src='{{user.avatarUrl}}' width="100rpx" height="100rpx" mode="aspectFill" />
       </mp-cell>
+      <mp-cell wx:if="{{user.parentMemberId}}" title="主账号">
+        <text>#{{user.parentMemberId}}</text>
+        <button class="mr-10" slot="footer" size="mini" data-id="{{user.parentMemberId}}" bindtap="GoToAccountPage">详细</button>
+      </mp-cell>
       <mp-cell title="昵称">
         <input bindinput="FormTextChange" data-field="displayName" value="{{formData.displayName}}" placeholder="{{_lang.displayNamePlaceholder}}" />
       </mp-cell>
@@ -44,8 +48,8 @@
       </mp-cell>
       <mp-cell title="操作">
         <view class="view-row">
-          <button bindtap="ShowCreditChangeDialog" size="mini">充值扣费</button>
           <button bindtap="ShowCreditTransferDialog" size="mini">他人转账</button>
+          <button bindtap="ShowCreditChangeDialog" size="mini">充值扣费</button>
         </view>
       </mp-cell>
 
@@ -57,6 +61,16 @@
           <text data-badge="{{badge}}" bindtap="showBadgeDialog">{{badge.title}}</text>
           <button class="mr-10" slot="footer" type="default" size="mini" data-badge="{{badge}}" bindtap="showBadgeDialog">修改</button>
           <button slot="footer" type="warn" size="mini" data-badge="{{badge}}" bindtap="removeBadge">删除</button>
+        </mp-cell>
+      </block>
+
+      <mp-cell wx:if="{{!user.parentMemberId}}" title="子账户">
+        <button slot="footer" type="default" size="mini" bindtap="AddSubAccountPage">增加</button>
+      </mp-cell>
+      <block wx:for="{{subUsers}}" wx:key="index" wx:for-index="id" wx:for-item="subUser">
+        <mp-cell title="{{subUser.memberId}}">
+          <text>{{subUser.displayName}}</text>
+          <button class="mr-10" slot="footer" size="mini" data-id="{{subUser.memberId}}" bindtap="GoToAccountPage">详细</button>
         </mp-cell>
       </block>
     </mp-cells>

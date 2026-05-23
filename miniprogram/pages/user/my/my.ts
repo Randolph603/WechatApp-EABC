@@ -1,5 +1,5 @@
 import { HandleException } from '@API/commonHelper';
-import { CheckUserExistsAsync } from '@API/userService';
+import { CheckUserExistsAsync, GetSubUsersByParentMemberId } from '@API/userService';
 import { GetLaguageMap, GetCurrentLanguage, LanguageArray, ChangeLanguage } from '@Language/languageUtils';
 import { UserBadgesArray, UserRole } from '@Lib/types';
 import { GetCurrentUrl, GetNavBarHeight, UpdateTabBarLaguage } from '@Lib/utils';
@@ -73,6 +73,8 @@ Page({
       const myOwnBadges = myProfile.badges ?? [];
       const myOwnBadgeTypes = myOwnBadges.map((b: iBadge) => b.type); 
       var myBadges = UserBadgesArray.map(b => myOwnBadgeTypes.includes(b.type));
+      const subUsers = await GetSubUsersByParentMemberId(myProfile.memberId);
+
       this.setData({
         isLoaded: true,
         triggered: false,
@@ -83,7 +85,8 @@ Page({
         isAdmin: myProfile.userRole === UserRole.Admin.value,
         isManager: myProfile.userRole === UserRole.Manager.value,
         myBadges: myBadges,
-        userBadgesArray: UserBadgesArray
+        userBadgesArray: UserBadgesArray,
+        subUsers: subUsers
       });
     } else {
       this.setData({

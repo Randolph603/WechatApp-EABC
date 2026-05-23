@@ -26,6 +26,7 @@ interface iLanguageMap {
   };
   userProfile: {
     title: string;
+    parentMemberId: string;
     memberId: string;
     noMemberId: string;
     avatar: string;
