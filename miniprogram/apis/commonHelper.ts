@@ -63,3 +63,14 @@ export const HandleException = async (functionName: string, error: any) => {
     exception: errorString,
   });
 };
+
+// return added success count
+export const BulkAddRecordAsync = async (collection: string, data: object) => {
+  const response = await CallCloudFuncAsync(
+    'bulkAddRecord',
+    {
+      collection: collection,     
+      data: data,    
+    });
+  return response.updatedCount;
+};

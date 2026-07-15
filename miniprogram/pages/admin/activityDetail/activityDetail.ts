@@ -1,6 +1,6 @@
 import { AddActivityAsync, AutoJoinActivityAsync, CancelJoinActivityAsync, ChangeAttendeeAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, LoadAllActivitiesAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
-import { AddMatchAsync, AddMatchResultsAsync, GenerateMatch, GetMatchRankAsync, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
+import { AddMatchesAsync, AddMatchResultsAsync, GenerateMatch, GetMatchRankAsync, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
 import { getCurrentWeekSpan, SortDate, ToNZDateString, ToNZTimeRangeString } from "@Lib/dateExtension";
 import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
@@ -691,25 +691,20 @@ Page({
   async CreateMatchesForCourt(e: IOption) {
     const { court } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
-    const promiseList = [] as any[];
     const attendees = this.data.courtAttendeesMap[court];
-    if (attendees.length === 6) {
-      const match1 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 1);
-      const match2 = GenerateMatch(activityId, attendees, court, 2, 4, 3, 5, 2);
-      const match3 = GenerateMatch(activityId, attendees, court, 0, 4, 1, 5, 3);
-      const match4 = GenerateMatch(activityId, attendees, court, 0, 3, 1, 2, 4);
-      const match5 = GenerateMatch(activityId, attendees, court, 2, 5, 3, 4, 5);
-      const match6 = GenerateMatch(activityId, attendees, court, 0, 5, 1, 4, 6);
-      const matches = [match1, match2, match3, match4, match5, match6];
-
-      matches.forEach((match: any) => {
-        const promise = AddMatchAsync(new MatchModel(match));
-        promiseList.push(promise);
-      });
-    }
 
     await ExcuteWithProcessingAsync(async () => {
-      await Promise.all(promiseList);
+      if (attendees.length === 6) {
+        const match1 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 1);
+        const match2 = GenerateMatch(activityId, attendees, court, 2, 4, 3, 5, 2);
+        const match3 = GenerateMatch(activityId, attendees, court, 0, 4, 1, 5, 3);
+        const match4 = GenerateMatch(activityId, attendees, court, 0, 3, 1, 2, 4);
+        const match5 = GenerateMatch(activityId, attendees, court, 2, 5, 3, 4, 5);
+        const match6 = GenerateMatch(activityId, attendees, court, 0, 5, 1, 4, 6);
+        const matches = [match1, match2, match3, match4, match5, match6];
+
+        await AddMatchesAsync(matches.map(m => new MatchModel(m)));
+      }
       await this.ReloadActivityByIdAsync(activityId);
     });
   },
@@ -717,24 +712,19 @@ Page({
   async CreateMatchesForCourtWith5(e: IOption) {
     const { court } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
-    const promiseList = [] as any[];
     const attendees = this.data.courtAttendeesMap[court];
-    if (attendees.length === 5) {
-      const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
-      const match2 = GenerateMatch(activityId, attendees, court, 1, 2, 3, 4, 2);
-      const match3 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 0, 3);
-      const match4 = GenerateMatch(activityId, attendees, court, 3, 4, 0, 1, 4);
-      const match5 = GenerateMatch(activityId, attendees, court, 4, 0, 1, 2, 5);
-      const matches = [match1, match2, match3, match4, match5];
-
-      matches.forEach((match: any) => {
-        const promise = AddMatchAsync(new MatchModel(match));
-        promiseList.push(promise);
-      });
-    }
 
     await ExcuteWithProcessingAsync(async () => {
-      await Promise.all(promiseList);
+      if (attendees.length === 5) {
+        const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
+        const match2 = GenerateMatch(activityId, attendees, court, 1, 2, 3, 4, 2);
+        const match3 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 0, 3);
+        const match4 = GenerateMatch(activityId, attendees, court, 3, 4, 0, 1, 4);
+        const match5 = GenerateMatch(activityId, attendees, court, 4, 0, 1, 2, 5);
+        const matches = [match1, match2, match3, match4, match5];
+
+        await AddMatchesAsync(matches.map(m => new MatchModel(m)));
+      }
       await this.ReloadActivityByIdAsync(activityId);
     });
   },
@@ -742,25 +732,20 @@ Page({
   async CreateMatchesForCourtWith3FixedCouple(e: IOption) {
     const { court } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
-    const promiseList = [] as any[];
     const attendees = this.data.courtAttendeesMap[court];
-    if (attendees.length === 6) {
-      const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
-      const match2 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 2);
-      const match3 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 1, 3);
-      const match4 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 4);
-      const match5 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 5);
-      const match6 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 1, 6);
-      const matches = [match1, match2, match3, match4, match5, match6];
-
-      matches.forEach((match: any) => {
-        const promise = AddMatchAsync(new MatchModel(match));
-        promiseList.push(promise);
-      });
-    }
 
     await ExcuteWithProcessingAsync(async () => {
-      await Promise.all(promiseList);
+      if (attendees.length === 6) {
+        const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
+        const match2 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 2);
+        const match3 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 1, 3);
+        const match4 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 4);
+        const match5 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 5);
+        const match6 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 1, 6);
+        const matches = [match1, match2, match3, match4, match5, match6];
+
+        await AddMatchesAsync(matches.map(m => new MatchModel(m)));
+      }
       await this.ReloadActivityByIdAsync(activityId);
     });
   },
@@ -768,25 +753,41 @@ Page({
   async CreateMatchesForCourtWith3MixCouple(e: IOption) {
     const { court } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
-    const promiseList = [] as any[];
     const attendees = this.data.courtAttendeesMap[court];
-    if (attendees.length === 6) {
-      const match1 = GenerateMatch(activityId, attendees, court, 0, 3, 1, 4, 1);
-      const match2 = GenerateMatch(activityId, attendees, court, 0, 4, 2, 5, 2);
-      const match3 = GenerateMatch(activityId, attendees, court, 2, 3, 1, 5, 3);
-      const match4 = GenerateMatch(activityId, attendees, court, 0, 4, 1, 3, 4);
-      const match5 = GenerateMatch(activityId, attendees, court, 0, 5, 2, 4, 5);
-      const match6 = GenerateMatch(activityId, attendees, court, 2, 5, 1, 3, 6);
-      const matches = [match1, match2, match3, match4, match5, match6];
-
-      matches.forEach((match: any) => {
-        const promise = AddMatchAsync(new MatchModel(match));
-        promiseList.push(promise);
-      });
-    }
 
     await ExcuteWithProcessingAsync(async () => {
-      await Promise.all(promiseList);
+      if (attendees.length === 6) {
+        const match1 = GenerateMatch(activityId, attendees, court, 0, 3, 1, 4, 1);
+        const match2 = GenerateMatch(activityId, attendees, court, 0, 4, 2, 5, 2);
+        const match3 = GenerateMatch(activityId, attendees, court, 2, 3, 1, 5, 3);
+        const match4 = GenerateMatch(activityId, attendees, court, 0, 4, 1, 3, 4);
+        const match5 = GenerateMatch(activityId, attendees, court, 0, 5, 2, 4, 5);
+        const match6 = GenerateMatch(activityId, attendees, court, 2, 5, 1, 3, 6);
+        const matches = [match1, match2, match3, match4, match5, match6];
+
+        await AddMatchesAsync(matches.map(m => new MatchModel(m)));
+      }
+      await this.ReloadActivityByIdAsync(activityId);
+    });
+  },
+
+  async CreateMatchesForCourtWith3v3(e: IOption) {
+    const { court } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+    const attendees = this.data.courtAttendeesMap[court];
+
+    await ExcuteWithProcessingAsync(async () => {
+      if (attendees.length === 6) {
+        const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 3, 4, 1);
+        const match2 = GenerateMatch(activityId, attendees, court, 0, 2, 3, 5, 2);
+        const match3 = GenerateMatch(activityId, attendees, court, 1, 2, 4, 5, 3);
+        const match4 = GenerateMatch(activityId, attendees, court, 0, 2, 3, 4, 4);
+        const match5 = GenerateMatch(activityId, attendees, court, 0, 1, 3, 5, 5);
+        const match6 = GenerateMatch(activityId, attendees, court, 1, 2, 4, 5, 6);
+        const matches = [match1, match2, match3, match4, match5, match6];
+
+        await AddMatchesAsync(matches.map(m => new MatchModel(m)));
+      }
       await this.ReloadActivityByIdAsync(activityId);
     });
   },
@@ -794,25 +795,20 @@ Page({
   async CreateMatchesForCourtWith1FixedCouple(e: IOption) {
     const { court } = e.currentTarget.dataset;
     const activityId = this.data.activityId;
-    const promiseList = [] as any[];
     const attendees = this.data.courtAttendeesMap[court];
-    if (attendees.length === 6) {
-      const match1 = GenerateMatch(activityId, attendees, court, 1, 2, 0, 3, 1);
-      const match2 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 2, 2);
-      const match3 = GenerateMatch(activityId, attendees, court, 1, 3, 4, 5, 3);
-      const match4 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 4);
-      const match5 = GenerateMatch(activityId, attendees, court, 4, 5, 1, 2, 5);
-      const match6 = GenerateMatch(activityId, attendees, court, 0, 3, 4, 5, 6);
-      const matches = [match1, match2, match3, match4, match5, match6];
-
-      matches.forEach((match: any) => {
-        const promise = AddMatchAsync(new MatchModel(match));
-        promiseList.push(promise);
-      });
-    }
 
     await ExcuteWithProcessingAsync(async () => {
-      await Promise.all(promiseList);
+      if (attendees.length === 6) {
+        const match1 = GenerateMatch(activityId, attendees, court, 1, 2, 0, 3, 1);
+        const match2 = GenerateMatch(activityId, attendees, court, 4, 5, 0, 2, 2);
+        const match3 = GenerateMatch(activityId, attendees, court, 1, 3, 4, 5, 3);
+        const match4 = GenerateMatch(activityId, attendees, court, 0, 2, 1, 3, 4);
+        const match5 = GenerateMatch(activityId, attendees, court, 4, 5, 1, 2, 5);
+        const match6 = GenerateMatch(activityId, attendees, court, 0, 3, 4, 5, 6);
+        const matches = [match1, match2, match3, match4, match5, match6];
+
+        await AddMatchesAsync(matches.map(m => new MatchModel(m)));
+      }
       await this.ReloadActivityByIdAsync(activityId);
     });
   },

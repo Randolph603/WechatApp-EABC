@@ -1,7 +1,7 @@
 import { MatchResultType } from "@Lib/types";
 import { MatchModel } from "@Model/Match";
 import { config } from "../configs/index";
-import { CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
+import { BulkAddRecordAsync, CallCloudFuncAsync, UpdateRecordAsync } from "./commonHelper";
 import { GetCloudAsync } from "./databaseService";
 
 // table of Matches
@@ -38,12 +38,9 @@ export const GenerateMatch = (activityId: string, attendees: any[], court: numbe
   return match;
 }
 
-export const AddMatchAsync = async (matchToAdd: MatchModel) => {
+export const AddMatchesAsync = async (matchesToAdd: MatchModel[]) => {
   try {
-    const app = await GetCloudAsync();
-    const db = app.database();
-    await RemoveMatchAsync(matchToAdd.activityId, matchToAdd.court);
-    await db.collection('Matches').add(matchToAdd);
+    await BulkAddRecordAsync('Matches', matchesToAdd);
   } catch (error) {
     console.log(error);
   }
@@ -205,7 +202,7 @@ export const GetTournamentResult = (matches: any[], attendees: any[], activityId
 
     const setLoserResult = (player: any) => {
       const findTeam = teams.find((t: any) => t.captain.memberId === player.memberId
-      || t.captain.memberId === player.captainMemberId);
+        || t.captain.memberId === player.captainMemberId);
       if (findTeam) {
         findTeam.lost = findTeam.lost + 1;
       }
@@ -213,13 +210,13 @@ export const GetTournamentResult = (matches: any[], attendees: any[], activityId
 
     if (match.leftScore > match.rightScore) {
       const pointDifference = match.leftScore - match.rightScore;
-      setWinnerResult(match.player1, pointDifference);     
+      setWinnerResult(match.player1, pointDifference);
       setLoserResult(match.player4);
     }
 
     if (match.rightScore > match.leftScore) {
       const pointDifference = match.rightScore - match.leftScore;
-      setLoserResult(match.player1);      
+      setLoserResult(match.player1);
       setWinnerResult(match.player4, pointDifference);
     }
   }

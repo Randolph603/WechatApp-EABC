@@ -1,5 +1,5 @@
 import { GetNewActivity, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCaptainAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
-import { AddMatchAsync, GenerateMatch, GetTournamentResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
+import { AddMatchesAsync, GenerateMatch, GetTournamentResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync } from "@API/userService";
 import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
@@ -293,28 +293,22 @@ Page({
 
   async CreateMatchesForCourt(e: IOption) {
     const { court } = e.currentTarget.dataset;
-    const activityId = this.data.activityId;
-    const promiseList = [] as any[];
+    const activityId = this.data.activityId;    
     const attendees = this.data.courtAttendeesMap[court];
     console.log(attendees);
 
-    if (attendees.length === 8) {
-      const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
-      const match2 = GenerateMatch(activityId, attendees, court, 0, 1, 4, 5, 2);
-      const match3 = GenerateMatch(activityId, attendees, court, 2, 3, 6, 7, 3);
-      const match4 = GenerateMatch(activityId, attendees, court, 6, 7, 0, 1, 4);
-      const match5 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 5);
-      const match6 = GenerateMatch(activityId, attendees, court, 6, 7, 4, 5, 6);
-      const matches = [match1, match2, match3, match4, match5, match6];
-
-      matches.forEach((match: any) => {
-        const promise = AddMatchAsync(new MatchModel(match));
-        promiseList.push(promise);
-      });
-    }
-
     await ExcuteWithProcessingAsync(async () => {
-      await Promise.all(promiseList);
+      if (attendees.length === 8) {
+        const match1 = GenerateMatch(activityId, attendees, court, 0, 1, 2, 3, 1);
+        const match2 = GenerateMatch(activityId, attendees, court, 0, 1, 4, 5, 2);
+        const match3 = GenerateMatch(activityId, attendees, court, 2, 3, 6, 7, 3);
+        const match4 = GenerateMatch(activityId, attendees, court, 6, 7, 0, 1, 4);
+        const match5 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 5);
+        const match6 = GenerateMatch(activityId, attendees, court, 6, 7, 4, 5, 6);
+        const matches = [match1, match2, match3, match4, match5, match6];
+  
+        await AddMatchesAsync(matches.map(m => new MatchModel(m)));
+      }
       await this.ReloadActivityByIdAsync(activityId);
     });
   },

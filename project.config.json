@@ -34,7 +34,7 @@
     "minifyWXSS": true,
     "minifyWXML": true,
     "localPlugins": false,
-    "condition": false,
+    "condition": true,
     "swc": false,
     "disableSWC": true,
     "disableUseStrict": false
@@ -47,7 +47,7 @@
     "tabIndent": "insertSpaces",
     "tabSize": 2
   },
-  "libVersion": "3.8.11",
+  "libVersion": "3.16.0",
   "packOptions": {
     "ignore": [
       {
