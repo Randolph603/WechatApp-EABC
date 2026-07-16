@@ -56,6 +56,11 @@
             <mp-cell title="公开活动">
               <switch checked="{{formData.toPublic}}" bindchange="formTextChange" data-field="toPublic" />
               <text>{{formData.toPublic === true ? '是' : '否'}}</text>
+              <view slot="footer" class="view-row-centre">
+                <navigator url="/pages/activity/{{typeMap[formData.type].value}}/details?id={{activityId}}">
+                  <text>报名页</text>
+                </navigator>
+              </view>
             </mp-cell>
             <mp-cell title="计算积分">
               <switch checked="{{formData.calculatePowerPoint}}" bindchange="formTextChange" data-field="calculatePowerPoint" />
@@ -98,10 +103,6 @@
                     <checkbox style="margin: 4rpx 0;" value="{{item}}" checked="{{utils.includes(section.courts, item)}}" />{{item}} 号场
                   </label>
                 </checkbox-group>
-              </mp-cell>
-              <mp-cell title="区域锁定">
-                <switch checked="{{section.isLocked}}" bindchange="handleSectionChange" data-id="{{id}}" data-field="isLocked" />
-                <text>{{section.isLocked === true ? '是' : '否'}}</text>
               </mp-cell>
               <mp-cell title="使用折扣">
                 <switch checked="{{section.useDiscount}}" bindchange="handleSectionChange" data-id="{{id}}" data-field="useDiscount" />
