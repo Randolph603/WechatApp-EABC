@@ -1,5 +1,4 @@
 import { WxRequestAsync } from "@Lib/promisify";
-const token = '2|NaXRu9JnMpSdb8l86BkJxj6gzKJofnhmExwr8EWkQtHoattDAGimsSYhpM22a61e1crjTjfIGTKfhzxA';
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0';
 const imageMap: { [key: number]: string } = {
   // MS
@@ -91,160 +90,77 @@ const imageMap: { [key: number]: string } = {
   95643: "https://img.bwfbadminton.com/image/upload/t_96_player_profile/v1634093078/assets/players/thumbnail/95643.png",
 };
 
-export const LoadMSRankAsync = async (): Promise<any> => {
-  const data = {
-    "catId": 6,
-    "drawCount": 1,
-    "rankId": 2,
-    "publicationId": 0,
-    "doubles": false,
-    "searchKey": "",
-    "pageKey": "20",
-    "page": 1,
+const categoryConfigs = {
+  MS: { catId: 6, drawCount: 1, doubles: false },
+  WS: { catId: 7, drawCount: 2, doubles: false },
+  MD: { catId: 8, drawCount: 3, doubles: true },
+  WD: { catId: 9, drawCount: 4, doubles: true },
+  XD: { catId: 10, drawCount: 5, doubles: true },
+} as const;
+
+type Category = keyof typeof categoryConfigs;
+
+const mapPlayer = (d: any, playerNo: 1 | 2) => ({
+  displayName: d[`player${playerNo}_model`].name_display_bold.replace(/<[^>]+>/g, ''),
+  nation: d[`p${playerNo}_country_model`].name,
+  avatarUrl: imageMap[d[`player${playerNo}_id`]] ?? defaultAvatarUrl,
+});
+
+const mapRankItem = (d: any, doubles: boolean) => {
+  const base = {
+    rank: d.rank,
+    rank_change: d.rank_change,
+    rank_previous: d.rank_previous,
+    tournaments: d.tournaments,
+    points: Number(d.points).toLocaleString("en-US"),
   };
-  const { results } = await LoadRankAsync(data);
-  return results.data.map((d: any) => {
-    return {
-      rank: d.rank,
-      rank_change: d.rank_change,
-      rank_previous: d.rank_previous,
-      tournaments: d.tournaments,
-      points: Number(d.points).toLocaleString("en-US"),
-      displayName: d.player1_model.name_display,
-      nation: d.player1_model.country_model.name,
-      avatarUrl: imageMap[d.player1_id] ?? defaultAvatarUrl,
-    }
-  })
-}
 
-export const LoadWSRankAsync = async (): Promise<any> => {
-  const data = {
-    "catId": 7,
-    "drawCount": 2,
-    "rankId": 2,
-    "publicationId": 0,
-    "doubles": false,
-    "searchKey": "",
-    "pageKey": "20",
-    "page": 1,
+  if (!doubles) {
+    return { ...base, ...mapPlayer(d, 1) };
+  }
+
+  const p1 = mapPlayer(d, 1);
+  const p2 = mapPlayer(d, 2);
+  return {
+    ...base,
+    player1_displayName: p1.displayName,
+    player1_nation: p1.nation,
+    player1_avatarUrl: p1.avatarUrl,
+    player2_displayName: p2.displayName,
+    player2_nation: p2.nation,
+    player2_avatarUrl: p2.avatarUrl,
   };
-  const { results } = await LoadRankAsync(data);
-  return results.data.map((d: any) => {
-    return {
-      rank: d.rank,
-      rank_change: d.rank_change,
-      rank_previous: d.rank_previous,
-      tournaments: d.tournaments,
-      points: Number(d.points).toLocaleString("en-US"),
-      displayName: d.player1_model.name_display,
-      nation: d.player1_model.country_model.name,
-      avatarUrl: imageMap[d.player1_id] ?? defaultAvatarUrl,
-    }
-  })
-}
+};
 
-export const LoadMDRankAsync = async (): Promise<any> => {
-  const data = {
-    "catId": 8,
-    "drawCount": 3,
-    "rankId": 2,
-    "publicationId": 0,
-    "doubles": true,
-    "searchKey": "",
-    "pageKey": "20",
-    "page": 1,
-  };
-  const { results } = await LoadRankAsync(data);
-  return results.data.map((d: any) => {
-    return {
-      rank: d.rank,
-      rank_change: d.rank_change,
-      rank_previous: d.rank_previous,
-      tournaments: d.tournaments,
-      points: Number(d.points).toLocaleString("en-US"),
-
-      player1_displayName: d.player1_model.name_display,
-      player1_nation: d.player1_model.country_model.name,
-      player1_avatarUrl: imageMap[d.player1_id] ?? defaultAvatarUrl,
-
-      player2_displayName: d.player2_model.name_display,
-      player2_nation: d.player2_model.country_model.name,
-      player2_avatarUrl: imageMap[d.player2_id] ?? defaultAvatarUrl,
-    }
-  })
-}
-
-export const LoadWDRankAsync = async (): Promise<any> => {
-  const data = {
-    "catId": 9,
-    "drawCount": 4,
-    "rankId": 2,
-    "publicationId": 0,
-    "doubles": true,
-    "searchKey": "",
-    "pageKey": "20",
-    "page": 1,
-  };
-  const { results } = await LoadRankAsync(data);
-  return results.data.map((d: any) => {
-    return {
-      rank: d.rank,
-      rank_change: d.rank_change,
-      rank_previous: d.rank_previous,
-      tournaments: d.tournaments,
-      points: Number(d.points).toLocaleString("en-US"),
-
-      player1_displayName: d.player1_model.name_display,
-      player1_nation: d.player1_model.country_model.name,
-      player1_avatarUrl: imageMap[d.player1_id] ?? defaultAvatarUrl,
-
-      player2_displayName: d.player2_model.name_display,
-      player2_nation: d.player2_model.country_model.name,
-      player2_avatarUrl: imageMap[d.player2_id] ?? defaultAvatarUrl,
-    }
-  })
-}
-
-export const LoadXDRankAsync = async (): Promise<any> => {
-  const data = {
-    "catId": 10,
-    "drawCount": 5,
-    "rankId": 2,
-    "publicationId": 0,
-    "doubles": true,
-    "searchKey": "",
-    "pageKey": "20",
-    "page": 1,
-  };
-  const { results } = await LoadRankAsync(data);
-  return results.data.map((d: any) => {
-    return {
-      rank: d.rank,
-      rank_change: d.rank_change,
-      rank_previous: d.rank_previous,
-      tournaments: d.tournaments,
-      points: Number(d.points).toLocaleString("en-US"),
-
-      player1_displayName: d.player1_model.name_display,
-      player1_nation: d.player1_model.country_model.name,
-      player1_avatarUrl: imageMap[d.player1_id] ?? defaultAvatarUrl,
-
-      player2_displayName: d.player2_model.name_display,
-      player2_nation: d.player2_model.country_model.name,
-      player2_avatarUrl: imageMap[d.player2_id] ?? defaultAvatarUrl,
-    }
-  })
-}
+const LoadCategoryRankAsync = async (category: Category): Promise<any> => {
+  const { catId, drawCount, doubles } = categoryConfigs[category];
+  const { results } = await LoadRankAsync({
+    rankId: 2,
+    catId,
+    drawCount,
+    doubles,
+    publicationId: 0,
+    searchKey: "",
+    pageKey: "20",
+    page: 1,
+  });
+  return results.data.map((d: any) => mapRankItem(d, doubles));
+};
 
 const LoadRankAsync = async (data: object): Promise<any> => {
   const response = await WxRequestAsync({
     url: 'https://extranet-lv.bwfbadminton.com/api/vue-rankingtable',
-    method: 'POST',
-    data: data,
-    header: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
+    method: 'GET',
+    data,
+    header: { 'Content-Type': 'application/json' },
   });
   return response.data;
-}
+};
+
+// 保持原有导出接口不变，调用方无需改动
+export const LoadMSRankAsync = () => LoadCategoryRankAsync('MS');
+export const LoadWSRankAsync = () => LoadCategoryRankAsync('WS');
+export const LoadMDRankAsync = () => LoadCategoryRankAsync('MD');
+export const LoadWDRankAsync = () => LoadCategoryRankAsync('WD');
+export const LoadXDRankAsync = () => LoadCategoryRankAsync('XD');
+

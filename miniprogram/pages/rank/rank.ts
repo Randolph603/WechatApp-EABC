@@ -1,7 +1,7 @@
 import { LoadMDRankAsync, LoadMSRankAsync, LoadWDRankAsync, LoadWSRankAsync, LoadXDRankAsync } from "@API/bwfService";
 import { RecordEvent } from "@API/eventService";
 import { GetMatchRankAsync } from "@API/matchService";
-import { CheckUserExistsAsync, SearchAllUsersAsync } from "@API/userService";
+import { SearchAllUsersAsync } from "@API/userService";
 import { getCurrentWeekSpan } from "@Lib/dateExtension";
 import { ExcuteWithLoadingAsync, UpdateTabBarLaguage } from "@Lib/utils";
 
