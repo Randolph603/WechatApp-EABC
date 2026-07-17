@@ -143,6 +143,18 @@ export const CancelJoinActivityAsync = async (activityId: string, memberId: numb
   }
 }
 
+export const CancelAttendeeAsync = async (attendeeId: string) => {
+  try {
+    await UpdateRecordAsync('Attendees',
+      { _id: attendeeId },
+      { isCancelled: true },
+      { updateDate: JSON.stringify(new Date()) }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export const AttendeeMoveSectionAsync = async (activityId: string, memberId: number, joinMore: number, sectionIndex: number) => {
   try {
     await UpdateRecordAsync('Attendees',

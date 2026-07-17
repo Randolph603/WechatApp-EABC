@@ -25,9 +25,23 @@
         {
           "name": "pages/admin/activityDetail/activityDetail",
           "pathName": "pages/admin/activityDetail/activityDetail",
-          "query": "id=831d07e26a2f6b3c00390b1814bf75b9",
+          "query": "id=36358d2c6a547b490075f5660830786c",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "id=36358d2c6a547c1900760d98149095de",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/admin/activityDetail/activityDetail",
+          "pathName": "pages/admin/activityDetail/activityDetail",
+          "query": "id=831d07e26a2f6b3c00390b1814bf75b9",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

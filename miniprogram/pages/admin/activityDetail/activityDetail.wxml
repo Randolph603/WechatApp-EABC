@@ -158,10 +158,9 @@
                   <text>{{user.continueWeeklyJoin || 0}} Weeks</text>
                 </view>
               </view>
-              <view slot="footer" class="view-row">
-                <image wx:if="{{!formData.isCompleted}}" data-user="{{user}}" bindtap="removeAttendeeAsync" class="footer-icon" src="/static/icons/minus.png" />
-                <text>+{{user.attendeeList.length-1}}</text>
-                <image wx:if="{{!formData.isCompleted}}" data-user="{{user}}" bindtap="addAttendeeAsync" class="footer-icon" src="/static/icons/add.png" />
+              <view wx:if="{{!formData.isCompleted}}" slot="footer" class="view-row">
+                <image data-user="{{user}}" bindtap="addAttendeeAsync" class="footer-icon" src="/static/icons/add.png" />
+                <image data-id="{{user.attendeeId}}" bindtap="cancelAttendee" class="footer-icon" src="/static/icons/minus.png" />
               </view>
             </mp-cell>
             <block wx:for="{{user.attendeeList}}" wx:key="attendeeId" wx:for-item="attendee">
@@ -182,7 +181,10 @@
                     <text>{{attendee.attendeeName}}</text>
                   </view>
                 </view>
-                <button slot="footer" type="default" size="mini" data-user="{{user}}" data-attendee="{{attendee}}" bindtap="showSelectedAttendee">修改</button>
+                <view wx:if="{{!formData.isCompleted}}" slot="footer" class="view-row">
+                  <button class="mr-10" type="default" size="mini" data-user="{{user}}" data-attendee="{{attendee}}" bindtap="showSelectedAttendee">修改</button>
+                  <image data-id="{{attendee.attendeeId}}" bindtap="cancelAttendee" class="footer-icon" src="/static/icons/minus.png" />
+                </view>
               </mp-cell>
               <mp-cell wx:if="{{attendee.parentMemberId && attendee.attendeeId !== user.attendeeId }}">
                 <view slot="title" class="view-row">
@@ -195,7 +197,9 @@
                     <text>{{attendee.continueWeeklyJoin || 0}} Weeks</text>
                   </view>
                 </view>
-                <button slot="footer" type="warn" size="mini" data-user="{{user}}" data-attendee="{{attendee}}" bindtap="">取消</button>
+                <view wx:if="{{!formData.isCompleted}}" slot="footer" class="view-row">                  
+                  <image data-id="{{attendee.attendeeId}}" bindtap="cancelAttendee" class="footer-icon" src="/static/icons/minus.png" />
+                </view>                
               </mp-cell>
             </block>
           </block>

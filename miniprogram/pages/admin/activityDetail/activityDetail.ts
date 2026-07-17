@@ -1,4 +1,4 @@
-import { AddActivityAsync, AutoJoinActivityAsync, CancelJoinActivityAsync, ChangeAttendeeAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, LoadAllActivitiesAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
+import { AddActivityAsync, AutoJoinActivityAsync, CancelAttendeeAsync, CancelJoinActivityAsync, ChangeAttendeeAsync, ConfrimActivityAsync, GetNewActivity, JoinActivityAsync, LoadActivityAndMatchesByIdAsync, LoadAllActivitiesAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCourtAsync, UpdateAttendeeMoreAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
 import { AddMatchesAsync, AddMatchResultsAsync, GenerateMatch, GetMatchRankAsync, GetMatchResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync, SearchUsersSortByContinuelyWeeksAsync } from "@API/userService";
@@ -116,8 +116,6 @@ Page({
       const mainAttendee = mainAttendeeList.length === 1
         ? mainAttendeeList[0]
         : mainAttendeeList.find((a: any) => !a.parentMemberId);
-      const restingAttendeeList = atts.filter(
-        (a: any) => a.attendeeName || a.attendeeId !== mainAttendee.attendeeId);
 
       const aggregateAttendee = {
         attendeeId: mainAttendee.attendeeId,
@@ -348,24 +346,17 @@ Page({
       }, false);
     }
   },
+  
+  async cancelAttendee(e: IOption) {
+    const { id } = e.currentTarget.dataset;
+    if (!id) return;
 
-  async removeAttendeeAsync(e: IOption) {
-    const { user } = e.currentTarget.dataset;
-    if (!user) return;
-
-    const more = user.attendeeList.length - 1;
-    const memberId = user.memberId;
     const activityId = this.data.activityId;
-
     await ExcuteWithProcessingAsync(async () => {
-      if (more > 0) {
-        await CancelJoinActivityAsync(activityId, memberId, more);
-      } else {
-        await CancelJoinActivityAsync(activityId, memberId, undefined);
-      }
-
+      await CancelAttendeeAsync(id);
       await this.ReloadActivityByIdAsync(activityId);
     }, false);
+
   },
 
   goToUserDetails(e: IOption) {
@@ -509,8 +500,8 @@ Page({
   },
 
   async ConfirmAndChargeActivityAsync() {
-    // Kevin : 10067
-    const vipMemberIds = [10067];
+    // Kevin : 10067 Alex Y ：10638
+    const vipMemberIds = [10638];
 
     const activityId = this.data.activityId;
     const sections = this.data.formData.sections;
