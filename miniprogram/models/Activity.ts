@@ -4,8 +4,7 @@ import { ActivityType, ConverPageArray } from "@Lib/types";
 export interface iSection {
   courts: Array<number>;
   during: number;
-  index: number;
-  isLocked: boolean;
+  index: number;  
   maxAttendee: number;
   price: number;
   time: string;
@@ -46,7 +45,6 @@ const newSection: iSection = {
   courts: [1, 2, 3, 4],
   during: 120,
   index: 0,
-  isLocked: false,
   maxAttendee: 24,
   price: 15,
   time: ToNZTimeString(today),
