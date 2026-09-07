@@ -20,7 +20,7 @@
 
     <mp-cell title="*{{_lang.gender}}" show-error prop="gender">
       <view class="view-row">
-        <view class="view-row  mr-10 gender-box {{formData.gender ===1 ? 'selected': ''}}" data-value="{{1}}" bindtap="changeGender">
+       <view class="view-row  mr-10 gender-box {{formData.gender ===1 ? 'selected': ''}}" data-value="{{1}}" bindtap="changeGender">
           <image class="icon24" src="/static/icons/male.png" mode="aspectFit" />
           <text class="ml-10">{{genderArray[1].name}}</text>
         </view>
@@ -37,9 +37,13 @@
         {{formData.selfRatingLevel > 0 ? "Lv."+userSelfRatingLevelMap[formData.selfRatingLevel].level+" - "+userSelfRatingLevelMap[formData.selfRatingLevel].title : "请选择"}}
       </view>
 
-      <!-- <view slot="footer">+0.5</view> -->
       <mp-badge slot="footer" wx:if="{{formData.selfRatingLevel === 0}}" content="New" color="#888" extClass="view-row" />
     </mp-cell>
+
+    <!-- <mp-cell title="自动报名">
+      <switch checked="{{formData.calculatePowerPoint}}" bindchange="formTextChange" data-field="calculatePowerPoint" />
+      <text>{{formData.calculatePowerPoint === true ? '是' : '否'}}</text>
+    </mp-cell> -->
 
     <text style="font-size: 12px; margin-left: 17px; color: rgb(167, 160, 160);">{{_lang.required}}</text>
 
