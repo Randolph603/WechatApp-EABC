@@ -490,7 +490,6 @@ Page({
           const targetUsersForThisSection = usersForThisSection
             .sort((a: any, b: any) => b.continueWeeklyJoin - a.continueWeeklyJoin)
             .slice(0, section.maxAttendee * 0.7);
-          console.log(targetUsersForThisSection);
           targetUsers.push(...targetUsersForThisSection);
         });
         const activityId = this.data.activityId;
