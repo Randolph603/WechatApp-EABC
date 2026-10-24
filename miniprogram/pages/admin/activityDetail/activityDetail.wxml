@@ -197,9 +197,9 @@
                     <text>{{attendee.continueWeeklyJoin || 0}} Weeks</text>
                   </view>
                 </view>
-                <view wx:if="{{!formData.isCompleted}}" slot="footer" class="view-row">                  
+                <view wx:if="{{!formData.isCompleted}}" slot="footer" class="view-row">
                   <image data-id="{{attendee.attendeeId}}" bindtap="cancelAttendee" class="footer-icon" src="/static/icons/minus.png" />
-                </view>                
+                </view>
               </mp-cell>
             </block>
           </block>

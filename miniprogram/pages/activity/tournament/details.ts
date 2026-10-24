@@ -11,7 +11,7 @@ import { GetAttendTitle, GetLaguageMap } from '@Language/languageUtils';
 import { WxShowModalAsync } from '@Lib/promisify';
 import { UserRole } from '@Lib/types';
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetCurrentUrl, NavigateBack } from '@Lib/utils';
-import { iSection, iUser } from '@Model/index';
+import { iUser } from '@Model/index';
 
 Page({
   data: {
@@ -128,7 +128,8 @@ Page({
 
       const captainMemberIds = allJoinedAttendees
         .filter((a: any) => a.captainMemberId)
-        .map((a: any) => a.captainMemberId);
+        .map((a: any) => a.captainMemberId)
+        .filter((id: number, index: number, arr: number[]) => arr.indexOf(id) === index);
 
       const teams = [];
       for (const captainMemberId of captainMemberIds) {

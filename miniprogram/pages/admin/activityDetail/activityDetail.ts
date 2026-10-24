@@ -46,7 +46,7 @@ Page({
     matchResultMap: null as unknown as any,
     typeArray: ActivityTypeArray,
     typeMap: ActivityTypeMap,
-    courtArray: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    courtArray: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],    
     converPageArray: ConverPageArray,
     rules: rules,
     // Attendees page
@@ -181,9 +181,9 @@ Page({
   },
 
   courtCheckboxChange(e: IOption) {
-    const newCourts = e.detail.value.map((str: any) => Number(str)).sort((a: number, b: number) => (a - b));
+    const newValues = e.detail.value.map((str: any) => Number(str)).sort((a: number, b: number) => (a - b));
     this.setData({
-      [`formData.courts`]: newCourts
+      [`formData.courts`]: newValues
     });
   },
 

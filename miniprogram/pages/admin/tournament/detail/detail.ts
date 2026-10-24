@@ -1,4 +1,5 @@
 import { GetNewActivity, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCaptainAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
+import { UpdateRecordAsync } from "@API/commonHelper";
 import { AddMatchesAsync, GenerateMatch, GetTournamentResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync } from "@API/userService";
 import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
@@ -25,7 +26,7 @@ Page({
     matchResultMap: null as unknown as any,
     typeArray: ActivityTypeArray,
     typeMap: ActivityTypeMap,
-    courtArray: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    sponsoringImageArray: [1, 2, 3, 4, 5, 6, 7, 8],
     converPageArray: ConverPageArray,
     // Attendees page
     groupedAttendees: [] as any[],
@@ -74,6 +75,35 @@ Page({
     allActiveAttendees = [...activity.Attendees];
     this.GenerateGroupAttendees();
     this.GenerateMatchResults();
+  },
+
+  sponsoringImagesCheckboxChange(e: IOption) {
+    const newValues = e.detail.value.map((str: any) => Number(str)).sort((a: number, b: number) => (a - b));
+    this.setData({
+      [`formData.sponsoringImages`]: newValues
+    });
+  },
+
+  async submitForm() {
+    this.selectComponent('#form').validate(async (valid: any, errors: any) => {
+      if (!valid) {
+        const firstError = Object.keys(errors)
+        if (firstError.length) {
+          wx.showToast({
+            title: errors[firstError[0]].message,
+            icon: 'none',
+          });
+        }
+      } else {
+        await ExcuteWithProcessingAsync(async () => {
+          const activityToAdd = this.data.formData;
+          console.log(activityToAdd);
+          if (this.data.activityId) {
+            await UpdateRecordAsync('Activities', { _id: this.data.activityId }, activityToAdd)
+          }
+        });
+      }
+    });
   },
 
   GenerateGroupAttendees() {
@@ -293,7 +323,7 @@ Page({
 
   async CreateMatchesForCourt(e: IOption) {
     const { court } = e.currentTarget.dataset;
-    const activityId = this.data.activityId;    
+    const activityId = this.data.activityId;
     const attendees = this.data.courtAttendeesMap[court];
     console.log(attendees);
 
@@ -306,7 +336,7 @@ Page({
         const match5 = GenerateMatch(activityId, attendees, court, 2, 3, 4, 5, 5);
         const match6 = GenerateMatch(activityId, attendees, court, 6, 7, 4, 5, 6);
         const matches = [match1, match2, match3, match4, match5, match6];
-  
+
         await AddMatchesAsync(matches.map(m => new MatchModel(m)));
       }
       await this.ReloadActivityByIdAsync(activityId);
