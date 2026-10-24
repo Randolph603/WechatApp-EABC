@@ -60,8 +60,7 @@
                       <text>{{attendee.attendeeName}}</text>
                     </view>
                   </view>
-                  <view slot="footer">
-                    <image class="icon24" src="/static/icons/close.png" mode="aspectFit" />
+                  <view slot="footer">                    
                     <image class="icon24" src="/static/icons/edit.png" mode="aspectFit" bindtap="showSelectedAttendee" data-user="{{user}}" data-attendee="{{attendee}}" />
                   </view>
                 </mp-cell>
