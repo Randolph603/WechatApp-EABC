@@ -22,18 +22,6 @@ Page({
     });
   },
 
-  // onSearchChange(e) {
-  //   const searchText = e.detail.value;
-  //   const filterActivity = this.data.allActivity.filter(a =>
-  //     a.title.toLowerCase().includes(searchText.toLowerCase())
-  //     || a.date.includes(searchText.toLowerCase())
-  //   );
-  //   this.setData({
-  //     searchTerm: searchText,
-  //     filterActivity: filterActivity,
-  //   });
-  // },
-
   async loadAllActivityAsync() {
     await ExcuteWithLoadingAsync(async () => {
       const activities = await LoadAllActivitiesAsync(30, undefined, undefined);

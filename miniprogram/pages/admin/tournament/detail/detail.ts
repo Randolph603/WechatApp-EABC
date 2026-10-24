@@ -97,9 +97,13 @@ Page({
       } else {
         await ExcuteWithProcessingAsync(async () => {
           const activityToAdd = this.data.formData;
-          console.log(activityToAdd);
           if (this.data.activityId) {
-            await UpdateRecordAsync('Activities', { _id: this.data.activityId }, activityToAdd)
+            const { startTime, updateDate, ...activityToUpdate } = activityToAdd;
+            const startTimeString = JSON.stringify(this.data.formData.startTime);
+            const updateDateString = JSON.stringify(new Date());
+            const updateDateData = { startTime: startTimeString, updateDate: updateDateString };
+
+            await UpdateRecordAsync('Activities', { _id: this.data.activityId }, activityToUpdate, updateDateData)
           }
         });
       }

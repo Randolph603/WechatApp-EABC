@@ -25,7 +25,7 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, type: string | 
     where: { isCancelled: false, type: type, toPublic: onlyPublic },
     sort: { startTime: -1 },
     limit: limit,
-  };
+  };  
   const { activities } = await CallCloudFuncAsync('activity_search', data)
   activities.forEach(SetupActivity);
   return activities;
