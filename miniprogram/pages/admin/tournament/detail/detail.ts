@@ -1,12 +1,16 @@
-import { GetNewActivity, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCaptainAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
+import { GetNewActivity, LoadActivityAndMatchesByIdAsync, RemoveAttendeeCaptainAsync, RemoveAttendeeCourtAsync, UpdateAttendeeCaptainAsync, UpdateAttendeeCourtAsync, UpdateCurrentPowerOfBattleAsync } from "@API/activityService";
 import { UpdateRecordAsync } from "@API/commonHelper";
 import { AddMatchesAsync, GenerateMatch, GetTournamentResult, RemoveMatchAsync, UpdateMatchAsync } from "@API/matchService";
 import { SearchUsersByKeyAsync } from "@API/userService";
-import { ActivityTypeArray, ActivityTypeMap, ConverPageArray, UserGenderArray } from "@Lib/types";
+import { ActivityTypeArray, ActivityTypeMap, UserGenderArray } from "@Lib/types";
 import { ExcuteWithLoadingAsync, ExcuteWithProcessingAsync, GetNavBarHeight } from "@Lib/utils";
 import { ActivityModel } from "@Model/Activity";
 import { IOption } from "@Model/index";
 import { MatchModel } from "@Model/Match";
+
+const rules = [
+  { name: 'sponsoringImages', rules: { required: true, message: 'sponsoringImages' } },
+];
 
 let allActiveAttendees: any[] = [];
 
@@ -27,7 +31,7 @@ Page({
     typeArray: ActivityTypeArray,
     typeMap: ActivityTypeMap,
     sponsoringImageArray: [1, 2, 3, 4, 5, 6, 7, 8],
-    converPageArray: ConverPageArray,
+    rules: rules,
     // Attendees page
     groupedAttendees: [] as any[],
     // Dialog
@@ -84,6 +88,13 @@ Page({
     });
   },
 
+  formNumberChange(e: IOption) {
+    const { field } = e.currentTarget.dataset
+    this.setData({
+      [`formData.${field}`]: Number(e.detail.value)
+    });
+  },
+
   async submitForm() {
     this.selectComponent('#form').validate(async (valid: any, errors: any) => {
       if (!valid) {
@@ -113,7 +124,7 @@ Page({
   GenerateGroupAttendees() {
     const groupedAttendees: any = [];
     const activeAttendeesGroup = allActiveAttendees
-      .filter(a => !a.captainName)
+      .filter(a => !a.captainName && !a.captainMemberId)
       .reduce((acc: any, currentValue: any) => {
         let groupKey = currentValue['memberId'];
         if (!acc[groupKey]) {
@@ -124,21 +135,20 @@ Page({
       }, {});
 
     Object.values(activeAttendeesGroup).forEach((atts: any) => {
-      const mainAttendee = atts.find((a: any) => a.joinMore === 0);
+      const captainAttendee = atts.find((a: any) => a.joinMore === 0);
       const teamMemberAttendees = allActiveAttendees
-        .filter((a: any) => a.captainMemberId === mainAttendee.memberId);
+        .filter((a: any) => a.captainMemberId === captainAttendee.memberId);
       const allTeamMember = teamMemberAttendees.concat(atts);
 
       const aggregateAttendee = {
-        avatarUrl: mainAttendee.avatarUrl,
-        continueWeeklyJoin: mainAttendee.continueWeeklyJoin,
-        creditBalance: mainAttendee.creditBalance,
-        discount: mainAttendee.discount,
-        displayName: mainAttendee.displayName,
-        gender: mainAttendee.gender,
-        memberId: mainAttendee.memberId,
-        captainName: mainAttendee.captainName,
-        captainMemberId: mainAttendee.captainMemberId,
+        attendeeId: captainAttendee.attendeeId,
+        avatarUrl: captainAttendee.avatarUrl,
+        displayName: captainAttendee.displayName,
+        gender: captainAttendee.gender,
+        memberId: captainAttendee.memberId,
+        captainName: captainAttendee.captainName,
+        captainMemberId: captainAttendee.captainMemberId,
+        captainAttendee: captainAttendee,
         attendeeList: allTeamMember.map((a: any) => {
           return {
             attendeeId: a.attendeeId,
@@ -147,6 +157,7 @@ Page({
             sectionIndex: a.sectionIndex,
             displayName: a.displayName,
             gender: a.gender,
+            memberId: a.memberId,
             attendeeName: a.attendeeName,
             attendeeGender: a.attendeeGender,
             attendeeMemberId: a.attendeeMemberId,
@@ -193,16 +204,25 @@ Page({
       attendeeJoinMore: attendee.joinMore,
       accountName: user.displayName,
       accountMemberId: user.memberId,
-      attendeeName: attendee.attendeeName,
-      attendeeGender: attendee.attendeeGender,
-      attendeeMemberId: attendee.attendeeMemberId,
+      attendeeName: attendee.attendeeName || attendee.displayName,
+      attendeeGender: attendee.attendeeGender || attendee.gender,
+      attendeeMemberId: attendee.attendeeMemberId || attendee.memberId,
       captainName: attendee.captainName,
       captainMemberId: attendee.captainMemberId,
+      teamName: attendee.teamName
     };
     this.setData({
       showAttendeeDialog: true,
       selectedAttendee: selectedAttendee
     })
+  },
+
+  changeSelectedTeamName(e: IOption) {
+    this.setData({ [`selectedAttendee.teamName`]: e.detail.value });
+  },
+
+  clearTeamName() {
+    this.setData({ [`selectedAttendee.teamName`]: null });
   },
 
   changeSelectedCaptainName(e: IOption) {
@@ -243,7 +263,18 @@ Page({
       await UpdateAttendeeCaptainAsync(
         selectedAttendee.attendeeId,
         selectedAttendee.captainName,
-        selectedAttendee.captainMemberId);
+        selectedAttendee.captainMemberId,
+        selectedAttendee.teamName);
+      await this.ReloadActivityByIdAsync(activityId);
+      this.setData({ showAttendeeDialog: false });
+    }, false);
+  },
+
+  async removeCaptain(e: IOption) {
+    const { attendee } = e.currentTarget.dataset;
+    const activityId = this.data.activityId;
+    await ExcuteWithProcessingAsync(async () => {
+      await RemoveAttendeeCaptainAsync(attendee.attendeeId);
       await this.ReloadActivityByIdAsync(activityId);
       this.setData({ showAttendeeDialog: false });
     }, false);

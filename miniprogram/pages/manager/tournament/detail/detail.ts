@@ -202,19 +202,6 @@ Page({
     });
   },
 
-  async updateSelectedAttendee() {
-    const activityId = this.data.activityId;
-    await ExcuteWithProcessingAsync(async () => {
-      const selectedAttendee = this.data.selectedAttendee;
-      await UpdateAttendeeCaptainAsync(
-        selectedAttendee.attendeeId,
-        selectedAttendee.captainName,
-        selectedAttendee.captainMemberId);
-      await this.ReloadActivityByIdAsync(activityId);
-      this.setData({ showAttendeeDialog: false });
-    }, false);
-  },
-
   //#endregion
 
   //#region group and match page private method

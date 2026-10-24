@@ -85,8 +85,8 @@
                   <block wx:for="{{joinedTeams}}" wx:key="index" wx:for-item="team">
                     <view class="game-box">
                       <view class="header">
-                        <view class="view-row-between">
-                          <text>Team {{index+1}}</text>
+                        <view class="view-row-between">                          
+                          <text>Team {{index + 1}} {{team.captain && team.captain.teamName ? '（' + team.captain.teamName + '）' : ''}}</text>
                           <text>总活跃度：{{team.totalPowerPoint}}</text>
                         </view>
                       </view>

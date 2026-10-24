@@ -25,7 +25,7 @@ export const LoadAllActivitiesAsync = async (limit: number = 20, type: string | 
     where: { isCancelled: false, type: type, toPublic: onlyPublic },
     sort: { startTime: -1 },
     limit: limit,
-  };  
+  };
   const { activities } = await CallCloudFuncAsync('activity_search', data)
   activities.forEach(SetupActivity);
   return activities;
@@ -216,15 +216,29 @@ export const ChangeAttendeeAsync = async (activityId: string, attendeeId: string
   }
 }
 
-export const UpdateAttendeeCaptainAsync = async (attendeeId: string, captainName: string, captainMemberId: number) => {
+export const UpdateAttendeeCaptainAsync = async (attendeeId: string, captainName: string, captainMemberId: number, teamName: string) => {
   if (attendeeId) {
     try {
       await UpdateRecordAsync('Attendees',
         { _id: attendeeId },
         {
           captainName, // if captainName is undefined, will not add this feild
-          captainMemberId // if captainMemberId is undefined, will not add this feild
+          captainMemberId, // if captainMemberId is undefined, will not add this feild
+          teamName // if teamName is undefined, will not add this feild
         },
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+export const RemoveAttendeeCaptainAsync = async (attendeeId: string) => {
+  if (attendeeId) {
+    try {
+      await RemoveFieldsAsync('Attendees',
+        { _id: attendeeId },
+        ['captainName', 'captainMemberId']
       );
     } catch (error) {
       console.log(error);

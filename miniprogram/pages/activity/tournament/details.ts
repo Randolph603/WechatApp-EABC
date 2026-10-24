@@ -150,7 +150,7 @@ Page({
       }
       teams.sort((a: any, b: any) => b.totalPowerPoint - a.totalPowerPoint)
 
-      const maxAttendeeGroup = activity.sections[0].maxAttendee / 2;
+      const maxAttendeeGroup = activity.sections[0].maxAttendee / (activity.teamMemberNumber ?? 6);
       const joinedTeams = teams.slice(0, maxAttendeeGroup);
       const waitingTeams = teams.slice(maxAttendeeGroup);
 

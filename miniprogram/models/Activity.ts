@@ -75,7 +75,7 @@ export class ActivityModel {
   constructor(fields?: Partial<ActivityModel>) {
     if (fields) {
       const allowedKeys = [
-        'address', 'calculatePowerPoint', 'courts', 'coverImage', 'isCancelled', 'isCompleted', 'maxAttendee', 'organizerMemberId', 'sections', 'shareCount', 'startTime', 'sponsoringImages', 'title', 'toPublic', 'type', 'updateDate', 'viewCount'
+        'address', 'calculatePowerPoint', 'courts', 'coverImage', 'isCancelled', 'isCompleted', 'maxAttendee', 'organizerMemberId', 'sections', 'shareCount', 'startTime', 'sponsoringImages', 'title', 'toPublic', 'type', 'updateDate', 'viewCount', 'teamMemberNumber'
       ];
 
       for (const key of allowedKeys) {

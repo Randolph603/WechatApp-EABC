@@ -23,11 +23,18 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/activity/tournament/details",
+          "pathName": "pages/activity/tournament/details",
+          "query": "id=fd7f9c2b6adc2f3500c1ee0c7f92ce7a",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
           "name": "pages/admin/activityList/activityList",
           "pathName": "pages/admin/activityList/activityList",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/home/home",
