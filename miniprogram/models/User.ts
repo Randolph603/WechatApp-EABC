@@ -1,6 +1,3 @@
-import { ToNZDateString } from "@Lib/dateExtension";
-import { UserBadges } from "@Lib/types";
-
 export interface iBadge {
   // Store in db
   id: string | null;
@@ -33,6 +30,7 @@ export interface iUser {
   // Store in db
   avatarUrl: string;
   continueWeeklyJoin: number;
+  attendanceCount2026: number;
   createDate: Date;
   creditBalance: number;
   creditHistory: any[];
@@ -89,7 +87,7 @@ export class UserModel {
   constructor(fields?: Partial<ProfileModel>) {
     if (fields) {
       const allowedKeys = ['displayName', 'bankName', 'userRole', 'gender', 'userLevel',
-        'creditBalance', 'powerPoint', 'continueWeeklyJoin', 'powerOfBattle', 'badges'];
+        'creditBalance', 'powerPoint', 'continueWeeklyJoin', 'attendanceCount2026', 'powerOfBattle', 'badges'];
       for (const key of allowedKeys) {
         if (key in fields) {
           (this as any)[key] = (fields as any)[key];

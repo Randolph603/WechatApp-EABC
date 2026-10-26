@@ -12,8 +12,9 @@ const rules = [
   { name: 'gender', rules: { required: true } },
   { name: 'powerPoint', rules: { required: true } },
   { name: 'continueWeeklyJoin', rules: { required: false } },
+  { name: 'attendanceCount2026', rules: { required: false } },
   { name: 'powerOfBattle', rules: { required: false } },
-  { name: 'badges', rules: { required: false } },
+  { name: 'badges', rules: { required: false } }
 ];
 
 const defaultCreditTransferUser = { memberId: 0, name: '', value: 0 };

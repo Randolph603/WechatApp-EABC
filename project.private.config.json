@@ -25,9 +25,23 @@
         {
           "name": "pages/activity/tournament/details",
           "pathName": "pages/activity/tournament/details",
-          "query": "id=fd7f9c2b6adc2f3500c1ee0c7f92ce7a",
+          "query": "id=c4a9204c68e5bdc001d0c71d05ac9427",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/activity/tournament/details",
+          "pathName": "pages/activity/tournament/details",
+          "query": "id=fd7f9c2b6adc2f3500c1ee0c7f92ce7a",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/activity/tournament/details",
+          "pathName": "pages/activity/tournament/details",
+          "query": "id=fd7f9c2b6adc2f3500c1ee0c7f92ce7a",
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/admin/activityList/activityList",

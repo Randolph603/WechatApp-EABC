@@ -37,6 +37,9 @@
       <mp-cell title="连续周次" show-error prop="continueWeeklyJoin">
         <input bindinput="FormNumberChange" type="number" value="{{formData.continueWeeklyJoin}}" data-field="continueWeeklyJoin" />
       </mp-cell>
+      <mp-cell title="出勤次数" show-error prop="attendanceCount2026">
+        <input bindinput="FormNumberChange" type="number" value="{{formData.attendanceCount2026}}" data-field="attendanceCount2026" />
+      </mp-cell>      
       <mp-cell title="战斗力">
         <input bindinput="FormNumberChange" type="number" value="{{formData.powerOfBattle}}" data-field="powerOfBattle" />
       </mp-cell>

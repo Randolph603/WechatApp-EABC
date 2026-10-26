@@ -24,7 +24,7 @@
 
             <view class="view-row mb-20">
               <image class="icon16 mr-10" src="/static/icons/details/location-white.png" />
-              <text>{{_lang.address}}：</text><text user-select>{{activity.address}}</text>
+              <text>{{_lang.address}}：</text><text style="font-size: 28rpx;" user-select>{{activity.address}}</text>
             </view>
 
             <view class="view-row-between mb-20">
@@ -79,7 +79,7 @@
               <swiper-item>
                 <view id="slide0">
                   <view class="view-row ml-20 mr-20 mt-10">
-                    <text>参赛队伍以参加群活动的活跃度排序，优先选取活跃度高的球友，也欢迎新球友参加。</text>
+                    <text>参赛队伍以近一年度参加群活动的出勤次数排序。</text>
                   </view>
                   <!-- For Teams -->
                   <block wx:for="{{joinedTeams}}" wx:key="index" wx:for-item="team">
@@ -87,7 +87,7 @@
                       <view class="header">
                         <view class="view-row-between">
                           <text>Team {{index + 1}} {{team.captain && team.captain.teamName ? '（' + team.captain.teamName + '）' : ''}}</text>
-                          <text>总活跃度：{{team.totalPowerPoint}}</text>
+                          <text wx:if="{{!activity.isCompleted}}">总出勤次数：{{team.teamAttendanceCount}}</text>
                         </view>
                       </view>
 
@@ -106,8 +106,10 @@
                               <text wx:if="{{user.joinMore && !user.attendeeName}}">+{{user.joinMore}}</text>
                             </view>
                           </view>
-                          <text wx:if="{{user.joinMore}}">活跃度: 0</text>
-                          <text wx:else>活跃度: {{user.powerPoint}}</text>
+                          <block wx:if="{{!activity.isCompleted}}">
+                            <text wx:if="{{user.joinMore}}">无账户无法统计</text>
+                            <text wx:else>出勤次数: {{user.attendanceCount2026}}</text>
+                          </block>
                         </view>
                       </view>
                     </view>
@@ -118,13 +120,13 @@
                   <!-- Waiting List -->
                   <block wx:if="{{waitingTeams.length > 0}}">
                     <view class="divider-main" />
-                    <view class="header">后补报名 (参加活动，提升活跃度, 每次活动10点，两周缺席降7点/周。)</view>
+                    <view class="header">后补报名 (参加活动，提升参加次数，每周一更新。)</view>
                     <block wx:for="{{waitingTeams}}" wx:key="index" wx:for-item="team">
                       <view class="game-box">
                         <view class="header">
                           <view class="view-row-between">
                             <text>后补队伍 {{index+1}}</text>
-                            <text>总活跃度：{{team.totalPowerPoint}}</text>
+                            <text wx:if="{{!activity.isCompleted}}">总出勤次数：{{team.teamAttendanceCount}}</text>
                           </view>
                         </view>
 
@@ -143,7 +145,10 @@
                                 <text wx:if="{{user.joinMore && !user.attendeeName}}">+{{user.joinMore}}</text>
                               </view>
                             </view>
-                            <text>活跃度: {{user.powerPoint}}</text>
+                            <block wx:if="{{!activity.isCompleted}}">
+                              <text wx:if="{{user.joinMore}}">无账户无法统计</text>
+                              <text wx:else>出勤次数: {{user.attendanceCount2026}}</text>
+                            </block>
                           </view>
                         </view>
                       </view>
@@ -151,7 +156,7 @@
                   </block>
 
                   <!-- For Solo -->
-                  <view class="game-box">
+                  <view wx:if="{{!activity.isCompleted}}" class="game-box">
                     <!-- Header information -->
                     <view class="header">
                       <view class="view-row">
@@ -169,11 +174,13 @@
                         <view class="view-row-centre full-width">
                           <image wx:if="{{user.attendeeGender > 0}}" class="icon16" src="/static/icons/{{user.attendeeGender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
                           <image wx:if="{{!user.attendeeGender && user.gender > 0}}" class="icon16" src="/static/icons/{{user.gender ===1 ? 'male': 'female'}}.png" mode="aspectFit" />
-                          <text class="display-name">{{user.attendeeName || user.displayName}}</text>                         
+                          <text class="display-name">{{user.attendeeName || user.displayName}}</text>
                         </view>
-                        <text >活跃度: {{user.powerPoint}}</text>
+                        <block wx:if="{{!activity.isCompleted}}">
+                          <text wx:if="{{user.joinMore}}">无账户无法统计</text>
+                          <text wx:else>出勤次数: {{user.attendanceCount2026}}</text>
+                        </block>
                         <text wx:if="{{user.joinMore && !user.attendeeName}}">+{{user.joinMore}}</text>
-                        
                       </view>
                     </view>
                     <!-- Attendee List End-->

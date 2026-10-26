@@ -123,7 +123,7 @@ Page({
     const id = this.data.activityId;
     if (id.length > 0) {
       const { activity, courtMatchesMap, matchResultMap } = await LoadActivityAndMatchesByIdAsync(id, true, recordEvent);
-      const allJoinedAttendees = activity.Attendees.filter((a: any) => a.isCancelled === false);
+      const allJoinedAttendees = activity.Attendees.filter((a: any) => a.isCancelled === false);      
       const allCancelledAttendees = activity.Attendees.filter((a: any) => a.isCancelled === true);
 
       const captainMemberIds = allJoinedAttendees
@@ -137,18 +137,18 @@ Page({
         const members = allJoinedAttendees.filter((a: any) => a.captainMemberId === captainMemberId);
         const players = [captain].concat(members);
 
-        const totalPowerPoint = players.reduce((accumulator, current) => {
-          const powerPoint = (current.joinMore > 0 && !current.attendeeMemberId) ? 0 : (current.powerPoint ?? 0);
-          return accumulator + powerPoint;
+        const teamAttendanceCount = players.reduce((accumulator, current) => {
+          const attendanceCount = (current.joinMore > 0 && !current.attendeeMemberId) ? 0 : (current.attendanceCount2026 ?? 0);
+          return accumulator + attendanceCount;
         }, 0);
 
         teams.push({
           captain: captain,
           players: players,
-          totalPowerPoint: totalPowerPoint
+          teamAttendanceCount: teamAttendanceCount
         });
       }
-      teams.sort((a: any, b: any) => b.totalPowerPoint - a.totalPowerPoint)
+      teams.sort((a: any, b: any) => b.teamAttendanceCount - a.teamAttendanceCount)
 
       const maxAttendeeGroup = activity.sections[0].maxAttendee / (activity.teamMemberNumber ?? 6);
       const joinedTeams = teams.slice(0, maxAttendeeGroup);
